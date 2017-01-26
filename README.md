@@ -32,13 +32,23 @@ MvcCore::GetInstance()->SetRouterClass(MvcCoreExt_LangRouter::class);
 
 # now you can define routes with languages:
 MvcCore_Router::GetInstance()
-	->SetAllowedLangs('en', 'cs')
+	->SetAllowedLangs('en', 'de')
 	->SetFirstRequestStrictlyByUserAgent()
 	->SetRoutes(array(
-		'Admin\Index:Index'	=> array(
-			'pattern'			=> array(
-				'en'				=> "#^/admin#",
-				'cs'				=> "#^/sprava#",
+		'Front\Product:List'	=> array(
+			'pattern'	=> array(
+				'en'		=> "#^/products\-list#",
+				'de'		=> "#^/produkte\-liste#",
+			),
+		),
+		'Front\Product:Detail'	=> array(
+			'pattern'	=> array(
+				'en'		=> "#^/product/(0-9]*)#",
+				'de'		=> "#^/produkt/(0-9]*)#",
+			),
+			'reverse'	=> array(
+				'en'		=> '/product/{%id}',
+				'de'		=> '/produkt/{%id}',
 			),
 		),
 		'Front\Index:Index'	=> array(
