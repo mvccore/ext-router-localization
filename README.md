@@ -14,7 +14,7 @@ MvcCore Router extension to manage your website language version optionaly conta
 - sets recognized or default language into request object
 - optionaly recognizes target language by http header `Accept-Language`
 - optionaly holds language once defined by session
-- optionaly keeps path for default language, but normaly redirects user into '/' for default language
+- optionaly keeps path for default language, but normaly redirects user into `'/'` for default language
 - optionaly forbids paths for not localized requests
 
 ## Installation
@@ -50,44 +50,44 @@ MvcCore_Router::GetInstance()
 
 ## Configuration
 
-### Session expiration
-There is possible to change session expiration about detected media
-site version value to not recognize media site version every request
-where is no prefix in url, because all regular expressions in Mobile_Detect
-library could takes some time. By **default** there is **1 hour**. 
-You can change it by:
+### Allowed languages
+For every multilanguage application is necessary to allow more than default language:
 ```php
-MvcCoreExt_LangRouter::GetInstance()->SetSessionExpirationSeconds(86400); // day
+MvcCore_Router::GetInstance()->SetAllowedLangs('en', 'cs');
 ```
-But it's not practicly necessary, because if there is necessary to detect
-user device again, it's not so often when the detection process is only 
-once per hour - it costs realy nothing per hour. And only a few users stay
-on your site more than one hour.
 
-### Media url prefixes and allowed media versions
-To allow only some media site versions and configure url prefixes, you can use:
+### Default language
+When request language is not possible to recognize by url address, no possible to recognize by http header `'Accept-Language'` and no language is in session from previous request, default language is used. Default language is `'en'` by default. To configure default language, use:
 ```php
-// to allow only mobile version (with url prefix '/mobile') 
-// and full version (with no url prefix):
-MvcCoreExt_LangRouter::GetInstance()->SetAllowedSiteKeysAndUrlPrefixes(array(
-	MediaSiteKey::MOBILE	=> '/mobile',
-	MediaSiteKey::FULL		=> '',
-));
+MvcCore_Router::GetInstance()->SetDefaultLang('de');
 ```
 
 ### Strict session mode
-To change managing user media version into more strict mode,
-where is not possible to change media version only by request 
-application with different media prefix in path like:
+To change managing language version into more strict mode,
+where is not possible to change language only by request 
+application with different language prefix in path like:
 ```
-/mobile/any/application/request/path
+/de/any/application/request/path
 ```
-but ony where is possible to change media site version by 
-special $_GET param "media_site_key" like:
+but ony where is possible to change language version by 
+special $_GET param "switch_lang" like:
 ```
-/mobile/any/application/request/path?media_site_key=mobile
+/de/any/application/request/path?switch_lang=de
 ```
 you need to configure router into strict session mode by:
 ```php
 MvcCoreExt_LangRouter::GetInstance()->SetStricModeBySession();
 ```
+
+### Session expiration
+There is possible to change session expiration about detected language
+language version, when it's not possible to do it by url address 
+(to not recognize language version every request again by http header `'Accept-Language'`),
+you can change it by:
+```php
+MvcCoreExt_LangRouter::GetInstance()->SetSessionExpirationSeconds(86400); // day
+```
+But it's not practicly necessary, because if there is necessary to detect
+user agent again, it's not so often when the detection process is only 
+once per hour - it costs realy nothing per hour. And only a few users stay
+on your site more than one hour.
