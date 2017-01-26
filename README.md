@@ -77,6 +77,13 @@ MvcCore_Router::GetInstance()->SetAllowNonLocalizedRoutes(TRUE);
 ```
 This options is FALSE by default.
 
+### Keed request path for default language
+To prevent redirect user from path `'/en/'` into path `'/'`, when default language is `'en'` and to have both paths for use, you can use:
+```php
+MvcCore_Router::GetInstance()->SetKeepDefaultLangPath(TRUE);
+```
+This options is FALSE by default.
+
 ### Strict session mode
 To change managing language version into more strict mode, where is not possible to change language only by request application with different language prefix in path like:
 ```
