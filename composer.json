@@ -1,6 +1,6 @@
 {
 	"name": "mvccore/ext-lang-router",
-	"description": "MvcCore_Router extension - language in url adresses (any http method, multi or single language patterns and reverses, url adresses like '/en/custom/path...', configuration options).",
+	"description": "MvcCore_Router extension - language in url adresses (any http method, multi or single language patterns and reverses, url adresses like '/en/custom/path', very configurable).",
 	"keywords": ["mvccore", "framework", "mvc", "router", "lang", "language", "multilang"],
 	"license": ["BSD-3-Clause"],
 	"authors": [
