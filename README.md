@@ -7,14 +7,15 @@
 MvcCore Router extension to manage your website language version optionaly contained in url address in the beinning.
 
 ## Features
-- recognizes user device by useragent with Mobile_Detect library into full/tablet/mobile
-- stores recognized device version into session namespace for hout by default, possible to change
-- completes public property MediaSiteVersion in MvcCore_Request to use it in your app
-- removes possibly founded media prefix flag from MvcCore_Request Path property to 
-  process routing as usual
-- completes every get application url with media prefix flag, possible to change
-- strict mode media site version configuration by:
-
+- routes application requests with language in the beginning
+- generates url adresses with language in the beginning
+- multi language pattern and reverse records in application routes
+- routes only allowed languages
+- sets recognized or default language into request object
+- optionaly recognizes target language by http header `Accept-Language`
+- optionaly holds language once defined by session
+- optionaly keeps path for default language, but normaly redirects user into '/' for default language
+- optionaly forbids paths for not localized requests
 
 ## Installation
 ```shell
@@ -28,6 +29,7 @@ using router for any purposes:
 ```php
 # patch core class:
 MvcCore::GetInstance()->SetRouterClass(MvcCoreExt_LangRouter::class);
+
 # now you can define routes with languages:
 MvcCore_Router::GetInstance()
 	->SetAllowedLangs('en', 'cs')
