@@ -36,22 +36,22 @@ MvcCore_Router::GetInstance()
 	->SetFirstRequestStrictlyByUserAgent()
 	->SetRoutes(array(
 		'Front\Product:List'	=> array(
-			'pattern'	=> array(
-				'en'		=> "#^/products\-list#",
-				'de'		=> "#^/produkte\-liste#",
+			'pattern'			=> array(
+				'en'			=> "#^/products\-list#",
+				'de'			=> "#^/produkte\-liste#",
 			),
 		),
 		'Front\Product:Detail'	=> array(
-			'pattern'	=> array(
-				'en'		=> "#^/product/(0-9]*)#",
-				'de'		=> "#^/produkt/(0-9]*)#",
+			'pattern'			=> array(
+				'en'			=> "#^/product/(0-9]*)#",
+				'de'			=> "#^/produkt/(0-9]*)#",
 			),
-			'reverse'	=> array(
-				'en'		=> '/product/{%id}',
-				'de'		=> '/produkt/{%id}',
+			'reverse'			=> array(
+				'en'			=> '/product/{%id}',
+				'de'			=> '/produkt/{%id}',
 			),
 		),
-		'Front\Index:Index'	=> array(
+		'Front\Index:Index'		=> array(
 			'pattern'			=> "#^([a-zA-Z0-9/_\-]*)#",
 			'reverse'			=> '{%path}',
 		),
