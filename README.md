@@ -68,7 +68,7 @@ To prevent all requests for whole application, which have not any language in th
 MvcCore_Router::GetInstance()->SetAllowNonLocalizedRoutes(FALSE);
 ```
 Non localized routes are allowed by default.
-```
+
 
 ### Choose language in first request strictly by user agent
 To choose language in first request by user agent http header `'Accept-Language'`, where is nothing in session yet, you can use:
