@@ -12,10 +12,10 @@ MvcCore Router extension to manage your website language version optionaly conta
 - multi language pattern and reverse records in application routes
 - routes only allowed languages
 - sets recognized or default language into request object
-- optionaly recognizes target language by http header `Accept-Language`
+- optionaly recognizes target language by http header `'Accept-Language'`
 - optionaly holds language once defined by session
 - optionaly keeps path for default language, but normaly redirects user into `'/'` for default language
-- optionaly forbids paths for not localized requests
+- optionaly prevent paths for not localized requests
 
 ## Installation
 ```shell
@@ -62,10 +62,23 @@ When request language is not possible to recognize by url address, no possible t
 MvcCore_Router::GetInstance()->SetDefaultLang('de');
 ```
 
+### Prevent not localized requests
+To prevent all requests for whole application, which have not any language in the beginning to redirect them into default language, you can use:
+```php
+MvcCore_Router::GetInstance()->SetAllowNonLocalizedRoutes(FALSE);
+```
+Non localized routes are allowed by default.
+```
+
+### Choose language in first request strictly by user agent
+To choose language in first request by user agent http header `'Accept-Language'`, where is nothing in session yet, you can use:
+```php
+MvcCore_Router::GetInstance()->SetAllowNonLocalizedRoutes(TRUE);
+```
+This options is FALSE by default.
+
 ### Strict session mode
-To change managing language version into more strict mode,
-where is not possible to change language only by request 
-application with different language prefix in path like:
+To change managing language version into more strict mode, where is not possible to change language only by request application with different language prefix in path like:
 ```
 /de/any/application/request/path
 ```
