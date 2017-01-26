@@ -427,6 +427,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 			}
 		} else {
 			if ($this->sessionLang) {
+				if ($this->requestLangNotAllowed) $this->requestLang = $this->sessionLang;
 				$this->setUpDetectedLangAndRedirectIfNecessary($this->requestLang);
 			} else {
 				if ($this->firstRequestStrictlyByUserAgent) {
