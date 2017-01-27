@@ -8,12 +8,29 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-class MvcCoreExt_LangRouter extends MvcCore_Router {
+namespace MvcCore\Ext\Router;
 
+class Lang extends \MvcCore\Router {
+
+	/**
+	 * MvcCore Extension - Router Lang - version:
+	 * Comparation by PHP function version_compare();
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '4.0.0';
+
+	/**
+	 * Key name for language in second argument $params in $router->Url();  method,
+	 * to tell $router->Url() method to generate different language url.
+	 */
 	const LANG_URL_PARAM = 'lang';
+
+	/**
+	 * Special $_GET param name for session strict mode, how to change site language version.
+	 */
 	const LANG_SWITCH_URL_PARAM = 'switch_lang';
 
 	/**
@@ -60,7 +77,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * Session record is always used to compare if user is requesting different lang
 	 * version then he has in session - if there is difference - user is redirected
 	 * to session lang version.
-	 * @var MvcCore_Session|stdClass
+	 * @var \MvcCore\Session|\stdClass
 	 */
 	protected $session = NULL;
 
@@ -134,7 +151,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * Set international lowercase language code(s), allowed to use in your application.
 	 * Default language is always allowed.
 	 * @var string $lang..., international lowercase language code(s)
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetAllowedLangs () {
 		$this->allowedLangs = array();
@@ -146,7 +163,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * Add international lowercase language code(s), allowed to use in your application.
 	 * Default language is always allowed.
 	 * @var string $lang..., international lowercase language code(s)
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function AddAllowedLangs () {
 		$args = func_get_args();
@@ -164,7 +181,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * lang from url, not possible to detect lang from 'Accept-Language' http header
 	 * or not possible to get from session.
 	 * @param string $defaultLang 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetDefaultLang ($defaultLang) {
 		$this->DefaultLang = $defaultLang;
@@ -174,7 +191,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	/**
 	 * Set language externaly, not recomanded.
 	 * @param string $lang 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetLang ($lang) {
 		$this->Lang = $lang;
@@ -184,7 +201,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	/**
 	 * Session expiration in seconds, by default - one hour.
 	 * @param int $sessionExpirationSeconds 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetSessionExpirationSeconds ($sessionExpirationSeconds = 3600) {
 		$this->SessionExpirationSeconds = $sessionExpirationSeconds;
@@ -198,7 +215,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * change only by special $_GET param called 'switch_lang=..' in query string.
 	 * If not configured, FALSE by default.
 	 * @param bool $stricModeBySession 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetStricModeBySession ($stricModeBySession = TRUE) {
 		$this->stricModeBySession = $stricModeBySession;
@@ -212,7 +229,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * there is target url path completed only to '/' (slash).
 	 * If not configured, FALSE by default.
 	 * @param mixed $keepDefaultLangPath 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetKeepDefaultLangPath ($keepDefaultLangPath = TRUE) {
 		$this->keepDefaultLangPath = $keepDefaultLangPath;
@@ -224,7 +241,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * http header 'Acept-Language', not by requested url. First or not first request 
 	 * is detected by session. If not configured, FALSE by default.
 	 * @param bool $firstRequestStrictlyByUserAgent 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetFirstRequestStrictlyByUserAgent ($firstRequestStrictlyByUserAgent = TRUE) {
 		$this->firstRequestStrictlyByUserAgent = $firstRequestStrictlyByUserAgent;
@@ -235,7 +252,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * If TRUE, redirect request to default language version if lang in request is not allowed.
 	 * If not configured, TRUE by default.
 	 * @param bool $redirectToDefaultLangIfNotAllowed 
-	 * @return MvcCoreExt_LangRouter
+	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
 		$this->allowNonLocalizedRoutes = $allowNonLocalizedRoutes;
@@ -246,23 +263,23 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * Append or prepend new request route.
 	 * Route definition array shoud be array with route
 	 * configuration definition, stdClass with route configuration
-	 * definition or MvcCore_Route instance. In configuration definition is
+	 * definition or \MvcCore\Route instance. In configuration definition is
 	 * required route name, controller, action, pattern and if pattern contains
 	 * regexp groups, its necessary also to define route reverse.
 	 * Route name should be defined as 'Controller:Action' string or any custom
 	 * route name, but then there is necessary to specify controller name and
 	 * action name inside route array/stdClass configuration or route instance.
-	 * @param array|stdClass|MvcCore_Route	$routeCfgOrRoute
+	 * @param array|\stdClass|\MvcCore\Route	$routeCfgOrRoute
 	 * @param bool							$prepend
-	 * @return MvcCore_Router
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $prepend = FALSE) {
-		if ($routeCfgOrRoute instanceof MvcCore_Route) {
+		if ($routeCfgOrRoute instanceof \MvcCore\Route) {
 			$instance = & $routeCfgOrRoute;
 		} else if (isset($routeCfgOrRoute['pattern']) && gettype($routeCfgOrRoute['pattern']) == 'array') {
-			$instance = MvcCoreExt_LangRouter_Route::GetInstance($routeCfgOrRoute);
+			$instance = \MvcCore\Ext\Router\Lang\Route::GetInstance($routeCfgOrRoute);
 		} else {
-			$instance = MvcCore_Route::GetInstance($routeCfgOrRoute);
+			$instance = \MvcCore\Route::GetInstance($routeCfgOrRoute);
 		}
 		if ($prepend) {
 			$this->routes = array_merge(array($instance->Name => $instance), $this->routes);
@@ -287,8 +304,8 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 				$this->currentRoute = $route;
 				$controllerName = isset($route->Controller)? $route->Controller: '';
 				$routeParams = array(
-					'controller'	=>	MvcCore_Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
-					'action'		=>	MvcCore_Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
+					'controller'	=>	\MvcCore\Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
+					'action'		=>	\MvcCore\Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
 				);
 				$routeReverse = $this->getRouteLocalizedRecord($route, 'Reverse');
 				preg_match_all("#{%([a-zA-Z0-9]*)}#", $routeReverse, $reverseMatches);
@@ -315,12 +332,12 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param MvcCore_Route $route 
+	 * @param \MvcCore\Route $route 
 	 * @param string $routeRecordKey
 	 * @return string
 	 */
-	protected function getRouteLocalizedRecord (MvcCore_Route & $route, $routeRecordKey = '') {
-		if ($route instanceof MvcCoreExt_LangRouter_Route && gettype($route->$routeRecordKey) == 'array') {
+	protected function getRouteLocalizedRecord (\MvcCore\Route & $route, $routeRecordKey = '') {
+		if ($route instanceof \MvcCore\Ext\Router\Lang\Route && gettype($route->$routeRecordKey) == 'array') {
 			$routeRecordKey = $route->$routeRecordKey;
 			if (isset($routeRecordKey[$this->Lang])) {
 				return $routeRecordKey[$this->Lang];
@@ -337,8 +354,8 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * @return void
 	 */
 	public static function StaticInit () {
-		MvcCore::AddPreRouteHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
-			MvcCore::SessionStart();
+		\MvcCore::AddPreRouteHandler(function (\MvcCore\Request & $request, \MvcCore\Response & $response) {
+			\MvcCore::SessionStart();
 			static::GetInstance()->processLangVersion($request);
 		});
 	}
@@ -401,10 +418,10 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * Detect language version by configured rules, 
 	 * set up detected version to current context, 
 	 * into request and into session and redirect if necessary.
-	 * @param MvcCore_Request $request
+	 * @param \MvcCore\Request $request
 	 * @return void
 	 */
-	protected function processLangVersion (MvcCore_Request & $request) {
+	protected function processLangVersion (\MvcCore\Request & $request) {
 		$this->prepareProcessing($request);
 		if ($this->stricModeBySession) {
 			if ($this->sessionLang) {
@@ -476,7 +493,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 * - try to complete session lang
 	 * @var void
 	 */
-	protected function prepareProcessing (MvcCore_Request & $request) {
+	protected function prepareProcessing (\MvcCore\Request & $request) {
 		$this->request = & $request;
 		// store original path value for later use
 		$this->request->OriginalPath = $this->request->Path;
@@ -523,7 +540,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 		$newUrl = $this->request->DomainUrl 
 			. $this->request->BasePath
 			. $targetPath . $query;
-		MvcCore_Controller::Redirect($newUrl);
+		\MvcCore\Controller::Redirect($newUrl);
 	}
 
 	/**
@@ -586,7 +603,7 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 	 */
 	protected function setUpSession () {
 		if (is_null($this->session)) {
-			$this->session = MvcCore_Session::GetNamespace(__CLASS__);
+			$this->session = \MvcCore\Session::GetNamespace(__CLASS__);
 			$this->session->SetExpirationSeconds($this->SessionExpirationSeconds);
 		}
 	}
@@ -645,4 +662,4 @@ class MvcCoreExt_LangRouter extends MvcCore_Router {
 		return $languages;
 	}
 }
-MvcCoreExt_LangRouter::StaticInit();
+Lang::StaticInit();

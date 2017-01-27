@@ -1,7 +1,25 @@
 {
-	"name": "mvccore/ext-lang-router",
-	"description": "MvcCore_Router extension - language in url adresses (any http method, multi or single language patterns and reverses, url adresses like '/en/custom/path', very configurable).",
-	"keywords": ["mvccore", "framework", "mvc", "router", "lang", "language", "multilang"],
+	"name": "mvccore/ext-router-lang",
+	"type": "library",
+	"description": "MvcCore Extension - Router - Languages - router for languages (optionaly) in url adresses. For any http method, multi or single language patterns and reverses, url adresses like '/en/custom/path', very configurable.",
+	"keywords": [
+		"mvc", 
+		"mvccore", 
+		"framework", 
+		"extension", 
+		"plugin", 
+		"plug-in", 
+		"ext",
+		"router", 
+		"routing",
+		"routes", 
+		"lang", 
+		"language", 
+		"multi lang", 
+		"multi language", 
+		"language version", 
+		"language url"
+	],
 	"license": ["BSD-3-Clause"],
 	"authors": [
 		{
@@ -11,7 +29,11 @@
 	],
 	"require": {
 		"php": ">=5.3.0",
-		"mvccore/mvccore": "^3.2",
+		"mvccore/mvccore": "^4.0",
+	},
+	"require-dev": {
+		"php": ">=5.3.0",
+		"mvccore/mvccore": "~4.0@dev",
 	},
 	"autoload": {
 		"classmap": ["src/"]
