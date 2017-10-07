@@ -20,7 +20,7 @@ class Lang extends \MvcCore\Router {
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.1.0';
+	const VERSION = '4.2.0';
 
 	/**
 	 * Key name for language in second argument $params in $router->Url();  method,
