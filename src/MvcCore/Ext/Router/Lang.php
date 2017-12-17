@@ -20,7 +20,7 @@ class Lang extends \MvcCore\Router {
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.2.0';
+	const VERSION = '4.3.1';
 
 	/**
 	 * Key name for language in second argument $params in $router->Url();  method,
@@ -49,7 +49,7 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * Default language, two lowercase characters, internaltional language code,
-	 * lang to use in cases, when is not possible to detect lang from url, 
+	 * lang to use in cases, when is not possible to detect lang from url,
 	 * not possible to detect lang from 'Accept-Language' http header
 	 * or not possible to get from session.
 	 * @var string
@@ -177,10 +177,10 @@ class Lang extends \MvcCore\Router {
 	}
 
 	/**
-	 * Set default lang to use in cases, when is not possible to detect 
+	 * Set default lang to use in cases, when is not possible to detect
 	 * lang from url, not possible to detect lang from 'Accept-Language' http header
 	 * or not possible to get from session.
-	 * @param string $defaultLang 
+	 * @param string $defaultLang
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetDefaultLang ($defaultLang) {
@@ -190,7 +190,7 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * Set language externaly, not recomanded.
-	 * @param string $lang 
+	 * @param string $lang
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetLang ($lang) {
@@ -200,7 +200,7 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * Session expiration in seconds, by default - one hour.
-	 * @param int $sessionExpirationSeconds 
+	 * @param int $sessionExpirationSeconds
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetSessionExpirationSeconds ($sessionExpirationSeconds = 3600) {
@@ -214,7 +214,7 @@ class Lang extends \MvcCore\Router {
 	 * redirected to url path begin by session. If TRUE, language version is possible to
 	 * change only by special $_GET param called 'switch_lang=..' in query string.
 	 * If not configured, FALSE by default.
-	 * @param bool $stricModeBySession 
+	 * @param bool $stricModeBySession
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetStricModeBySession ($stricModeBySession = TRUE) {
@@ -228,7 +228,7 @@ class Lang extends \MvcCore\Router {
 	 * If FALSE and language is necessary to request into default language url version,
 	 * there is target url path completed only to '/' (slash).
 	 * If not configured, FALSE by default.
-	 * @param mixed $keepDefaultLangPath 
+	 * @param mixed $keepDefaultLangPath
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetKeepDefaultLangPath ($keepDefaultLangPath = TRUE) {
@@ -238,9 +238,9 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * If TRUE, first request language will be strictly recognized by user agent
-	 * http header 'Acept-Language', not by requested url. First or not first request 
+	 * http header 'Acept-Language', not by requested url. First or not first request
 	 * is detected by session. If not configured, FALSE by default.
-	 * @param bool $firstRequestStrictlyByUserAgent 
+	 * @param bool $firstRequestStrictlyByUserAgent
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetFirstRequestStrictlyByUserAgent ($firstRequestStrictlyByUserAgent = TRUE) {
@@ -251,7 +251,7 @@ class Lang extends \MvcCore\Router {
 	/**
 	 * If TRUE, redirect request to default language version if lang in request is not allowed.
 	 * If not configured, TRUE by default.
-	 * @param bool $redirectToDefaultLangIfNotAllowed 
+	 * @param bool $redirectToDefaultLangIfNotAllowed
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
@@ -332,7 +332,7 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * Get route non-localized or localized record - 'Pattern' and 'Reverse'
-	 * @param \MvcCore\Route $route 
+	 * @param \MvcCore\Route $route
 	 * @param string $routeRecordKey
 	 * @return string
 	 */
@@ -415,8 +415,8 @@ class Lang extends \MvcCore\Router {
 	}
 
 	/**
-	 * Detect language version by configured rules, 
-	 * set up detected version to current context, 
+	 * Detect language version by configured rules,
+	 * set up detected version to current context,
 	 * into request and into session and redirect if necessary.
 	 * @param \MvcCore\Request $request
 	 * @return void
@@ -466,7 +466,7 @@ class Lang extends \MvcCore\Router {
 	 * If detected is different than request version - redirect to detected version.
 	 * Else if original request version is different than request version
 	 * and boolean switch $this->allowNonLocalizedRoutes is true, redirect to default lang.
-	 * @param string $detectedLang 
+	 * @param string $detectedLang
 	 */
 	protected function setUpDetectedLangAndRedirectIfNecessary ($detectedLang) {
 		$this->Lang = $detectedLang;
@@ -521,7 +521,7 @@ class Lang extends \MvcCore\Router {
 	 * Redirect to different language path version,
 	 * only by changing first path element to different value.
 	 * If router is configured to use default lang root path, keep it.
-	 * @param string $targetLang 
+	 * @param string $targetLang
 	 * @return void
 	 */
 	protected function redirectToDifferentLangVersion ($targetLang) {
@@ -537,7 +537,7 @@ class Lang extends \MvcCore\Router {
 		} else {
 			$query = ($this->request->Query ? '?' . $this->request->Query : '');
 		}
-		$newUrl = $this->request->DomainUrl 
+		$newUrl = $this->request->DomainUrl
 			. $this->request->BasePath
 			. $targetPath . $query;
 		\MvcCore\Controller::Redirect($newUrl);
@@ -634,7 +634,7 @@ class Lang extends \MvcCore\Router {
 
 	/**
 	 * Parse list of comma separated language tags and sort it by the quality value
-	 * @param string $languagesList 
+	 * @param string $languagesList
 	 * @return array
 	 */
 	protected function parseUserAgentLangList($languagesList) {
@@ -642,8 +642,8 @@ class Lang extends \MvcCore\Router {
 		$languageRanges = explode(',', trim($languagesList));
 		foreach ($languageRanges as $languageRange) {
 			$regExpResult = preg_match(
-				"/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/", 
-				trim($languageRange), 
+				"/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/",
+				trim($languageRange),
 				$match
 			);
 			if ($regExpResult) {
