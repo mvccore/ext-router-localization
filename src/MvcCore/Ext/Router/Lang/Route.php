@@ -24,7 +24,7 @@ class Route extends \MvcCore\Route
 	 * @param $reverse			string|array	required|optional
 	 * @param $params			array			required|optional
 	 */
-	public function __construct ($nameOrConfig = NULL, $controller = NULL, $action = NULL, $pattern = NULL, $reverse = NULL, $params = array()) {
+	public function __construct ($nameOrConfig = NULL, $controller = NULL, $action = NULL, $pattern = NULL, $reverse = NULL, $params = []) {
 		$args = func_get_args();
 		if (count($args) == 1 && gettype($args[0]) == 'array') {
 			$data = (object) $args[0];
@@ -33,7 +33,7 @@ class Route extends \MvcCore\Route
 			$action = isset($data->action) ? $data->action : '';
 			$pattern = isset($data->pattern) ? $data->pattern : '';
 			$reverse = isset($data->reverse) ? $data->reverse : '';
-			$params = isset($data->params) ? $data->params : array();
+			$params = isset($data->params) ? $data->params : [];
 		} else {
 			list($name, $controller, $action, $pattern, $reverse, $params) = $args;
 		}
@@ -48,7 +48,7 @@ class Route extends \MvcCore\Route
 			$this->Reverse = $reverse;
 		} else {
 			if (gettype($pattern) == 'array') {
-				$reverse = array();
+				$reverse = [];
 				foreach ($pattern as $lang => $value) $reverse[$lang] = trim($value, '#^$');
 				$this->Reverse = $reverse;
 			} else {

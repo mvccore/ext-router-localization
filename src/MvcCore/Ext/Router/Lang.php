@@ -145,7 +145,7 @@ class Lang extends \MvcCore\Router {
 	 * Allowed language codes to use in your application, default lang will be allowed automaticly.
 	 * @var array
 	 */
-	protected $allowedLangs = array();
+	protected $allowedLangs = [];
 
 	/**
 	 * Set international lowercase language code(s), allowed to use in your application.
@@ -154,8 +154,8 @@ class Lang extends \MvcCore\Router {
 	 * @return \MvcCore\Ext\Router\Lang
 	 */
 	public function SetAllowedLangs () {
-		$this->allowedLangs = array();
-		call_user_func_array(array($this, 'AddAllowedLangs'), func_get_args());
+		$this->allowedLangs = [];
+		call_user_func_array([$this, 'AddAllowedLangs'], func_get_args());
 		return $this;
 	}
 
@@ -282,7 +282,7 @@ class Lang extends \MvcCore\Router {
 			$instance = \MvcCore\Route::GetInstance($routeCfgOrRoute);
 		}
 		if ($prepend) {
-			$this->routes = array_merge(array($instance->Name => $instance), $this->routes);
+			$this->routes = array_merge([$instance->Name => $instance], $this->routes);
 		} else {
 			$this->routes[$instance->Name] = & $instance;
 		}
@@ -303,10 +303,10 @@ class Lang extends \MvcCore\Router {
 			if (count($patternMatches) > 0 && count($patternMatches[0]) > 0) {
 				$this->currentRoute = $route;
 				$controllerName = isset($route->Controller)? $route->Controller: '';
-				$routeParams = array(
-					'controller'	=>	\MvcCore\Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
+				$routeParams = [
+					'controller'	=>	\MvcCore\Tool::GetDashedFromPascalCase(str_replace(['_', '\\'], '/', $controllerName)),
 					'action'		=>	\MvcCore\Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
-				);
+				];
 				$routeReverse = $this->getRouteLocalizedRecord($route, 'Reverse');
 				preg_match_all("#{%([a-zA-Z0-9]*)}#", $routeReverse, $reverseMatches);
 				if (isset($reverseMatches[1]) && $reverseMatches[1]) {
@@ -323,7 +323,7 @@ class Lang extends \MvcCore\Router {
 						}
 					}
 				}
-				$routeDefaultParams = isset($route->Params) ? $route->Params : array();
+				$routeDefaultParams = isset($route->Params) ? $route->Params : [];
 				$this->request->Params = array_merge($routeDefaultParams, $routeParams, $this->request->Params);
 				break;
 			}
@@ -369,7 +369,7 @@ class Lang extends \MvcCore\Router {
 	protected function urlByRoute ($controllerActionOrRouteName, $params) {
 		$route = $this->urlRoutes[$controllerActionOrRouteName];
 		$allParams = array_merge(
-			is_array($route->Params) ? $route->Params : array(), $params
+			is_array($route->Params) ? $route->Params : [], $params
 		);
 		$lang = '';
 		if (isset($allParams[static::LANG_URL_PARAM])) {
@@ -392,7 +392,7 @@ class Lang extends \MvcCore\Router {
 			$paramKeyReplacement = "{%$key}";
 			if (mb_strpos($result, $paramKeyReplacement) === FALSE) {
 				$glue = (mb_strpos($result, '?') === FALSE) ? '?' : '&';
-				$result .= $glue . http_build_query(array($key => $value));
+				$result .= $glue . http_build_query([$key => $value]);
 			} else {
 				$result = str_replace($paramKeyReplacement, $value, $result);
 			}
@@ -588,7 +588,7 @@ class Lang extends \MvcCore\Router {
 	 * @return void
 	 */
 	protected function setUpAllowedLangs () {
-		$allowedLangs = array();
+		$allowedLangs = [];
 		foreach ($this->allowedLangs as $lang) {
 			$allowedLangs[$lang] = 1;
 		}
@@ -638,7 +638,7 @@ class Lang extends \MvcCore\Router {
 	 * @return array
 	 */
 	protected function parseUserAgentLangList($languagesList) {
-		$languages = array();
+		$languages = [];
 		$languageRanges = explode(',', trim($languagesList));
 		foreach ($languageRanges as $languageRange) {
 			$regExpResult = preg_match(
@@ -653,7 +653,7 @@ class Lang extends \MvcCore\Router {
 					$match[2] = (string) floatval($match[2]);
 				}
 				if (!isset($languages[$match[2]])) {
-					$languages[$match[2]] = array();
+					$languages[$match[2]] = [];
 				}
 				$languages[$match[2]][] = strtolower($match[1]);
 			}
