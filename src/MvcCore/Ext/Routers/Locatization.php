@@ -13,39 +13,26 @@
 
 namespace MvcCore\Ext\Router;
 
-class Lang extends \MvcCore\Router {
+class Locatization extends \MvcCore\Router
+{
 
 	/**
 	 * MvcCore Extension - Router Lang - version:
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.3.1';
+	const VERSION = '5.0.0-alpha';
 
 	/**
-	 * Key name for language in second argument $params in $router->Url();  method,
-	 * to tell $router->Url() method to generate different language url.
+	 * Key name for language or/and locale in second argument $params in $router->Url();  method,
+	 * to tell $router->Url() method to generate url in different locale.
 	 */
-	const LANG_URL_PARAM = 'lang';
+	const URL_PARAM = 'locatization';
 
 	/**
-	 * Special $_GET param name for session strict mode, how to change site language version.
+	 * Special $_GET param name for session strict mode, how to change site locale version.
 	 */
-	const LANG_SWITCH_URL_PARAM = 'switch_lang';
-
-	/**
-	 * Route preg_match pattern in classic PHP form:
-	 * array('en' => "#^/url\-begin/([^/]*)/([^/]*)/(.*)#", 'de' => "#^/url\-beginn/([^/]*)/([^/]*)/(.*)#",);
-	 * @var string|array
-	 */
-    public $Pattern		= '';
-
-	/**
-	 * Route reverse address form from preg_replace pattern
-	 * in form: array('en' => "/url-begin/{%first}/{%second}/{%third}", 'de' => "/url-beginn/{%first}/{%second}/{%third}",);
-	 * @var string|array
-	 */
-	public $Reverse		= '';
+	const SWITCH_URL_PARAM = 'switch_locatization';
 
 	/**
 	 * Default language, two lowercase characters, internaltional language code,
@@ -54,14 +41,21 @@ class Lang extends \MvcCore\Router {
 	 * or not possible to get from session.
 	 * @var string
 	 */
-	public $DefaultLang = 'en';
+	protected $defaultLocatization = 'en_US';
 
 	/**
-	 * Result language, two lowercase characters, internaltional language code.
+	 * Result language, lowercase characters, internaltional language code.
 	 * Example: 'en' | 'fr' | 'de'...
 	 * @var string
 	 */
-	public $Lang = '';
+	protected $lang = '';
+
+	/**
+	 * Result locale, uppercase characters, internaltional locale code.
+	 * Example: 'US' | 'UK' | 'DE'...
+	 * @var string
+	 */
+	protected $locale = '';
 
 	/**
 	 * Session expiration seconds for remembering detected lang version by user agent.
@@ -71,7 +65,9 @@ class Lang extends \MvcCore\Router {
 	 * for described redirection.
 	 * @var int
 	 */
-	public $SessionExpirationSeconds = 3600; // hour
+	protected $sessionExpirationSeconds = 3600; // hour
+
+	// non configurable props:
 
 	/**
 	 * Session record is always used to compare if user is requesting different lang
@@ -85,25 +81,25 @@ class Lang extends \MvcCore\Router {
 	 * Lang founded in session.
 	 * @var string
 	 */
-	protected $sessionLang = '';
+	protected $sessionLocalization = '';
 
 	/**
 	 * Lang founded in request.
 	 * @var string
 	 */
-	protected $requestLang = '';
+	protected $requestLocalization = '';
 
 	/**
 	 * Lang value in special $_GET param if session mode is strict.
 	 * @var string
 	 */
-	protected $switchUriParamLang = '';
+	protected $switchUriParamLocalization = '';
 
 	/**
 	 * If any, lang value in request, in url, not allowed to work with.
 	 * @var string
 	 */
-	protected $requestLangNotAllowed = '';
+	protected $requestLocalizationNotAllowed = '';
 
 	/**
 	 * If true, process lang version strictly by session stored version,
@@ -125,7 +121,7 @@ class Lang extends \MvcCore\Router {
 	 * If not configured, FALSE by default.
 	 * @var bool
 	 */
-	protected $keepDefaultLangPath = FALSE;
+	protected $keepDefaultLocalizationPath = FALSE;
 
 	/**
 	 * If TRUE, redirect request to default language version if lang in request is not allowed.
@@ -145,7 +141,7 @@ class Lang extends \MvcCore\Router {
 	 * Allowed language codes to use in your application, default lang will be allowed automaticly.
 	 * @var array
 	 */
-	protected $allowedLangs = [];
+	protected $allowedLocalizations = [];
 
 	/**
 	 * Set international lowercase language code(s), allowed to use in your application.
