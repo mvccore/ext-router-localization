@@ -143,6 +143,30 @@ class Locatization extends \MvcCore\Router
 	 */
 	protected $allowedLocalizations = [];
 
+
+	/**
+	 * Get singleton instance of `\MvcCore\Ext\Routers\Localization` stored always 
+	 * in parent class `MvcCore\Router::$instance` static property.
+	 * Optionaly set routes as first argument.
+	 * This method automaticly patch `\MvcCore\Application` with it's class name for router:
+	 * `\MvcCore\Application::GetInstance()->SetRouterClass(get_called_class());`.
+	 * @param \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]|array $routes Keyed array with routes,
+	 *																	  keys are route names or route
+	 *																	  `Controller::Action` definitions.
+	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 */
+	public static function & GetInstance (array $routes = []) {
+		static::$application = \MvcCore\Application::GetInstance();
+		static::$application->SetRouterClass(get_called_class()); // patch current router class in core
+		$router = parent::GetInstance($routes);
+		static::$application
+			->AddPreRouteHandler(function (\MvcCore\Interfaces\IRequest & $request) use (& $router) {
+				return $router->preRouteHandler($request);
+			});
+		return $router;
+	}
+
+
 	/**
 	 * Set international lowercase language code(s), allowed to use in your application.
 	 * Default language is always allowed.

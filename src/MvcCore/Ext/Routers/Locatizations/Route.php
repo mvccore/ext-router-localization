@@ -11,50 +11,141 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-namespace MvcCore\Ext\Router\Lang;
+namespace MvcCore\Ext\Routers\Localizations;
 
 class Route extends \MvcCore\Route
 {
 	/**
-	 * Create new route
-	 * @param $nameOrConfig		string|array	required
-	 * @param $controller		string			required|optional
-	 * @param $action			string			required|optional
-	 * @param $pattern			string|array	required|optional
-	 * @param $reverse			string|array	required|optional
-	 * @param $params			array			required|optional
+	 * @param string $lang
+	 * @return string|\string[]|NULL
 	 */
-	public function __construct ($nameOrConfig = NULL, $controller = NULL, $action = NULL, $pattern = NULL, $reverse = NULL, $params = []) {
-		$args = func_get_args();
-		if (count($args) == 1 && gettype($args[0]) == 'array') {
-			$data = (object) $args[0];
-			$name = isset($data->name) ? $data->name : '';
-			$controller = isset($data->controller) ? $data->controller : '';
-			$action = isset($data->action) ? $data->action : '';
-			$pattern = isset($data->pattern) ? $data->pattern : '';
-			$reverse = isset($data->reverse) ? $data->reverse : '';
-			$params = isset($data->params) ? $data->params : [];
+	public function GetPattern ($lang = NULL) {
+		return $lang !== NULL
+			? $this->pattern[$lang]
+			: $this->pattern;
+	}
+
+	/**
+	 * @param string|\string[] $pattern
+	 * @param string $lang 
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetPattern ($pattern, $lang = NULL) {
+		if ($lang !== NULL) {
+			$this->pattern[$lang] = $pattern;
 		} else {
-			list($name, $controller, $action, $pattern, $reverse, $params) = $args;
+			$this->pattern = $pattern;
 		}
-		if (!$controller && !$action && strpos($name, ':') !== FALSE) {
-			list($controller, $action) = explode(':', $name);
-		}
-		$this->Name = $name;
-		$this->Controller = $controller;
-		$this->Action = $action;
-		$this->Pattern = $pattern;
-		if ($reverse) {
-			$this->Reverse = $reverse;
+		return $this;
+	}
+
+	/**
+	 * @param string $lang 
+	 * @return string|\string[]|NULL
+	 */
+	public function GetMatch ($lang = NULL) {
+		return $lang !== NULL
+			? $this->match[$lang]
+			: $this->match;
+	}
+
+	/**
+	 * @param string|\string[] $match
+	 * @param string $lang 
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetMatch ($match, $lang = NULL) {
+		if ($lang !== NULL) {
+			$this->match[$lang] = $match;
 		} else {
-			if (gettype($pattern) == 'array') {
-				$reverse = [];
-				foreach ($pattern as $lang => $value) $reverse[$lang] = trim($value, '#^$');
-				$this->Reverse = $reverse;
-			} else {
-				$this->Reverse = trim($pattern, '#^$');
+			$this->match = $match;
+		}
+		return $this;
+	}
+
+	/**
+	 * @param string $lang 
+	 * @return string|\string[]|NULL
+	 */
+	public function GetReverse ($lang = NULL) {
+		return $lang !== NULL
+			? $this->reverse[$lang]
+			: $this->reverse;
+	}
+
+	/**
+	 * @param string|\string[] $reverse
+	 * @param string $lang 
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetReverse ($reverse, $lang = NULL) {
+		if ($lang !== NULL) {
+			$this->reverse[$lang] = $reverse;
+		} else {
+			$this->reverse = $reverse;
+		}
+		return $this;
+	}
+
+	/**
+	 * @param string $lang 
+	 * @return array|\array[]
+	 */
+	public function & GetDefaults ($lang = NULL) {
+		return $lang !== NULL
+			? $this->defaults[$lang]
+			: $this->defaults;
+	}
+
+	/**
+	 * @param array|\array[] $defaults
+	 * @param string $lang 
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetDefaults ($defaults = [], $lang = NULL) {
+		if ($lang !== NULL) {
+			$this->defaults[$lang] = & $defaults;
+		} else {
+			$this->defaults = & $defaults;
+		}
+		return $this;
+	}
+
+	/**
+	 * @param string $lang 
+	 * @return array|\array[]
+	 */
+	public function & GetConstraints ($lang = NULL) {
+		return $lang !== NULL
+			? $this->constraints[$lang]
+			: $this->constraints;
+	}
+
+	/**
+	 * @param array|\array[] $constraints
+	 * @param string $lang 
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetConstraints ($constraints = [], $lang = NULL) {
+		if ($lang !== NULL) {
+			$this->constraints[$lang] = & $constraints;
+			if (!isset($this->defaults[$lang]))
+				$this->defaults[$lang] = [];
+			$defaults = & $this->defaults[$lang];
+			foreach ($constraints as $key => $value)
+				if (!isset($defaults[$key]))
+					$defaults[$key] = NULL;
+		} else {
+			$this->constraints = & $constraints;
+			foreach ($constraints as $lang => $constraintItem) {
+				if (!isset($this->defaults[$lang]))
+					$this->defaults[$lang] = [];
+				$defaults = & $this->defaults[$lang];
+				foreach ($constraintItem as $key => $value)
+					if (!isset($defaults[$key]))
+						$defaults[$key] = NULL;
 			}
 		}
-		$this->Params = $params;
+		return $this;
 	}
 }
