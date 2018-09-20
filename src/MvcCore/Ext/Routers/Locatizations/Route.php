@@ -91,7 +91,7 @@ class Route extends \MvcCore\Route
 	 * @param string $lang 
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($lang = NULL) {
+	public function GetDefaults ($lang = NULL) {
 		return $lang !== NULL
 			? $this->defaults[$lang]
 			: $this->defaults;
@@ -115,7 +115,7 @@ class Route extends \MvcCore\Route
 	 * @param string $lang 
 	 * @return array|\array[]
 	 */
-	public function & GetConstraints ($lang = NULL) {
+	public function GetConstraints ($lang = NULL) {
 		return $lang !== NULL
 			? $this->constraints[$lang]
 			: $this->constraints;
