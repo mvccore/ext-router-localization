@@ -29,28 +29,28 @@ trait PropsGettersSetters
 	 * or not possible to get from session.
 	 * @var string
 	 */
-	protected $defaultLocatization = ['en', 'US'];
+	protected $defaultLocatization = ['en'];
 
 	/**
 	 * Result language, lowercase characters, internaltional language code.
 	 * Example: 'en' | 'fr' | 'de'...
 	 * @var string|NULL
 	 */
-	protected $lang = NULL;
+	//protected $lang = NULL;
 
 	/**
 	 * Result locale, uppercase characters, internaltional locale code.
 	 * Example: 'US' | 'UK' | 'DE'...
 	 * @var string|NULL
 	 */
-	protected $locale = NULL;
+	//protected $locale = NULL;
 
 	// non configurable props:
 
 	/**
-	 * @var string|NULL
+	 * @var array
 	 */
-	protected $localization = NULL;
+	protected $localization = [];
 
 	/**
 	 * Lang founded in session.
@@ -90,6 +90,16 @@ trait PropsGettersSetters
 	 */
 	protected $allowedLocalizations = [];
 
+	/**
+	 * If `NULL`, request wasn't first, there was something in session stored by previous requests.
+	 * If `TRUE` or `FALSE`, request is first, nothing is in session yet and `TRUE` means
+	 * the best language and locale match by sended http headers `Accept-Headers`.
+	 * `FALSE` then means that there was a match, but it could be a lower prioritized
+	 * language and locale from `Accept-Headers` or it could be default aplication localization.
+	 * @var bool|NULL
+	 */
+	protected $firstRequestDetection = NULL;
+
 	
 	/**
 	 * @return array
@@ -104,7 +114,13 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetDefaultLocatization ($defaultLang, $defaultLocale = NULL) {
-		$this->defaultLocatization = [$defaultLang, $defaultLocale];
+		if ($defaultLang === NULL)
+			throw new \InvalidArgumentException("[".__CLASS__."] Default localization must be defined at least by the language.");
+		if ($defaultLocale === NULL) {
+			$this->defaultLocatization = [$defaultLang];
+		} else {
+			$this->defaultLocatization = [$defaultLang, $defaultLocale];
+		}
 		return $this;
 	}
 
@@ -112,7 +128,7 @@ trait PropsGettersSetters
 	 * @return array
 	 */
 	public function GetLocalization () {
-		return [$this->lang, $this->locale];
+		return $this->localization;
 	}
 
 	/**
@@ -121,8 +137,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalization ($lang, $locale = NULL) {
-		$this->lang = $lang;
-		$this->locale = $locale;
+		if ($lang !== NULL)
+			throw new \InvalidArgumentException("[".__CLASS__."] Localization must be defined at least by the language.");
+		$this->localization[0] = $lang;
+		if ($locale !== NULL) $this->localization[1] = $locale;
 		return $this;
 	}
 

@@ -52,15 +52,12 @@ trait Routing
 		}
 
 		// set up stored/detected localization into request:
-		$langAndLocale = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
-
-		$this->lang = strtolower($langAndLocale[0]);
-		$this->request->SetLang($this->lang);
-		if (count($langAndLocale) > 1) {
-			$this->locale = strtoupper($langAndLocale[1]);
-			$this->request->SetLocale($this->locale);
-		}
+		$this->request->SetLang($this->localization[0]);
+		if (count($this->localization) > 1) 
+			$this->request->SetLocale($this->localization[1]);
 		
+		xxx([$this->request->GetLang(), $this->request->GetLocale()]);
+
 		// return `TRUE` or `FALSE` to break or not the routing process
 		return $result;
 	}
@@ -75,8 +72,12 @@ trait Routing
 	 * @return void
 	 */
 	protected function preRoutePrepareLocalization () {
+		// check all necessary properties configured
+		if (!$this->defaultLocatization)
+			throw new \RuntimeException("[".__CLASS__."] No default localization configured.");
+
 		// add default localization into allowed langs for sure
-		$this->allowedLocalizations[$this->defaultLocatization] = 1;
+		$this->allowedLocalizations[implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocatization)] = 1;
 		
 		//if ($this->stricModeBySession) { // check it with any strict session configuration to have more flexible navigations
 			$sessStrictModeSwitchUrlParam = static::SWITCH_LOCATIZATION_URL_PARAM;
@@ -180,25 +181,26 @@ trait Routing
 	 * @return bool
 	 */
 	protected function manageLocalizationSwitchingAndRedirect () {
-		$localization = $this->switchUriParamLocalization;
+		$localizationStr = $this->switchUriParamLocalization;
 		// store switched site key into session
 		$localizationUrlParam = static::LOCATIZATION_URL_PARAM;
-		$this->session->{$localizationUrlParam} = $localization;
+		$this->session->{$localizationUrlParam} = $localizationStr;
 		$sessStrictModeSwitchUrlParam = static::SWITCH_LOCATIZATION_URL_PARAM;
 		unset($this->requestGlobalGet[$sessStrictModeSwitchUrlParam]);
 		// unset site key switch param and redirect to no switch param uri version
 		$request = & $this->request;
+		$defaultLocatizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocatization);
 		if ($this->anyRoutesConfigured) {
-			$targetUrl = $request->GetBaseUrl()
-				. $this->allowedLocalizations[$localization] 
+			$targetUrl = $request->GetBaseUrl() 
+				. ($localizationStr === $defaultLocatizationStr ? '' : $localizationStr) 
 				. $request->GetPath();
 		} else {
 			$targetUrl = $request->GetBaseUrl();
-			if ($localization === static::MEDIA_VERSION_FULL) {
+			if ($localizationStr === $defaultLocatizationStr) {
 				if (isset($this->requestGlobalGet[$localizationUrlParam]))
 					unset($this->requestGlobalGet[$localizationUrlParam]);
 			} else {
-				$this->requestGlobalGet[$localizationUrlParam] = $localization;
+				$this->requestGlobalGet[$localizationUrlParam] = $localizationStr;
 			}
 			$this->removeDefaultCtrlActionFromGlobalGet();
 			if ($this->requestGlobalGet)
@@ -211,6 +213,111 @@ trait Routing
 		$this->redirect($targetUrl, \MvcCore\Interfaces\IResponse::SEE_OTHER);
 		return FALSE;
 	}
+
+	/**
+	 * Detect language and locale by sended http header string and store 
+	 * detected result in session namespace for next requests.
+	 * @return void
+	 */
+	protected function manageLocalizationDetectionAndStoreInSession () {
+		$firstRequestDetection = FALSE;
+		$requestClass = $this->application->GetRequestClass();
+		$requestGlobalServer = $this->request->GetGlobalCollection('server');
+		$allLanguagesAndLocales = $requestClass::ParseHttpAcceptLang($requestGlobalServer['HTTP_ACCEPT_LANGUAGE']);
+		$counter = 1;
+		foreach ($allLanguagesAndLocales as /*$priority =>*/ $languagesAndLocales) {
+			foreach ($languagesAndLocales as $languageAndLocale) {
+				$languageAndLocaleCount = count($languageAndLocale);
+				if (!$languageAndLocaleCount || $languageAndLocale[0] === NULL) {
+					$counter++;
+					continue;
+				}
+				$localizationStr = strtolower($languageAndLocale[0]);
+				if ($languageAndLocaleCount > 1 && $languageAndLocale[1] !== NULL) 
+					$localizationStr .= static::LANG_AND_LOCALE_SEPARATOR . strtoupper($languageAndLocale[1]);
+				if ($this->allowedLocalizations[$localizationStr]) {
+					$this->localization = $languageAndLocale;
+					if ($counter === 1) $firstRequestDetection = TRUE;
+					break 2;
+				}
+				$counter++;
+			}
+		}
+		if (!$this->localization) 
+			$this->localization = $this->defaultLocatization;
+		$localizationUrlParam = static::LOCATIZATION_URL_PARAM;
+		$this->session->{$localizationUrlParam} = $this->localization;
+		$this->firstRequestDetection = $firstRequestDetection;
+	}
+
+	/**
+	 * If localization is the same as requested - do not process 
+	 * any redirections. If local localization is different than 
+	 * localization in requested url (localization is completed previously 
+	 * from session or by `Accept-Language` headers), then  - if strict mode by 
+	 * session is configured as `TRUE` - redirect to local context localization. 
+	 * If it's configured as `FALSE`, redirect to requested localization.
+	 * @return bool
+	 */
+	protected function checkLocalizationWithRequestVersionAndRedirectIfDifferent() {
+		$request = & $this->request;
+		$requestLocalization = [$request->GetLang(), $request->GetLocale()];
+		$sessionOrDetectionSameWithRequest = $this->localization === $requestLocalization;
+		$targetLocalization = NULL;
+		if ($this->firstRequestDetection === FALSE && $this->redirectFirstRequestToDefault) 
+			$targetLocalization = $this->defaultLocatization;
+		if ($targetLocalization === NULL && $sessionOrDetectionSameWithRequest) 
+			return TRUE;
+		// if requested localization is not the same as localization in session 
+		// fix it by `$this->stricModeBySession` configuration:
+		$localizationUrlParam = static::LOCATIZATION_URL_PARAM;
+		if ($targetLocalization === NULL) {
+			if (
+				$this->stricModeBySession && 
+				(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly)
+			) {
+				// redirect back to `$this->mediaSiteVersion` by session
+				$targetLocalization = $this->localization;
+			} else {
+				// redirect to requested version by `$requestMediaSiteVersion`:
+				$targetLocalization = $requestLocalization;
+			}
+		}
+		// store the right media site version in session
+		$this->session->{$localizationUrlParam} = $targetLocalization;
+		$this->localization = $targetLocalization;
+		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
+		// complete new url to redirect into
+		if ($this->anyRoutesConfigured) {
+			if ($targetLocalization === $this->defaultLocatization) 
+				$targetLocalizationStr = '';
+			$targetUrl = $request->GetBaseUrl()
+				. $targetLocalizationStr
+				. $request->GetPath(TRUE)
+				. $request->GetQuery(TRUE);
+		} else {
+			$targetUrl = $request->GetBaseUrl();
+			if ($targetLocalization === $this->defaultLocatization) {
+				if (isset($this->requestGlobalGet[$localizationUrlParam]))
+					unset($this->requestGlobalGet[$localizationUrlParam]);
+			} else {
+				$this->requestGlobalGet[$localizationUrlParam] = $targetLocalizationStr;
+			}
+			$this->removeDefaultCtrlActionFromGlobalGet();
+			if ($this->requestGlobalGet) {
+				$targetUrl .= $request->GetScriptName();
+				$amp = $this->getQueryStringParamsSepatator();
+				$targetUrl .= '?' . http_build_query($this->requestGlobalGet, '', $amp);
+			}
+		}
+		// redirect
+		$this->redirect(
+			$targetUrl, 
+			\MvcCore\Interfaces\IResponse::SEE_OTHER
+		);
+		return FALSE;
+	}
+
 
 
 
