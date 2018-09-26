@@ -258,13 +258,13 @@ class Route extends \MvcCore\Route
 	 */
 	public function Url (& $params = [], & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
-		$localizationParamName = $router::LOCATIZATION_URL_PARAM;
+		$localizationParamName = $router::LOCALIZATION_URL_PARAM;
 		$localizationStr = (
 			isset($params[$localizationParamName])
 				? $params[$localizationParamName]
 				: (isset($requestedUrlParams[$localizationParamName])
 					? $requestedUrlParams[$localizationParamName]
-					: implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetDefaultLocatization()))
+					: implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetDefaultLocalization()))
 		);
 		$localization = explode($router::LANG_AND_LOCALE_SEPARATOR, $localizationStr);
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()

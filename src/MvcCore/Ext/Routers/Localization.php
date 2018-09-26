@@ -13,7 +13,7 @@
 
 namespace MvcCore\Ext\Routers;
 
-class		Locatization 
+class		Localization 
 extends		\MvcCore\Router
 implements	\MvcCore\Ext\Routers\ILocalization,
 			\MvcCore\Ext\Routers\IExtended
@@ -23,6 +23,13 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	use \MvcCore\Ext\Routers\Localization\Routing;
 	use \MvcCore\Ext\Routers\Localization\UrlCompletion;
 	
+	/**
+	 * MvcCore Extension - Router Lang - version:
+	 * Comparation by PHP function version_compare();
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '5.0.0-alpha';
+
 	/**
 	 * Route current application request by configured routes list or by query string data.
 	 * - If there is strictly defined `controller` and `action` value in query string,
@@ -40,31 +47,30 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
 	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
-	 * - Return completed `\MvcCore\Router::$currentRoute` or `FALSE` for redirection or `NULL` for not matched.
+	 * - Return `TRUE` if `\MvcCore\Router::$currentRoute` is route instance or `FALSE` for redirection.
 	 *
 	 * This method is always called from core routing by:
 	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @return \MvcCore\Route|bool|NULL
+	 * @return bool
 	 */
-	public function & Route () {
-		$result = FALSE;
-		if (!$this->redirectToProperTrailingSlashIfNecessary()) return $result;
+	public function Route () {
+		if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
 		$this->anyRoutesConfigured = count($this->routes) > 0;
 		if ($requestCtrlName && $requestActionName) {
-			if ($this->preRouteLocalization() === FALSE) return $result;
+			if (!$this->preRouteLocalization()) return FALSE;
 			$this->routeByControllerAndActionQueryString(
 				$requestCtrlName, $requestActionName
 			);
 		} else {
-			if ($this->preRouteLocalization() === FALSE) return $result;
+			if (!$this->preRouteLocalization()) return FALSE;
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
-			if ($this->currentRoute === NULL && !$this->requestLocatization) {
+			if ($this->currentRoute === NULL && !$this->requestLocalization) {
 				$this->allowNonLocalizedRoutes = FALSE;
 				if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) 
-					return $result;
+					return FALSE;
 			}
 		}
 		if ($this->currentRoute === NULL && (
@@ -76,6 +82,6 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 			);
 		}
-		return $this->currentRoute;
+		return $this->currentRoute instanceof \MvcCore\Interfaces\IRoute;
 	}
 }

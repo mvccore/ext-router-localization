@@ -23,7 +23,6 @@ trait Routing
 	 * @return bool
 	 */
 	protected function preRouteLocalization () {
-		$result = TRUE;
 		$this->preRoutePrepare();
 		if (!$this->preRoutePrepareLocalization()) return FALSE;
 		
@@ -34,7 +33,7 @@ trait Routing
 			// if there is detected in requested url media site version switching param,
 			// store switching param value in session, remove param from `$_GET` 
 			// and redirect to the same page with new media site version:
-			$result = $this->manageLocalizationSwitchingAndRedirect();
+			if (!$this->manageLocalizationSwitchingAndRedirect()) return FALSE;
 
 		} else if (
 			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) && 
@@ -43,13 +42,13 @@ trait Routing
 			// if there is no session record about media site version:
 			$this->manageLocalizationDetectionAndStoreInSession();
 			// check if media site version is the same as local media site version:
-			$result = $this->checkLocalizationWithUrlAndRedirectIfNecessary();
+			if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
 
 		} else {
 			// if there is media site version in session already:
 			$this->localization = $this->sessionLocalization;
 			// check if media site version is the same as local media site version:
-			$result = $this->checkLocalizationWithUrlAndRedirectIfNecessary();
+			if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
 		}
 
 		// set up stored/detected localization into request:
@@ -59,7 +58,7 @@ trait Routing
 				$this->request->SetLocale($this->localization[1]);
 		}
 		// return `TRUE` or `FALSE` to break or not the routing process
-		return $result;
+		return TRUE;
 	}
 
 	/**
@@ -73,14 +72,14 @@ trait Routing
 	 */
 	protected function preRoutePrepareLocalization () {
 		// check all necessary properties configured
-		if (!$this->defaultLocatization)
+		if (!$this->defaultLocalization)
 			throw new \RuntimeException("[".__CLASS__."] No default localization configured.");
 
 		// prepare possibly modified allowed localizations
 		$this->allowedLocalizations = array_combine($this->allowedLocalizations, $this->allowedLocalizations);
 		// add default localization into allowed langs for sure
-		$this->defaultLocatizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocatization);
-		$this->allowedLocalizations[$this->defaultLocatizationStr] = $this->defaultLocatizationStr;
+		$this->defaultLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocalization);
+		$this->allowedLocalizations[$this->defaultLocalizationStr] = $this->defaultLocalizationStr;
 
 		// add automaticly into equivalents also all langs parsed from localizations if necessary
 		if ($this->detectAcceptLanguageOnlyByLang) {
@@ -96,7 +95,7 @@ trait Routing
 		
 		// check it with any strict session configuration to have more flexible navigations
 		//if ($this->stricModeBySession) {
-			$sessStrictModeSwitchUrlParam = static::SWITCH_LOCATIZATION_URL_PARAM;
+			$sessStrictModeSwitchUrlParam = static::SWITCH_LOCALIZATION_URL_PARAM;
 			if (isset($this->requestGlobalGet[$sessStrictModeSwitchUrlParam])) {
 				$globalGetValue = strtolower($this->requestGlobalGet[$sessStrictModeSwitchUrlParam]);
 				$separatorPos = strpos($globalGetValue, static::LANG_AND_LOCALE_SEPARATOR);
@@ -114,8 +113,8 @@ trait Routing
 			$this->stricModeBySession && 
 			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly)
 		);
-		if (isset($this->session->{static::LOCATIZATION_URL_PARAM})) 
-			$this->sessionLocalization = $this->session->{static::LOCATIZATION_URL_PARAM};
+		if (isset($this->session->{static::LOCALIZATION_URL_PARAM})) 
+			$this->sessionLocalization = $this->session->{static::LOCALIZATION_URL_PARAM};
 		
 		// get current lang version from url string
 		return $this->setUpRequestLocalizationFromUrl();
@@ -131,7 +130,7 @@ trait Routing
 	protected function setUpRequestLocalizationFromUrl () {
 		if ($this->setUpRequestLocalizationFromUrlQueryString() === FALSE) 
 			return FALSE;
-		if ($this->requestLocatization === NULL && $this->anyRoutesConfigured) 
+		if ($this->requestLocalization === NULL && $this->anyRoutesConfigured) 
 			return $this->setUpRequestLocalizationFromUrlPath();
 		return TRUE;
 	}
@@ -141,8 +140,8 @@ trait Routing
 	 * @return bool
 	 */
 	protected function setUpRequestLocalizationFromUrlQueryString () {
-		$this->requestLocatization = NULL;
-		$localizationUrlParam = static::LOCATIZATION_URL_PARAM;
+		$this->requestLocalization = NULL;
+		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
 		$langAndLocaleSeparator = static::LANG_AND_LOCALE_SEPARATOR;
 		// try ty set up request localization by query string first - query string is always stronger value
 		$requestLocalization = $this->request->GetParam(
@@ -158,9 +157,9 @@ trait Routing
 					. strtoupper(substr($requestLocalization, $separatorPos + 1));
 		}
 		if ($requestLocalizationValidStr && isset($this->allowedLocalizations[$requestLocalization])) {
-			$this->requestLocatization = explode($langAndLocaleSeparator, $requestLocalization);
-			$this->request->SetLang($this->requestLocatization[0]);
-			if ($this->requestLocatization[1]) $this->request->SetLocale($this->requestLocatization[1]);
+			$this->requestLocalization = explode($langAndLocaleSeparator, $requestLocalization);
+			$this->request->SetLang($this->requestLocalization[0]);
+			if ($this->requestLocalization[1]) $this->request->SetLocale($this->requestLocalization[1]);
 		} else if (isset($this->localizationEquivalents[$requestLocalization])) {
 			$targetLocalization = explode($langAndLocaleSeparator, $this->localizationEquivalents[$requestLocalization]);
 			if ($this->stricModeBySession && $this->sessionLocalization) {
@@ -209,7 +208,7 @@ trait Routing
 		if (isset($this->allowedLocalizations[$localizationPart])) {
 			$langAndLocale = explode(static::LANG_AND_LOCALE_SEPARATOR, $localizationPart);
 			if (strlen($langAndLocale[0]) > 0) {
-				$this->requestLocatization = $langAndLocale;
+				$this->requestLocalization = $langAndLocale;
 				$this->request
 					->SetLang($langAndLocale[0])
 					->SetPath(
@@ -233,11 +232,11 @@ trait Routing
 				);
 			}
 		}
-		if ($this->requestLocatization === NULL && $requestPath == '/') {
-			$this->requestLocatization = $this->defaultLocatization;
-			$this->request->SetLang($this->requestLocatization[0]);
-			if ($this->requestLocatization[1]) 
-				$this->request->SetLocale($this->requestLocatization[1]);
+		if ($this->requestLocalization === NULL && $requestPath == '/') {
+			$this->requestLocalization = $this->defaultLocalization;
+			$this->request->SetLang($this->requestLocalization[0]);
+			if ($this->requestLocalization[1]) 
+				$this->request->SetLocale($this->requestLocalization[1]);
 		}
 		return TRUE;
 	}
@@ -251,7 +250,7 @@ trait Routing
 	protected function manageLocalizationSwitchingAndRedirect () {
 		$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->switchUriParamLocalization);
 		// unset site key switch param
-		unset($this->requestGlobalGet[static::SWITCH_LOCATIZATION_URL_PARAM]);
+		unset($this->requestGlobalGet[static::SWITCH_LOCALIZATION_URL_PARAM]);
 		// redirect to no switch param uri version
 		return $this->redirectToTargetLocalization(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)
@@ -295,8 +294,8 @@ trait Routing
 			}
 		}
 		if (!$this->localization) 
-			$this->localization = $this->defaultLocatization;
-		$localizationUrlParam = static::LOCATIZATION_URL_PARAM;
+			$this->localization = $this->defaultLocalization;
+		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
 		$this->session->{$localizationUrlParam} = $this->localization;
 		$this->firstRequestDetection = $firstRequestDetection;
 	}
@@ -323,33 +322,33 @@ trait Routing
 	protected function checkLocalizationWithUrlAndRedirectIfNecessary() {
 		// if there is no localization in request and non-localized routes like 
 		// `/admin` are allowed, do not redirect to anywhere, do nothing and return
-		if (!$this->requestLocatization && $this->allowNonLocalizedRoutes) 
+		if (!$this->requestLocalization && $this->allowNonLocalizedRoutes) 
 			return TRUE;
 		// if there was first detection not with very precise result, 
 		// decide if to redirect to global or if to stay where we are
 		if (
 			$this->firstRequestDetection === FALSE || (
 				$this->firstRequestDetection === TRUE && 
-				$this->requestLocatization !== NULL && 
-				$this->requestLocatization !== $this->localization
+				$this->requestLocalization !== NULL && 
+				$this->requestLocalization !== $this->localization
 			)
 		) {
 			$targetLocalization = $this->redirectFirstRequestToDefault
-				? $this->defaultLocatization
-				: ($this->requestLocatization !== NULL
-					? $this->requestLocatization
+				? $this->defaultLocalization
+				: ($this->requestLocalization !== NULL
+					? $this->requestLocalization
 					: $this->localization);
-		} else if ($this->stricModeBySession || $this->requestLocatization === NULL) {
+		} else if ($this->stricModeBySession || $this->requestLocalization === NULL) {
 			$targetLocalization = $this->localization;
 		} else {
-			$targetLocalization = $this->setUpLocalizationToContextAndSession($this->requestLocatization);
+			$targetLocalization = $this->setUpLocalizationToContextAndSession($this->requestLocalization);
 		}
 		$originalRequestPath = trim($this->request->GetOriginalPath(), '/');
-		if ($originalRequestPath === $this->defaultLocatizationStr) 
+		if ($originalRequestPath === $this->defaultLocalizationStr) 
 			return $this->redirectToTargetLocalization(
-				$this->setUpLocalizationToContextAndSession($this->requestLocatization)	
+				$this->setUpLocalizationToContextAndSession($this->requestLocalization)	
 			);
-		if ($targetLocalization === $this->requestLocatization) 
+		if ($targetLocalization === $this->requestLocalization) 
 			return TRUE;
 		return $this->redirectToTargetLocalization(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)	
@@ -363,13 +362,13 @@ trait Routing
 	 */
 	protected function redirectToTargetLocalization ($targetLocalization) {
 		// prepare for uri manipulation
-		$sessStrictModeSwitchUrlParam = static::SWITCH_LOCATIZATION_URL_PARAM;
+		$sessStrictModeSwitchUrlParam = static::SWITCH_LOCALIZATION_URL_PARAM;
 		unset($this->requestGlobalGet[$sessStrictModeSwitchUrlParam]);
 		// unset site key switch param and redirect to no switch param uri version
 		$request = & $this->request;
 		$localizationUrlParam = static::LANG_AND_LOCALE_SEPARATOR;
 		$targetLocalizationStr = implode($localizationUrlParam, $targetLocalization);
-		$targetIsTheSameAsDefault = $targetLocalizationStr === $this->defaultLocatizationStr;
+		$targetIsTheSameAsDefault = $targetLocalizationStr === $this->defaultLocalizationStr;
 		if ($this->anyRoutesConfigured) {
 			$path = $request->GetPath(TRUE);
 			$targetLocalizationStr = ($targetIsTheSameAsDefault && ($path == '/' || $path == ''))
@@ -404,7 +403,7 @@ trait Routing
 	 * @return \string[]
 	 */
 	protected function setUpLocalizationToContextAndSession ($targetLocalization) {
-		$this->session->{static::LOCATIZATION_URL_PARAM} = $targetLocalization;
+		$this->session->{static::LOCALIZATION_URL_PARAM} = $targetLocalization;
 		$this->localization = $targetLocalization;
 		return $targetLocalization;
 	}
@@ -420,7 +419,7 @@ trait Routing
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
-		$localizationInRequest = count($this->requestLocatization) > 0;
+		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$requestPath = $localizationInRequest
 			? $request->GetPath()
 			: $request->GetOriginalPath();
@@ -430,7 +429,7 @@ trait Routing
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
 		$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
 			? $localizationStr
-			: $this->localization[0];
+			: (count($this->localization) > 0 ? $this->localization[0] : NULL);
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
 		foreach ($this->routes as & $route) {
@@ -450,7 +449,7 @@ trait Routing
 						$this->requestedUrlParams ? $this->requestedUrlParams : [],
 						$matchedParamsClone
 					);
-					$this->requestedUrlParams[static::LOCATIZATION_URL_PARAM] = $localizationStr;
+					$this->requestedUrlParams[static::LOCALIZATION_URL_PARAM] = $localizationStr;
 				}
 				break;
 			}

@@ -29,7 +29,7 @@ trait PropsGettersSetters
 	 * previous localization from session.
 	 * @var \string[]
 	 */
-	protected $defaultLocatization = [];
+	protected $defaultLocalization = [];
 
 	/**
 	 * Current router context localization value. It could contain in first index
@@ -145,7 +145,7 @@ trait PropsGettersSetters
 	 * Default localization, imploded from array to string.
 	 * @var string|NULL
 	 */
-	protected $defaultLocatizationStr = NULL;
+	protected $defaultLocalizationStr = NULL;
 	
 
 	/*************************************************************************************
@@ -162,8 +162,8 @@ trait PropsGettersSetters
 	 * previous localization from session.
 	 * @return \string[]
 	 */
-	public function GetDefaultLocatization () {
-		return $this->defaultLocatization;
+	public function GetDefaultLocalization () {
+		return $this->defaultLocalization;
 	}
 	
 	/**
@@ -178,7 +178,7 @@ trait PropsGettersSetters
 	 * @var string $defaultLocale It could be `US`, `GB`...
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetDefaultLocatization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
+	public function & SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
 		if ($defaultLocalizationOrLanguage === NULL)
 			throw new \InvalidArgumentException("[".__CLASS__."] Default localization must be defined at least by the language.");
 		if ($defaultLocale === NULL) {
@@ -188,12 +188,12 @@ trait PropsGettersSetters
 				$defaultLocalizationOrLanguage = substr($defaultLocalizationOrLanguage, 0, $delimiterPos);
 			}
 			if (strlen($defaultLocale) > 0) {
-				$this->defaultLocatization = [$defaultLocalizationOrLanguage, $defaultLocale];
+				$this->defaultLocalization = [$defaultLocalizationOrLanguage, $defaultLocale];
 			} else {
-				$this->defaultLocatization = [$defaultLocalizationOrLanguage];
+				$this->defaultLocalization = [$defaultLocalizationOrLanguage];
 			}
 		} else {
-			$this->defaultLocatization = [$defaultLocalizationOrLanguage, $defaultLocale];
+			$this->defaultLocalization = [$defaultLocalizationOrLanguage, $defaultLocale];
 		}
 		return $this;
 	}
