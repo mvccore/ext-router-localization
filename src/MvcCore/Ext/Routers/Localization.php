@@ -21,6 +21,7 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	use \MvcCore\Ext\Routers\Extended;
 	use \MvcCore\Ext\Routers\Localization\PropsGettersSetters;
 	use \MvcCore\Ext\Routers\Localization\Routing;
+	use \MvcCore\Ext\Routers\Localization\Redirecting;
 	use \MvcCore\Ext\Routers\Localization\UrlCompletion;
 	
 	/**
@@ -59,13 +60,14 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
 		$this->anyRoutesConfigured = count($this->routes) > 0;
+		$this->preRoutePrepare();
+		if (!$this->preRoutePrepareLocalization()) return FALSE;
+		if (!$this->preRouteLocalization()) return FALSE;
 		if ($requestCtrlName && $requestActionName) {
-			if (!$this->preRouteLocalization()) return FALSE;
 			$this->routeByControllerAndActionQueryString(
 				$requestCtrlName, $requestActionName
 			);
 		} else {
-			if (!$this->preRouteLocalization()) return FALSE;
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
 			if ($this->currentRoute === NULL && !$this->requestLocalization) {
 				$this->allowNonLocalizedRoutes = FALSE;

@@ -33,49 +33,53 @@ trait UrlCompletion
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []) {
-		$requestedUrlParams = & $this->GetRequestedUrlParams();
-		$localizationParamName = (string) static::LOCALIZATION_URL_PARAM;
+		$requestedUrlParams = $this->GetRequestedUrlParams();
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
-		$localization = (
-			isset($params[$localizationParamName])
-				? $params[$localizationParamName]
-				: (isset($requestedUrlParams[$localizationParamName])
-					? $requestedUrlParams[$localizationParamName]
-					: $this->defaultLocalizationStr)
-		);
-		unset($params[$localizationParamName]);
+		
+		$localizationParamName = static::LOCALIZATION_URL_PARAM;
+		
+		if (isset($params[$localizationParamName])) {
+			$localizationStr = $params[$localizationParamName];
+			if ($localizedRoute) unset($params[$localizationParamName]);
+		} else if (isset($requestedUrlParams[$localizationParamName])) {
+			$localizationStr = $requestedUrlParams[$localizationParamName];
+			if ($localizedRoute) unset($requestedUrlParams[$localizationParamName]);
+		} else {
+			$localizationStr = implode(
+				static::LANG_AND_LOCALE_SEPARATOR, $this->localization
+			);
+		}
+		if (!isset($this->allowedLocalizations[$localizationStr])) {
+			if (isset($this->localizationEquivalents[$localizationStr])) 
+				$localizationStr = $this->localizationEquivalents[$localizationStr];
+			if (!isset($this->allowedLocalizations[$localizationStr]))
+				throw new \InvalidArgumentException(
+					'['.__CLASS__.'] Not allowed localization used to generate url: `'
+					.$localizationStr.'`. Allowed values: `'
+					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.'
+				);
+		}
+
+		if (
+			$this->stricModeBySession && 
+			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
+		) 
+			$params[static::SWITCH_LOCALIZATION_URL_PARAM] = $localizationStr;
+		
 		$result = $route->Url(
 			$params, $requestedUrlParams, $this->getQueryStringParamsSepatator()
 		);
-		if ($localizedRoute) 
-			$result = '/' . $localization . $result;
+
+		$localizationUrlPrefix = '';
 		$questionMarkPos = mb_strpos($result, '?');
-		$anyQueryString = $questionMarkPos !== FALSE;
-		$resultPath = $anyQueryString 
+		$resultPath = $questionMarkPos !== FALSE 
 			? mb_substr($result, 0, $questionMarkPos)
 			: $result;
-		if (trim($resultPath, '/') === $this->defaultLocalizationStr) 
-			$result = '/' . ($anyQueryString ? mb_substr($result, $questionMarkPos) : '');
-		return $this->request->GetBasePath() . $result;
-	}
-
-	/**
-	 * Get all request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @return array
-	 */
-	public function & GetRequestedUrlParams () {
-		if ($this->requestedUrlParams === NULL) {
-			// create global `$_GET` array clone:
-			$this->requestedUrlParams = array_merge([], $this->request->GetGlobalCollection('get'));
-			$requestLocalization = [$this->request->GetLang()];
-			$requestLocale = $this->request->GetLocale();
-			if ($requestLocale !== NULL)
-				$requestLocalization[] = $requestLocale;
-			$this->requestedUrlParams[static::LOCALIZATION_URL_PARAM] = implode(
-				static::LANG_AND_LOCALE_SEPARATOR, $requestLocalization
-			);
-		}
-		return $this->requestedUrlParams;
+		if ($localizedRoute && trim($resultPath, '/') !== $this->defaultLocalizationStr)
+			$localizationUrlPrefix = '/' . $localizationStr;
+		
+		return $this->request->GetBasePath() 
+			. $localizationUrlPrefix
+			. $result;
 	}
 }

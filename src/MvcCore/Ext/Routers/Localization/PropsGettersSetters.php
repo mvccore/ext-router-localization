@@ -146,6 +146,12 @@ trait PropsGettersSetters
 	 * @var string|NULL
 	 */
 	protected $defaultLocalizationStr = NULL;
+
+	/**
+	 * Original request path before localization manipulation.
+	 * @var string|NULL
+	 */
+	protected $originalRequestPath = NULL;
 	
 
 	/*************************************************************************************
@@ -203,10 +209,14 @@ trait PropsGettersSetters
 	 * index international language code string and nothing more or the language 
 	 * under first index and international locale code under second index.
 	 * If there are no language and locale detected, returned array is empty.
-	 * @return array
+	 * @param bool $asString `FALSE` by default to get array with lang and locale, 
+	 *						 `TRUE` to get lang and locale as string.
+	 * @return string|array
 	 */
-	public function GetLocalization () {
-		return $this->localization;
+	public function GetLocalization ($asString = FALSE) {
+		return $asString
+			? implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
+			: $this->localization;
 	}
 
 	/**

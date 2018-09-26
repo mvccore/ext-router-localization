@@ -23,9 +23,6 @@ trait Routing
 	 * @return bool
 	 */
 	protected function preRouteLocalization () {
-		$this->preRoutePrepare();
-		if (!$this->preRoutePrepareLocalization()) return FALSE;
-		
 		if (
 			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) &&
 			$this->switchUriParamLocalization !== NULL
@@ -109,14 +106,13 @@ trait Routing
 		
 		// look into session object if there are or not
 		// any record about lang from previous request
-		$this->stricModeBySession = (
-			$this->stricModeBySession && 
-			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly)
-		);
 		if (isset($this->session->{static::LOCALIZATION_URL_PARAM})) 
 			$this->sessionLocalization = $this->session->{static::LOCALIZATION_URL_PARAM};
 		
-		// get current lang version from url string
+		// store path info localy for routing process
+		$this->originalRequestPath = $this->request->GetPath();
+
+		// get current localization from requested url string
 		return $this->setUpRequestLocalizationFromUrl();
 	}
 
@@ -191,7 +187,9 @@ trait Routing
 			* $requestPath = '/any-thing/'			=> $secondSlashPos = 10		=> $firstPathElm = 'any-thing'
 			* $requestPath = '/any-thing/more...'	=> $secondSlashPos = 10		=> $firstPathElm = 'any-thing'
 			*/
-		$secondSlashPos = mb_strpos($requestPath, '/', 1);
+		$secondSlashPos = mb_strlen($requestPath) > 1 
+			? mb_strpos($requestPath, '/', 1) 
+			: FALSE;
 		if ($secondSlashPos === FALSE) {
 			$firstPathElm = $requestPath !== '/' ? mb_substr($requestPath, 1) : '';
 		} else {
@@ -232,7 +230,7 @@ trait Routing
 				);
 			}
 		}
-		if ($this->requestLocalization === NULL && $requestPath == '/') {
+		if ($this->requestLocalization === NULL && trim($requestPath, '/') === '') {
 			$this->requestLocalization = $this->defaultLocalization;
 			$this->request->SetLang($this->requestLocalization[0]);
 			if ($this->requestLocalization[1]) 
@@ -343,7 +341,7 @@ trait Routing
 		} else {
 			$targetLocalization = $this->setUpLocalizationToContextAndSession($this->requestLocalization);
 		}
-		$originalRequestPath = trim($this->request->GetOriginalPath(), '/');
+		$originalRequestPath = trim($this->originalRequestPath, '/');
 		if ($originalRequestPath === $this->defaultLocalizationStr) 
 			return $this->redirectToTargetLocalization(
 				$this->setUpLocalizationToContextAndSession($this->requestLocalization)	
@@ -353,48 +351,6 @@ trait Routing
 		return $this->redirectToTargetLocalization(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)	
 		);
-	}
-
-	/**
-	 * Redirect to target localization version with path and uery string.
-	 * @param \string[] $targetLocalization 
-	 * @return boolean
-	 */
-	protected function redirectToTargetLocalization ($targetLocalization) {
-		// prepare for uri manipulation
-		$sessStrictModeSwitchUrlParam = static::SWITCH_LOCALIZATION_URL_PARAM;
-		unset($this->requestGlobalGet[$sessStrictModeSwitchUrlParam]);
-		// unset site key switch param and redirect to no switch param uri version
-		$request = & $this->request;
-		$localizationUrlParam = static::LANG_AND_LOCALE_SEPARATOR;
-		$targetLocalizationStr = implode($localizationUrlParam, $targetLocalization);
-		$targetIsTheSameAsDefault = $targetLocalizationStr === $this->defaultLocalizationStr;
-		if ($this->anyRoutesConfigured) {
-			$path = $request->GetPath(TRUE);
-			$targetLocalizationStr = ($targetIsTheSameAsDefault && ($path == '/' || $path == ''))
-				? ''
-				: '/' . $targetLocalizationStr;
-			$targetUrl = $request->GetBaseUrl() 
-				. $targetLocalizationStr
-				. $path;
-		} else {
-			$targetUrl = $request->GetBaseUrl();
-			if ($targetIsTheSameAsDefault) {
-				if (isset($this->requestGlobalGet[$localizationUrlParam]))
-					unset($this->requestGlobalGet[$localizationUrlParam]);
-			} else {
-				$this->requestGlobalGet[$localizationUrlParam] = $targetLocalizationStr;
-			}
-			$this->removeDefaultCtrlActionFromGlobalGet();
-			if ($this->requestGlobalGet)
-				$targetUrl .= $request->GetScriptName();
-		}
-		if ($this->requestGlobalGet) {
-			$amp = $this->getQueryStringParamsSepatator();
-			$targetUrl .= '?' . str_replace('%2F', '/', http_build_query($this->requestGlobalGet, '', $amp));
-		}
-		$this->redirect($targetUrl, \MvcCore\Interfaces\IResponse::SEE_OTHER);
-		return FALSE;
 	}
 
 	/**
@@ -422,9 +378,10 @@ trait Routing
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$requestPath = $localizationInRequest
 			? $request->GetPath()
-			: $request->GetOriginalPath();
-		if ($requestPath === '') 
+			: $this->originalRequestPath;
+		if ($requestPath === '') {
 			$requestPath = '/';
+		}
 		$requestMethod = $request->GetMethod();
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
 		$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
