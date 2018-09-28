@@ -462,12 +462,12 @@ trait PropsGettersSetters
 	 * Get always route instance from given route configuration data or instance 
 	 * and return created instance from given configuration data or already given 
 	 * instance.
-	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
 	 *																		   route config array.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
-		if ($routeCfgOrRoute instanceof \MvcCore\Interfaces\IRoute) 
+		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute;
 		$routeClass = $this->isRouteCfgDataLocalized($route) 
 			? self::$routeClassLocalized 

@@ -331,11 +331,22 @@ trait Routing
 				$this->requestLocalization !== $this->localization
 			)
 		) {
-			$targetLocalization = $this->redirectFirstRequestToDefault
-				? $this->defaultLocalization
-				: ($this->requestLocalization !== NULL
-					? $this->requestLocalization
-					: $this->localization);
+			if ($this->redirectFirstRequestToDefault) {
+				$targetLocalization = $this->defaultLocalization;
+				/** @var $request \MvcCore\Request */
+				$request = & $this->request;
+				$this->requestGlobalGet[static::REDIRECTED_SOURCE_URL_PARAM] = rawurlencode(
+					$request->GetBaseUrl() 
+					. $request->GetOriginalPath()
+					. $request->GetQuery(TRUE, TRUE) 
+					. $request->GetFragment(TRUE, TRUE)
+				);
+				$request->SetPath('');
+			} else if ($this->requestLocalization !== NULL) {
+				$targetLocalization = $this->requestLocalization;
+			} else {
+				$targetLocalization = $this->localization;
+			}
 		} else if ($this->stricModeBySession || $this->requestLocalization === NULL) {
 			$targetLocalization = $this->localization;
 		} else {
@@ -376,17 +387,23 @@ trait Routing
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
-		$requestPath = $localizationInRequest
-			? $request->GetPath()
-			: $this->originalRequestPath;
+		if ($localizationInRequest) {
+			$requestPath = $request->GetPath();
+		} else {
+			$requestPath = $this->originalRequestPath;
+		}
 		if ($requestPath === '') {
 			$requestPath = '/';
 		}
 		$requestMethod = $request->GetMethod();
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
-		$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
-			? $localizationStr
-			: (count($this->localization) > 0 ? $this->localization[0] : NULL);
+		if ($this->routeRecordsByLanguageAndLocale) {
+			$routesLocalizationStr = $localizationStr;
+		} else if (count($this->localization) > 0) {
+			$routesLocalizationStr = $this->localization[0];
+		} else {
+			$routesLocalizationStr = NULL;
+		}
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
 		foreach ($this->routes as & $route) {
@@ -402,9 +419,13 @@ trait Routing
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
 				if ($matchedParamsClone) {
+					if ($this->requestedUrlParams) {
+						$requestedUrlParamsToMerge = $this->requestedUrlParams;
+					} else {
+						$requestedUrlParamsToMerge = [];
+					}
 					$this->requestedUrlParams = array_merge(
-						$this->requestedUrlParams ? $this->requestedUrlParams : [],
-						$matchedParamsClone
+						$requestedUrlParamsToMerge, $matchedParamsClone
 					);
 					$this->requestedUrlParams[static::LOCALIZATION_URL_PARAM] = $localizationStr;
 				}

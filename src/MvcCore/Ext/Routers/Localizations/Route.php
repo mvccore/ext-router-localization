@@ -45,15 +45,20 @@ class Route extends \MvcCore\Route
 	 * @return string|array|NULL
 	 */
 	public function GetPattern ($localization = NULL) {
-		return $localization !== NULL && array_key_exists($localization, $this->patternLocalized)
-			? $this->patternLocalized[$localization]
-			: $this->pattern;
+		if (
+			$localization !== NULL && 
+			array_key_exists($localization, $this->patternLocalized)
+		) {
+			return $this->patternLocalized[$localization];
+		} else {
+			return $this->pattern;
+		}
 	}
 
 	/**
 	 * @param string|array $pattern
 	 * @param string|NULL $localization 
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetPattern ($pattern, $localization = NULL) {
 		if ($localization !== NULL) {
@@ -71,15 +76,20 @@ class Route extends \MvcCore\Route
 	 * @return string|array|NULL
 	 */
 	public function GetMatch ($localization = NULL) {
-		return $localization !== NULL && array_key_exists($localization, $this->matchLocalized)
-			? $this->matchLocalized[$localization]
-			: $this->match;
+		if (
+			$localization !== NULL && 
+			array_key_exists($localization, $this->matchLocalized)	
+		) {
+			return $this->matchLocalized[$localization];
+		} else {
+			return $this->match;
+		}
 	}
 
 	/**
 	 * @param string|array $match
 	 * @param string|NULL $localization 
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetMatch ($match, $localization = NULL) {
 		if ($localization !== NULL) {
@@ -97,15 +107,19 @@ class Route extends \MvcCore\Route
 	 * @return string|array|NULL
 	 */
 	public function GetReverse ($localization = NULL) {
-		return $localization !== NULL && array_key_exists($localization, $this->reverseLocalized)
-			? $this->reverseLocalized[$localization]
-			: $this->reverse;
+		if (
+			$localization !== NULL && 
+			array_key_exists($localization, $this->reverseLocalized)
+		) {
+			return $this->reverseLocalized[$localization];
+		}
+		return $this->reverse;
 	}
 
 	/**
 	 * @param string|array $reverse
 	 * @param string|NULL $localization 
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetReverse ($reverse, $localization = NULL) {
 		if ($localization !== NULL) {
@@ -123,19 +137,20 @@ class Route extends \MvcCore\Route
 	 * @return array|\array[]
 	 */
 	public function GetDefaults ($localization = NULL) {
-		return (
+		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->defaultsLocalized) && 
 			is_array($this->defaultsLocalized[$localization])
-		)
-			? $this->defaultsLocalized[$localization]
-			: $this->defaults;
+		) {
+			return $this->defaultsLocalized[$localization];
+		}
+		return $this->defaults;
 	}
 
 	/**
 	 * @param array|\array[] $defaults
 	 * @param string|NULL $localization 
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetDefaults ($defaults = [], $localization = NULL) {
 		if ($localization !== NULL) {
@@ -153,13 +168,14 @@ class Route extends \MvcCore\Route
 	 * @return array|\array[]
 	 */
 	public function GetConstraints ($localization = NULL) {
-		return (
+		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->constraintsLocalized) && 
 			is_array($this->constraintsLocalized[$localization])
-		)
-			? $this->constraintsLocalized[$localization]
-			: $this->constraints;
+		) {
+			return $this->constraintsLocalized[$localization];
+		}
+		return $this->constraints;
 	}
 
 	/**
@@ -176,7 +192,7 @@ class Route extends \MvcCore\Route
 	/**
 	 * @param array|\array[] $constraints
 	 * @param string $localization 
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetConstraints ($constraints = [], $localization = NULL) {
 		if ($localization !== NULL) {
@@ -280,17 +296,21 @@ class Route extends \MvcCore\Route
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
 				list($this->controller, $this->action) = explode(':', $data->controllerAction);
-				$this->name = isset($data->name) 
-					? $data->name 
-					: $data->controllerAction;
+				if (isset($data->name)) {
+					$this->name = $data->name;
+				} else {
+					$this->name = $data->controllerAction;
+				}
 			} else {
 				$this->controller = isset($data->controller) ? $data->controller : '';
 				$this->action = isset($data->action) ? $data->action : '';
-				$this->name = isset($data->name) 
-					? $data->name 
-					: ($this->controller !== '' && $this->action !== ''
-						? $this->controller . ':' . $this->action
-						: NULL);
+				if (isset($data->name)) {
+					$this->name = $data->name;
+				} else if ($this->controller !== '' && $this->action !== '') {
+					$this->name = $this->controller . ':' . $this->action;
+				} else {
+					$this->name = NULL;
+				}
 			}
 			if (isset($data->pattern)) {
 				if (is_array($data->pattern)) {
@@ -322,7 +342,8 @@ class Route extends \MvcCore\Route
 			}
 			if (isset($data->constraints)) 
 				$this->SetConstraints($data->constraints);
-			$this->method = isset($data->method) ? $data->method : NULL ;
+			if (isset($data->method)) 
+				$data->method = strtoupper($data->method);
 		} else {
 			if (is_array($patternOrConfig)) {
 				$this->patternLocalized = $patternOrConfig;
@@ -337,9 +358,8 @@ class Route extends \MvcCore\Route
 				$this->defaults = $defaults;
 			}
 			$this->SetConstraints($constraints);
-			$this->method = $method;
+			if ($method !== NULL) $this->method = strtoupper($method);
 		}
-		$this->method = $this->method === NULL ? NULL : strtoupper($this->method);
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
 			list($this->controller, $this->action) = explode(':', $this->name);
 		}
@@ -437,13 +457,13 @@ class Route extends \MvcCore\Route
 	public function Url (& $params = [], & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
 		$localizationParamName = $router::LOCALIZATION_URL_PARAM;
-		$localizationStr = (
-			isset($params[$localizationParamName])
-				? $params[$localizationParamName]
-				: (isset($requestedUrlParams[$localizationParamName])
-					? $requestedUrlParams[$localizationParamName]
-					: implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetDefaultLocalization()))
-		);
+		if (isset($params[$localizationParamName])) {
+			$localizationStr = $params[$localizationParamName];
+		} else if (isset($requestedUrlParams[$localizationParamName])) {
+			$localizationStr = $requestedUrlParams[$localizationParamName];
+		} else {
+			$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetDefaultLocalization());
+		}
 		$localization = explode($router::LANG_AND_LOCALE_SEPARATOR, $localizationStr);
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
@@ -455,20 +475,21 @@ class Route extends \MvcCore\Route
 		$givenParamsKeys = array_merge([], $params);
 		foreach ($this->reverseParams as $paramName) {
 			$paramKeyReplacement = '<'.$paramName.'>';
-			$paramValue = (
-				isset($params[$paramName])
-					? $params[$paramName]
-					: (isset($requestedUrlParams[$paramName])
-						? $requestedUrlParams[$paramName]
-						: (isset($routeDefaults[$paramName])
-							? $routeDefaults[$paramName]
-							: ''))
-			);
+			if (isset($params[$paramName])) {
+				$paramValue = $params[$paramName];
+			} else if (isset($requestedUrlParams[$paramName])) {
+				$paramValue = $requestedUrlParams[$paramName];
+			} else if (isset($routeDefaults[$paramName])) {
+				$paramValue = $routeDefaults[$paramName];
+			} else {
+				$paramValue = '';
+			}
 			// convert possible XSS chars to entities (`< > & " ' &`):
 			$paramValue = htmlspecialchars($paramValue, ENT_QUOTES);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
 			unset($givenParamsKeys[$paramName]);
 		}
+		$result = & $this->correctTrailingSlashBehaviour($result);
 		if ($givenParamsKeys) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
@@ -481,7 +502,7 @@ class Route extends \MvcCore\Route
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
@@ -489,7 +510,7 @@ class Route extends \MvcCore\Route
 		if ($this->match === NULL && !array_key_exists($localization, $this->matchLocalized)) {
 			list($match, $reverse) = $this->initMatch($localization);
 			$this->matchLocalized[$localization] = $match;
-			if (!array_key_exists($localization, $this->reverse))
+			if (!array_key_exists($localization, $this->reverseLocalized))
 				$this->reverseLocalized[$localization] = $reverse;
 		}
 		if ($this->lastPatternParam === NULL || $this->reverseParams === NULL) 

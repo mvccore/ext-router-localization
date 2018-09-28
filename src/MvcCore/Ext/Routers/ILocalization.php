@@ -30,4 +30,9 @@ interface ILocalization
 	 * International language and locale code separator used in url address.
 	 */
 	const LANG_AND_LOCALE_SEPARATOR = '-';
+
+	/**
+	 * Source url param name, when first request is redirected to default localization by configuration.
+	 */
+	const REDIRECTED_SOURCE_URL_PARAM = 'source_url';
 }

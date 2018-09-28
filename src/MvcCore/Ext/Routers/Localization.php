@@ -81,9 +81,9 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 		)) {
 			list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
 			$this->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+				\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 			);
 		}
-		return $this->currentRoute instanceof \MvcCore\Interfaces\IRoute;
+		return $this->currentRoute instanceof \MvcCore\IRoute;
 	}
 }

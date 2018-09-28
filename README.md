@@ -30,7 +30,7 @@ before application routing or any other extension configuration
 using router for any purposes:
 ```php
 # patch core class:
-\MvcCore::GetInstance()->SetRouterClass(\MvcCore\Ext\Routers\Localization::class);
+\MvcCore::GetInstance()->SetRouterClass('\\MvcCore\\Ext\\Routers\\Localization');
 
 # now you can define routes with languages:
 \MvcCore\Router::GetInstance()

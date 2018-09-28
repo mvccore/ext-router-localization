@@ -32,7 +32,7 @@ trait UrlCompletion
 	 * @param array $params
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []) {
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []) {
 		$requestedUrlParams = $this->GetRequestedUrlParams();
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 		
@@ -75,7 +75,12 @@ trait UrlCompletion
 		$resultPath = $questionMarkPos !== FALSE 
 			? mb_substr($result, 0, $questionMarkPos)
 			: $result;
-		if ($localizedRoute && trim($resultPath, '/') !== $this->defaultLocalizationStr)
+		if (
+			$localizedRoute && !(
+				trim($resultPath, '/') === '' && 
+				$localizationStr === $this->defaultLocalizationStr
+			)
+		) 
 			$localizationUrlPrefix = '/' . $localizationStr;
 		
 		return $this->request->GetBasePath() 
