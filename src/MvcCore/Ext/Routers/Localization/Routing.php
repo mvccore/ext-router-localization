@@ -61,9 +61,13 @@ trait Routing
 	/**
 	 * Prepare localizations processing:
 	 * - Check if any default localization configured.
+	 * - Complete allowed localizations into array keyed by it's values to check by `isset()`.
+	 * - Complete default localization string for comparations later.
 	 * - Put default localization into allowed localizations for sure.
+	 * - Complete localization equivalents with language codes only by router configuration.
 	 * - Try to complete switching param from request object global `$_GET` collection.
 	 * - Try to complete session language and locale.
+	 * - Store request path before next request localization detection request path manipulation.
 	 * - Try to complete request language and locale from request query string or path.
 	 * @return bool
 	 */
@@ -173,6 +177,8 @@ trait Routing
 	
 	/**
 	 * Try to set up lang (or lang and locale) from request path.
+	 * If there is any request path detected, remove localization from request 
+	 * path and store detected localization in local context.
 	 * @return bool
 	 */
 	protected function setUpRequestLocalizationFromUrlPath () {
@@ -299,22 +305,12 @@ trait Routing
 	}
 
 	/**
-	 * If there was first request and if there was no matched the very fist 
-	 * `Accept-Language` value, target localization will be changed by config 
-	 * boolean if `$this->redirectFirstRequestToDefault`. If `TRUE`, set target
-	 * localization to default language, else to detected localization. 
-	 * 
-	 * If there was not first request, set target localization to detected 
-	 * localization value from session.
-	 * 
-	 * If target localization is the same as requested localization - do not 
-	 * process any redirections. 
-	 * 
-	 * If target localization is different than localization in requested url 
-	 * then  - if strict mode by session is configured as `TRUE` - redirect to 
-	 * local context localization, which is always defined by session, in first 
-	 * request by default lang. If it's configured as `FALSE`, redirect to 
-	 * requested localization by client.
+	 * Check request localization, session localization and possible detected
+	 * localization in local context by `Accept-Language` http header, check
+	 * if there ware any detection in first request and than do everything by 
+	 * configuration. This function is optimized to not process too much 
+	 * conditions or to not process anything twice. It's still do the logic 
+	 * very well. Do not change anything if you don't know all router options.
 	 * @return bool
 	 */
 	protected function checkLocalizationWithUrlAndRedirectIfNecessary() {
@@ -379,7 +375,8 @@ trait Routing
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
 	 * Go throught all configured routes and try to find matching route.
 	 * If there is catched any matching route - reset `\MvcCore\Request::$params`
-	 * with default route params, with params itself and with params parsed from matching process.
+	 * with default route params, with params itself and with params parsed from 
+	 * matching process.
 	 * @param string $controllerName
 	 * @param string $actionName
 	 * @return void

@@ -16,7 +16,8 @@ namespace MvcCore\Ext\Routers\Localization;
 trait Redirecting
 {
 	/**
-	 * Redirect to target localization version with path and query string.
+	 * Redirect to target localization version with path and by cloned request 
+	 * object global `$_GET` collection. Return always `FALSE`.
 	 * @param \string[] $targetLocalization 
 	 * @return bool
 	 */

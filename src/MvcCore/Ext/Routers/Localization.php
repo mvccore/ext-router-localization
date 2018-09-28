@@ -33,6 +33,10 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 
 	/**
 	 * Route current application request by configured routes list or by query string data.
+	 * - Complete before every request from requested path requested localization string
+	 *   (language and locale codes) and compare it with session by configuration. If there
+	 *   is nothing from previous requests, recognize browser language by `Accept-Language`
+	 *   http header, store it in session if anything parsed and continue or redirect by configuration.
 	 * - If there is strictly defined `controller` and `action` value in query string,
 	 *   route request by given values, add new route and complete new empty
 	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.

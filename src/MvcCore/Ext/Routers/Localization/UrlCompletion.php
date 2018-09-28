@@ -16,19 +16,23 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlCompletion
 {
 	/**
-	 * Complete non-absolute, non-localized url by route instance reverse info.
+	 * Complete non-absolute, non-localized or localized url by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
-	 *		`"/products-list/<name>/<color>"`
+	 *	`[
+	 *		"en"	=> "/products-list/<name>/<color>"`,
+	 *		"de"	=> "/produkt-liste/<name>/<color>"`,
+	 *	]`
 	 *	Input ($params):
 	 *		`array(
-	 *			"name"		=> "cool-product-name",
-	 *			"color"		=> "red",
-	 *			"variant"	=> array("L", "XL"),
+	 *			"name"			=> "cool-product-name",
+	 *			"color"			=> "red",
+	 *			"variant"		=> ["L", "XL"],
+	 *			"localization"	=> "en-US",
 	 *		);`
 	 *	Output:
-	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route &$route
+	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
+	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
 	 * @param array $params
 	 * @return string
 	 */
