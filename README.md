@@ -87,7 +87,8 @@ $router->SetDefaultLocalization('en-US');
 
 Default localization configured above `en-US` is allowed automaticly. 
 
-Any other request (e.g. path like: `/something`) is not localized and it's redirected to default localization path: `/en-US/something`, which could be usefull to prevent URL typo mistakes.
+Any other request (e.g. path like: `/something`) is not localized and it's redirected to default localization path  
+`/en-US/something`, which could be usefull to prevent URL typo mistakes.
 
 But also any other requested localization not allowed (e.g. path like: `/nl-NL/product-lijst`) is not used to localize request and request is redirected to default localization path `/en-US/nl-NL/product-lijst`, which could generate error 404 - not found.
 
