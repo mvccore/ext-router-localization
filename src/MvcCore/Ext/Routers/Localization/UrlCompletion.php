@@ -17,6 +17,9 @@ trait UrlCompletion
 {
 	/**
 	 * Complete non-absolute, non-localized or localized url by route instance reverse info.
+	 * If there is key `localization` in `$params`, unset this param before
+	 * route url completing and place this param as url prefix to prepend 
+	 * completed url string.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *	`[
@@ -42,24 +45,28 @@ trait UrlCompletion
 		
 		$localizationParamName = static::LOCALIZATION_URL_PARAM;
 		
-		if (!isset($params[$localizationParamName])) {
+		if (isset($params[$localizationParamName])) {
+			$localizationStr = $params[$localizationParamName];
+			//if (!$localizedRoute) unset($params[$localizationParamName]);
+		} else {
 			$localizationStr = implode(
 				static::LANG_AND_LOCALE_SEPARATOR, $this->localization
 			);
 			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
-		} else if (isset($params[$localizationParamName])) {
-			$localizationStr = $params[$localizationParamName];
-			//if (!$localizedRoute) unset($params[$localizationParamName]);
 		}
+
 		if (!isset($this->allowedLocalizations[$localizationStr])) {
 			if (isset($this->localizationEquivalents[$localizationStr])) 
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
-			if (!isset($this->allowedLocalizations[$localizationStr]))
-				throw new \InvalidArgumentException(
+			if (!isset($this->allowedLocalizations[$localizationStr])) {
+				$localizationStr = '';
+				trigger_error(
 					'['.__CLASS__.'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
-					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.'
+					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.',
+					E_USER_ERROR
 				);
+			}
 		}
 
 		if (
