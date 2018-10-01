@@ -42,16 +42,14 @@ trait UrlCompletion
 		
 		$localizationParamName = static::LOCALIZATION_URL_PARAM;
 		
-		if (isset($params[$localizationParamName])) {
-			$localizationStr = $params[$localizationParamName];
-			if ($localizedRoute) unset($params[$localizationParamName]);
-		} else if (isset($requestedUrlParams[$localizationParamName])) {
-			$localizationStr = $requestedUrlParams[$localizationParamName];
-			if ($localizedRoute) unset($requestedUrlParams[$localizationParamName]);
-		} else {
+		if (!isset($params[$localizationParamName])) {
 			$localizationStr = implode(
 				static::LANG_AND_LOCALE_SEPARATOR, $this->localization
 			);
+			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
+		} else if (isset($params[$localizationParamName])) {
+			$localizationStr = $params[$localizationParamName];
+			//if (!$localizedRoute) unset($params[$localizationParamName]);
 		}
 		if (!isset($this->allowedLocalizations[$localizationStr])) {
 			if (isset($this->localizationEquivalents[$localizationStr])) 

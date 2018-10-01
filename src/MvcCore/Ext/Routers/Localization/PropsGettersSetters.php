@@ -229,7 +229,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalization ($lang, $locale = NULL) {
-		if ($lang !== NULL)
+		if ($lang === NULL)
 			throw new \InvalidArgumentException("[".__CLASS__."] Localization must be defined at least by the language.");
 		$this->localization[0] = $lang;
 		if ($locale !== NULL) $this->localization[1] = $locale;
