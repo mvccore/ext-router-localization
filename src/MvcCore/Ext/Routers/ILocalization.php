@@ -138,7 +138,7 @@ interface ILocalization
 	 * combination which application has configured in allowed localizations only.
 	 * @return bool
 	 */
-	public function GetDetectAcceptLanguageOnlyByLang ();
+	public function GetDetectLocalizationOnlyByLang ();
 
 	/**
 	 * Set detect localization only by language record from `Accept-Language` http 
@@ -149,10 +149,10 @@ interface ILocalization
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
 	 * combination which application has configured in allowed localizations only.
-	 * @param bool $detectAcceptLanguageOnlyByLang
+	 * @param bool $detectLocalizationOnlyByLang
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetDetectAcceptLanguageOnlyByLang ($detectAcceptLanguageOnlyByLang = TRUE);
+	public function & SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE);
 
 	/**
 	 * Get list of allowed localization strings in your application, default 

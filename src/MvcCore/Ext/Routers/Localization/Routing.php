@@ -54,6 +54,7 @@ trait Routing
 			if (count($this->localization) > 1) 
 				$this->request->SetLocale($this->localization[1]);
 		}
+
 		// return `TRUE` or `FALSE` to break or not the routing process
 		return TRUE;
 	}
@@ -83,7 +84,7 @@ trait Routing
 		$this->allowedLocalizations[$this->defaultLocalizationStr] = $this->defaultLocalizationStr;
 
 		// add automaticly into equivalents also all langs parsed from localizations if necessary
-		if ($this->detectAcceptLanguageOnlyByLang) {
+		if ($this->detectLocalizationOnlyByLang) {
 			foreach ($this->allowedLocalizations as $allowedLocalization => $allowedLocalizationValue) {
 				$separatorPos = strpos($allowedLocalization, static::LANG_AND_LOCALE_SEPARATOR);
 				if ($separatorPos !== FALSE) {
@@ -264,12 +265,12 @@ trait Routing
 	/**
 	 * Detect language and locale by sended `Accept-Language` http header string 
 	 * and store detected result in session namespace for next requests.
-	 * Also store boolean property `$this->firstRequestDetection` if there was
+	 * Also store boolean property `$this->firstRequestLocalizationDetection` if there was
 	 * matched the very first accepted language and locale or not.
 	 * @return void
 	 */
 	protected function manageLocalizationDetectionAndStoreInSession () {
-		$firstRequestDetection = FALSE;
+		$firstRequestLocalizationDetection = FALSE;
 		$requestClass = $this->application->GetRequestClass();
 		$requestGlobalServer = $this->request->GetGlobalCollection('server');
 		$allLanguagesAndLocales = $requestClass::ParseHttpAcceptLang($requestGlobalServer['HTTP_ACCEPT_LANGUAGE']);
@@ -286,12 +287,12 @@ trait Routing
 					$localizationStr .= static::LANG_AND_LOCALE_SEPARATOR . strtoupper($languageAndLocale[1]);
 				if (isset($this->allowedLocalizations[$localizationStr])) {
 					$this->localization = $languageAndLocale;
-					if ($counter === 1) $firstRequestDetection = TRUE;
+					if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
 					break 2;
 				}
 				if (isset($this->localizationEquivalents[$localizationStr])) {
 					$this->localization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localizationEquivalents[$localizationStr]);
-					if ($counter === 1) $firstRequestDetection = TRUE;
+					if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
 					break 2;
 				}
 				$counter++;
@@ -301,7 +302,7 @@ trait Routing
 			$this->localization = $this->defaultLocalization;
 		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
 		$this->session->{$localizationUrlParam} = $this->localization;
-		$this->firstRequestDetection = $firstRequestDetection;
+		$this->firstRequestLocalizationDetection = $firstRequestLocalizationDetection;
 	}
 
 	/**
@@ -321,8 +322,8 @@ trait Routing
 		// if there was first detection not with very precise result, 
 		// decide if to redirect to global or if to stay where we are
 		if (
-			$this->firstRequestDetection === FALSE || (
-				$this->firstRequestDetection === TRUE && 
+			$this->firstRequestLocalizationDetection === FALSE || (
+				$this->firstRequestLocalizationDetection === TRUE && 
 				$this->requestLocalization !== NULL && 
 				$this->requestLocalization !== $this->localization
 			)

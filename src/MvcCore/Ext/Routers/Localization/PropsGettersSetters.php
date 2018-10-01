@@ -68,7 +68,7 @@ trait PropsGettersSetters
 	 * combination which application has configured in allowed localizations only.
 	 * @var bool
 	 */
-	protected $detectAcceptLanguageOnlyByLang = TRUE;
+	protected $detectLocalizationOnlyByLang = TRUE;
 
 	/**
 	 * List of allowed localization strings in your application, default 
@@ -134,12 +134,12 @@ trait PropsGettersSetters
 	/**
 	 * If `NULL`, request wasn't first, there was something in session stored by previous requests.
 	 * If `TRUE` or `FALSE`, request is first, nothing is in session yet and `TRUE` means
-	 * the best language and locale match by sended http headers `Accept-Headers`.
+	 * the best localization match by sended http headers (`Accept-Language`).
 	 * `FALSE` then means that there was a match, but it could be a lower prioritized
-	 * language and locale from `Accept-Headers` or it could be default aplication localization.
+	 * language and locale from `Accept-Language` or it could be default aplication localization.
 	 * @var bool|NULL
 	 */
-	protected $firstRequestDetection = NULL;
+	protected $firstRequestLocalizationDetection = NULL;
 
 	/**
 	 * Default localization, imploded from array to string.
@@ -293,8 +293,8 @@ trait PropsGettersSetters
 	 * combination which application has configured in allowed localizations only.
 	 * @return bool
 	 */
-	public function GetDetectAcceptLanguageOnlyByLang () {
-		return $this->detectAcceptLanguageOnlyByLang;
+	public function GetDetectLocalizationOnlyByLang () {
+		return $this->detectLocalizationOnlyByLang;
 	}
 
 	/**
@@ -306,11 +306,11 @@ trait PropsGettersSetters
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
 	 * combination which application has configured in allowed localizations only.
-	 * @param bool $detectAcceptLanguageOnlyByLang
+	 * @param bool $detectLocalizationOnlyByLang
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetDetectAcceptLanguageOnlyByLang ($detectAcceptLanguageOnlyByLang = TRUE) {
-		$this->detectAcceptLanguageOnlyByLang = $detectAcceptLanguageOnlyByLang;
+	public function & SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE) {
+		$this->detectLocalizationOnlyByLang = $detectLocalizationOnlyByLang;
 		return $this;
 	}
 
