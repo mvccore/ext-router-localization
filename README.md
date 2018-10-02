@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md)
 ![PHP Version](https://img.shields.io/badge/PHP->=5.3-brightgreen.svg?style=plastic)
 
-MvcCore Router extension to have localized and non-localized URL addresses in your application, very configurable. URL addresses could contain localization by language code or by language and locale code together (`/en/custom/path` or `/en-US/custom/path` or `/any/non-localized/path`). Router works with any http method and with multi or single language route patterns and reverses.
+MvcCore Router extension to have localized and non-localized URL addresses in your application, very configurable. URL addresses could contain localization by language code or by language and locale code together (`/en/custom/path` or `/en-US/custom/path` or `/any/non-localized/path`). Router works with any HTTP method and with multi or single language route patterns and reverses.
 
 ## Outline  
 1. [Installation](#user-content-1-installation)  
@@ -190,33 +190,77 @@ $router->SetRoutes([
 
 [go to top](#user-content-outline)
 
+## 4.5. Usage - Allow Non-Localized Routes
+Non-localized routes are allowed by default, so you can route localized and non-localized routes together. But to have all routes strictly localized and to redirect all requests into default localization prefix or into URL with default localization query string param value - all requests - where was not possible to recognize localization by query string param and also where was not possible to recognize localization even by URL prefix, you need to configure router by:
+```php
+$router->SetAllowNonLocalizedRoutes(FALSE);
+```
+
+[go to top](#user-content-outline)
+
+## 4.6. Usage - Detect Localization Only By Language
+Router is configured with `TRUE` value by default to detect localization only by language record from `Accept-Language` HTTP header record, not strictly together with locale code. Parsed international language code is enough by default to choose final target aplication localization. There will be choosed first localization in allowed list with detected language.  
+If value is `FALSE`, then there is necessary to send into application in `Accept-Language` HTTP header international language code together with international locale code with the only same combination which application has configured in allowed localizations only:
+```php
+$router->SetDetectLocalizationOnlyByLang(FALSE);
+```
+
+[go to top](#user-content-outline)
+
+## 4.7. Usage - Localization Equivalents
+You can define list of localization equivalents used in localization detection by HTTP header `Accept-Language` parsed in first request. It could be used for language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+Keys in this array is target localization, value is an array with target localization equivalents.
+
+```php
+$router->->SetLocalizationEquivalents([
+	// Browsers prefering UK, USA or Canada are considered as `en-US` locale to send
+	'en-US'	=> ['en-GB', 'en-CA', 'en-AU'],
+	// Browsers prefering Slovak are considered as `cs-CZ` locale to send
+	'cs-CZ'	=> ['sk-SK'],	// Czeck and Slovak
+]);
+...
+$router->AddLocalizationEquivalents(/*... same param syntax as method above*/);
+```
+
+[go to top](#user-content-outline)
+
+## 4.8. Usage - Route Records By Language And Locale
+ If you define `TRUE` value (default is `FALSE`), defined route records like `pattern`, `match`, `reverse` or `defaults` has to be defined by international language code and international locale code, not only by language code. This option is very rare, if different locales have different naming for url strings.
+```php
+$router->SetRouteRecordsByLanguageAndLocale(TRUE);
+```
+
+[go to top](#user-content-outline)
+
+
+## 4.9. Usage - Redirect To Default And Back In First Request
+If `TRUE` (`FALSE` by default), if request is historicly first (by session), if localization by HTTP headers is not the best match or if it is the best match but requested localization is not the same as HTTP headers prefer, redirect to default localization homepage with `source_url` query string param:
+```php
+$router->SetRedirectFirstRequestToDefault(TRUE);
+```
+
+[go to top](#user-content-outline)
+
+## 4.10. Usage - Localized URL In Non-Localized Request
+If request is routed on any non-localized route and request object has not defined any language or no locale code, you still could generate localized URL addresses, for example for email messages in cron scripts like so:
+```php
+$router->SetLocalization('de', 'DE');
+...
+$router->Url('Front\Product:Detail', ['id' => 50]);	// `/de-DE/produkt/50`
+
+// or somewhere in template or in controller
+$this->Url('Front\Product:Detail', ['id' => 50]);	// `/de-DE/produkt/50`
+```
+
+[go to top](#user-content-outline)
+
 ## 5. Configuration
 
-### Prevent not localized requests
-To prevent all requests for whole application, which have not any language in the beginning to redirect them into default language, you can use:
-```php
-\MvcCore\Ext\Routers\Localization::GetInstance()->SetAllowNonLocalizedRoutes(FALSE);
-```
-Non localized routes are allowed by default.
-
-
-### Choose language in first request strictly by user agent
-To choose language in first request by user agent http header `'Accept-Language'`, where is nothing in session yet, you can use:
-```php
-\MvcCore\Ext\Routers\Localization::GetInstance()->SetAllowNonLocalizedRoutes(TRUE);
-```
-This options is FALSE by default.
-
-
-
-
-
-### 5.2. Configuration - Session Expiration
-There is possible to change session expiration about detected media
-site version value to not recognize media site version every request
-where is no prefix in URL, because to process all regular expressions 
-in `\Mobile_Detect` library could take some time. By **default** there is **1 hour**. 
-You can change it by:
+### 5.1. Advanced Configuration - Session Expiration
+There is possible to change session expiration about detected localization 
+value to not recognize localization every request where is no prefix in URL, 
+because to process parsing `Accept-Language` HTTP header could take some time. 
+By **default** there is **1 hour**. You can change it by:
 ```php
 $router->SetSessionExpirationSeconds(
     \MvcCore\Session::EXPIRATION_SECONDS_DAY
@@ -225,22 +269,22 @@ $router->SetSessionExpirationSeconds(
 
 [go to top](#user-content-outline)
 
-### 5.3. Configuration - Strict Session Mode
-**In session strict mode, there is not possible to change media site version only by requesting different media site version prefix in URL.**
-Stric session mode is router mode when media site version is managed by session value from the first request recognition. 
-All requests to different media site version than the version in session are automatically redirected to media site version stored in the session.
+### 5.2. Advanced Configuration - Strict Session Mode
+**In session strict mode, there is not possible to change localization only by requesting different localization prefix in URL.**
+Stric session mode is router mode when localization is managed by session value from the first request HTTP header recognition. 
+All requests to different localization version than the version in session are automatically redirected to localization version stored in the session.
 
-Normally, there is possible to get different media site version only by 
-requesting different media site version URL prefix. For example - to get 
-a different version from `full` version, for example, to get `mobile` version, 
-it's only necessary to request application with configured `mobile` prefix 
-in URL like this: `/mobile/any/application/request/path`.
+Normally, there is possible to get different localization version only by 
+requesting different localization version URL prefix. For example - to get 
+a different version from `en-US` localization, for example, to get `de-DE` localization, 
+it's only necessary to request application with configured `de-DE` allowed localization 
+in URL like this: `/de-DE/any/application/request/path`.
 
-In session strict mode, there is possible to change media site version only by special `$_GET` parameter in your media version navigation. For example - 
-to get a different version from `full` version, for example, `mobile` version, 
+In session strict mode, there is possible to change localization version only by special `$_GET` parameter in your media version navigation. For example - 
+to get a different localization from `en-US`, for example, `de-DE` localization, 
 you need to add into query string parameters like this:
-`/any/application/request/path?switch_media_version=mobile`
-Then, there is changed media site version stored in the session and the user is redirected to the mobile application version with mobile URL prefixes everywhere.
+`/any/application/request/path?switch_localization=de-DE`
+Then, there is changed localization version stored in the session and the user is redirected to the new localization version with `de-DE` URL prefixes everywhere.
 
 To have this session strict mode, you only need to configure router by:
 ```php
@@ -249,12 +293,14 @@ $router->SetStricModeBySession(TRUE);
 
 [go to top](#user-content-outline)
 
-### 5.4. Configuration - Routing `GET` Requests Only
-The router manages media site version only for `GET` requests. It means
+### 5.3. Advanced Configuration - Routing `GET` Requests Only
+The router manages localization version only for `GET` requests. It means
 redirections to the proper version in session strict mode or to redirect
-in the first request to recognized media site version. `POST` requests
-and other request methods to manage for media site version doesn't make sense. For those requests, you have still media site version record in session and you can use it any time. But to process all
+in the first request to recognized localization version. `POST` requests
+and other request methods to manage for localization version doesn't make sense. For those requests, you have still localization version record in session and you can use it any time. But to process all
 request methods, you can configure the router to do so like this:
 ```php
 $router->SetRouteGetRequestsOnly(FALSE);
 ```
+
+[go to top](#user-content-outline)
