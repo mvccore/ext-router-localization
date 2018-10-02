@@ -508,15 +508,19 @@ class Route extends \MvcCore\Route
 	 */
 	public function & InitAll () {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
-		$localization = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
-		if ($this->match === NULL && !array_key_exists($localization, $this->matchLocalized)) {
-			list($match, $reverse) = $this->initMatch($localization);
-			$this->matchLocalized[$localization] = $match;
-			if (!array_key_exists($localization, $this->reverseLocalized))
-				$this->reverseLocalized[$localization] = $reverse;
+		$localization = $router->GetLocalization();
+		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
+		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
+			? $localizationStr
+			: $localization[0];
+		if ($this->match === NULL && !array_key_exists($routesLocalization, $this->matchLocalized)) {
+			list($match, $reverse) = $this->initMatch($routesLocalization);
+			$this->matchLocalized[$routesLocalization] = $match;
+			if (!array_key_exists($routesLocalization, $this->reverseLocalized))
+				$this->reverseLocalized[$routesLocalization] = $reverse;
 		}
 		if ($this->lastPatternParam === NULL || $this->reverseParams === NULL) 
-			$this->reverseLocalized[$localization] = $this->initReverse($localization);
+			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
 		return $this;
 	}
 

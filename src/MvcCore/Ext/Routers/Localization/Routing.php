@@ -237,7 +237,10 @@ trait Routing
 				);
 			}
 		}
-		if ($this->requestLocalization === NULL && trim($requestPath, '/') === '') {
+		if (
+			$this->requestLocalization === NULL && 
+			(trim($requestPath, '/') === '' || $requestPath == $this->request->GetScriptName())
+		) {
 			$this->requestLocalization = $this->defaultLocalization;
 			$this->request->SetLang($this->requestLocalization[0]);
 			if ($this->requestLocalization[1]) 
@@ -344,7 +347,7 @@ trait Routing
 			} else {
 				$targetLocalization = $this->localization;
 			}
-		} else if ($this->stricModeBySession || $this->requestLocalization === NULL) {
+		} else if (($this->stricModeBySession && !$this->adminRequest) || $this->requestLocalization === NULL) {
 			$targetLocalization = $this->localization;
 		} else {
 			$targetLocalization = $this->setUpLocalizationToContextAndSession($this->requestLocalization);
@@ -412,7 +415,7 @@ trait Routing
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod, $routesLocalizationStr)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->GetDefaults($routesLocalizationStr) ?: [];
-				$newParams = array_merge($routeDefaultParams, $request->GetParams('.*'), $matchedParams);
+				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
 				$request->SetParams($newParams);
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
