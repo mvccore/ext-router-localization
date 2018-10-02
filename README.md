@@ -73,16 +73,15 @@ composer require mvccore/ext-router-localization
 		- There is also completed flag if the detected version is the same as the requested version and flag if detected version is best match between allowed localizations in application and highly prioritized localization in HTTP header.
 	- If strict session mode is configured to `FALSE` (by default):
 		- If the request is first (nothing is in session from previous requests):
-TODOOOOOO
-			- If the detected localization match is not the best:
-				- Redirect user to default language version:
-				
+			- If the detected localization match is not the best or match is the best but requested loc. is not recognized (`NULL`)
+				- Check if to redirect this unknown first request to default localization homepage by configuration to do so.
+				- If request localization is not recognized, redirect user to localization from HTTP headers.
 			- Else route request with requested localization in a standard way later, do not process any redirections.
 		- Else route request with requested localization in a standard way later, do not process any redirections.
 	- If strict session mode is configured to `TRUE`:
 		- If the requested localization is different from the session version:
 			- Redirect user to session version.
-		- Else route request with requestedlocalization in a standard way later, do not process any redirections.
+		- Else route request with requested localization in a standard way later, do not process any redirections.
 - Router removes any founded localization URL prefix to process routing for any localizaton with the same request path.
 - Then the router, routes request in a standard way.
 
@@ -128,10 +127,9 @@ $router->SetDefaultLocalization('en-US');
 
 Default localization configured above `en-US` is allowed automaticly. 
 
-Any other request (e.g. path like: `/something`) is not localized and it's redirected to default localization path  
-`/en-US/something`, which could be usefull to prevent URL typo mistakes.
+Any other request (e.g. path like: `/something`) is not localized and if no non-localized route is matched, it's redirected to default localization path like: `/en-US/something`, which could be usefull to prevent URL typo mistakes.
 
-But also any other requested localization not allowed (e.g. path like: `/nl-NL/product-lijst`) is not used to localize request and request is redirected to default localization path `/en-US/nl-NL/product-lijst`, which could generate error 404 - not found.
+But also any other requested localization not allowed (e.g. path like: `/nl-NL/product-lijst`) is not used to localize request and if no non-localized route is matched, request is redirected to default localization path `/en-US/nl-NL/product-lijst`, which could generate error 404 - not found otherwise, so be carefull to have averywhere only localizations you want.
 
 ```php
 $router->SetAllowedLocalizations(/*'en-US', */'en-DE');
@@ -143,9 +141,13 @@ $router->SetAllowedLocalizations(/*'en-US', */'en-DE');
 
 ```php
 $router->SetRoutes([
-	// If you want to add non-localized route, 
-	// you can use only definition like this:
+
+	// If you want to add non-localized route, you can use only
+	// definition like this to define router key with 
+	// `Namespace\Controller:Action` and `pattern` as '/admin' 
+	// bellow or you could put here any non-localized route instance:
 	'Admin\Index:Index'		=> '/admin',
+	
 	// Localized route with automaticly completed `match` 
 	// and `reverse` records from `pattern` record:
 	'Front\Product:List'	=> [
@@ -154,7 +156,9 @@ $router->SetRoutes([
 			'de'					=> "/produkte-liste",
 		],
 	],
-	// 
+	
+	// Localized route with explicitly defined `match` and `reverse` 
+	// records with also localized `defaults` values:
 	'Front\Product:Detail'	=> [
 		'match'					=> [
 			'en'					=> '#^/product/(?<id>\d+)#',
@@ -169,6 +173,10 @@ $router->SetRoutes([
 			'de'					=> 'rot'
 		]
 	],
+	
+	// Automaticly localized route, `pattern` record and later 
+	// `match` and `reverse` records are defined for all localizations
+	// with the same values `/<path>`, `constraints` are never localized:
 	'Front\Index:Index'		=> [
 		'pattern'				=> '/<path>',
 		// constraints are never localized
@@ -176,24 +184,13 @@ $router->SetRoutes([
 			'path' 					=> '[-a-zA-Z0-9_/]*'
 		]
 	],
+	
 ]);
 ```
 
 [go to top](#user-content-outline)
 
 ## 5. Configuration
-
-### Allowed languages
-For every multilanguage application is necessary to allow more than default language:
-```php
-\MvcCore\Ext\Routers\Localization::GetInstance()->SetAllowedLangs('en', 'de');
-```
-
-### Default language
-When request language is not possible to recognize by url address, no possible to recognize by http header `'Accept-Language'` and no language is in session from previous request, default language is used. Default language is `'en'` by default. To configure default language, use:
-```php
-\MvcCore\Ext\Routers\Localization::GetInstance()->SetDefaultLang('de');
-```
 
 ### Prevent not localized requests
 To prevent all requests for whole application, which have not any language in the beginning to redirect them into default language, you can use:
@@ -209,6 +206,10 @@ To choose language in first request by user agent http header `'Accept-Language'
 \MvcCore\Ext\Routers\Localization::GetInstance()->SetAllowNonLocalizedRoutes(TRUE);
 ```
 This options is FALSE by default.
+
+
+
+
 
 ### 5.2. Configuration - Session Expiration
 There is possible to change session expiration about detected media
