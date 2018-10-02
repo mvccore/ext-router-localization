@@ -40,6 +40,7 @@ composer require mvccore/ext-router-localization
 ### 2.1. Features - Routing
 - Router routes requests in localization in URL address containing only international lowercase language code or containing both codes - international language code, dash and uppercase international locale code.
 - Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with `match` and `reverse`) by language keys or by language and locale keys if necessary.
+- Router defines for all non-localized routes into request object and into itself localization from session first and if there is nothing in session, it defines configured default localization.
 - Router acceps only allowed languages or languages and locale codes in rewrited URL addresses or in `localization` query string param, all other values are redirected to default localization.
 - Router keeps only one URL address version for default localization home page (under slash address - `/` or `/index.php`). Requests to default localization home page are redirected to slash URL address automaticaly.
 - Router recognizes user device localization settings by HTTP header `Accept-Language` in first request.
@@ -242,7 +243,7 @@ $router->SetRedirectFirstRequestToDefault(TRUE);
 [go to top](#user-content-outline)
 
 ## 4.10. Usage - Localized URL In Non-Localized Request
-If request is routed on any non-localized route and request object has not defined any language or no locale code, you still could generate localized URL addresses, for example for email messages in cron scripts like so:
+If request is routed on any non-localized route and request object has some strange localization from session or default localization (if there was nonthing in sesison), you still could generate defferently localized URL addresses, for example for email messages in CRON scripts like so:
 ```php
 $router->SetLocalization('de', 'DE');
 ...
