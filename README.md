@@ -254,7 +254,7 @@ $this->Url('Front\Product:Detail', ['id' => 50]);	// `/de-DE/produkt/50`
 
 [go to top](#user-content-outline)
 
-## 5. Configuration
+## 5. Advanced Configuration
 
 ### 5.1. Advanced Configuration - Session Expiration
 There is possible to change session expiration about detected localization 
