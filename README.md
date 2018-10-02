@@ -19,7 +19,7 @@ MvcCore Router extension to have localized and non-localized URL addresses in yo
 	4.2. [Usage - Default Localization](#user-content-42-usage---default-localization)  
 	4.3. [Usage - Allowed Localizations](#user-content-43-usage---allowed-localizations)  
 	4.4. [Usage - Routes Configuration](#user-content-44-usage---routes-configuration)  
-	4.5. [Usage - Allow Non-Localized Routes](#user-content-45-usage---allow non-localized-routes)  
+	4.5. [Usage - Allow Non-Localized Routes](#user-content-45-usage---allow-non-localized-routes)  
 	4.6. [Usage - Detect Localization Only By Language](#user-content-46-usage---detect-localization-only-by-language)  
 	4.7. [Usage - Localization Equivalents](#user-content-47-usage---localization-equivalents)  
 	4.8. [Usage - Route Records By Language And Locale](#user-content-48-usage---route-records-by-language-and-locale)  
