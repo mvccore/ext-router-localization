@@ -322,7 +322,7 @@ trait PropsGettersSetters
 	 * dash.
 	 * @return array
 	 */
-	public function & GetAllowedLocalizations () {
+	public function GetAllowedLocalizations () {
 		return array_values($this->allowedLocalizations);
 	}
 

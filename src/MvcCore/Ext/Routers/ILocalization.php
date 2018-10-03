@@ -162,7 +162,7 @@ interface ILocalization
 	 * dash.
 	 * @return array
 	 */
-	public function & GetAllowedLocalizations ();
+	public function GetAllowedLocalizations ();
 
 	/**
 	 * Set list of allowed localization strings in your application, default 

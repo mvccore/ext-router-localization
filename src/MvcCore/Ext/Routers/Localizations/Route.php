@@ -509,6 +509,7 @@ class Route extends \MvcCore\Route
 	public function & InitAll () {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
 		$localization = $router->GetLocalization();
+		var_dump($localization);
 		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
