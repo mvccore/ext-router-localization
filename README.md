@@ -42,16 +42,16 @@ composer require mvccore/ext-router-localization
 
 ### 2.1. Features - Routing
 - Router works with requests with localization in URL address containing only international lowercase language code or containing both codes - international language code, dash and uppercase international locale code.
-- Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with explicit `match` and `reverse`) by language keys or by language and locale keys if necessary.
-- Router defines for all non-localized routes into request object and into itself localization from session first and if there is nothing in session, it defines configured default localization.
-- Router accepts only allowed languages or languages and locale codes in rewritten URL addresses or in `localization` query string param, all other values are redirected to default localization.
-- Router keeps only one URL address version for the default localization home page (under slash address - `/` or `/index.php`). Requests to the default localization homepage are redirected to slash URL address automatically.
 - The router recognizes user device localization settings by HTTP header `Accept-Language` in the first request.
-- Router stores recognized device localization in its own session namespace with configurable expiration (to not process localization recognition in every request again).
-- Router redirects requests by configuration to a different language (and locale) in first request localization recognition by HTTP header.
-- Router redirects requests by configuration to a different language (and locale) in strict session mode to localization from the session.
-- Router completes `$request->GetLang()` and `$request->GetLocale();` (or `$router->GetLocalization();`) values to use them anywhere in your app.
+- The router redirects the first request if necessary to URL address with better localization prefix or localization query string param, where is more suitable content for recognized accepting language from HTTP header.
+- Router stores recognized device localization in its own session namespace with configurable expiration (to not process localization recognition in every request again and again).
 - Router replaces possibly founded localization prefix substring (containing lowercase international language code and optionally uppercase international locale code) in request path (`$request->GetPath();`) with an empty string. It keeps request path every time in the same form to process routing as usual.
+- Router completes `$request->GetLang()` and `$request->GetLocale();` (or `$router->GetLocalization();`) values to use them anywhere in your app.
+- Session strict mode for localization version (configurable) to drive application localization strictly by session value.
+- Router keeps only one URL address version for the default localization homepage (under slash address - `/` or `/index.php`). Requests to the default localization homepage are redirected to slash URL address automatically (so there is no page for example for default localization `en-US` on address `/en-US/`, this page is automaticly redirected to `/`).
+- Router accepts only allowed languages or it accepts allowed language and locale code pairs in rewritten URL addresses or it accepts allowed localizations in `localization` query string param, all other values are redirected to default localization.
+- Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with explicit `match` and `reverse`) by language keys or by language and locale keys if necessary.
+- Router defines for all non-localized routes localization record from session first into request object and into itself and if there is nothing in session, it defines configured default localization.
 
 [go to top](#user-content-outline)
 
