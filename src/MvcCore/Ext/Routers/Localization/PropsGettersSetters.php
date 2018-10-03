@@ -110,7 +110,7 @@ trait PropsGettersSetters
 	 * only used internaly in this class.
 	 * @var string
 	 */
-	protected static $routeClassLocalized = '\\MvcCore\\Ext\\Routers\\Localizations\\Route';
+	protected static $routeClassLocalized = '\MvcCore\Ext\Routers\Localizations\Route';
 
 	/**
 	 * Localization founded in session, parsed from previous requests.
@@ -438,6 +438,68 @@ trait PropsGettersSetters
 		$this->routeRecordsByLanguageAndLocale = $routeRecordsByLanguageAndLocale;
 		return $this;
 	}
+
+	/**
+	 * Append or prepend new request routes.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		'products_list'	=> [
+	 *			"pattern"			=>  [
+	 *				"en"				=> "/products-list/<name>/<color>",
+	 *				"de"				=> "/produkt-liste/<name>/<color>"
+	 *			],
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		)
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
+	 *		)
+	 *	]);`
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										 `Controller::Action` definitions.
+	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
+	 *						be prepended from the last to the first in
+	 *						given list, not appended.
+	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
+	 *											 if route `name` or route `Controller:Action`
+	 *											 has been defined already. If `FALSE` old route
+	 *											 is overwriten by new one.
+	 * @return \MvcCore\Router
+	 */
+	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+		$routeClass = self::$routeClass;
+		self::$routeClass = self::$routeClassLocalized;
+		parent::AddRoutes($routes, $prepend, $throwExceptionForDuplication);
+		self::$routeClass = $routeClass;
+		return $this;
+	}
 	
 
 	/*************************************************************************************
@@ -463,13 +525,13 @@ trait PropsGettersSetters
 	 * and return created instance from given configuration data or already given 
 	 * instance.
 	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
-	 *																		   route config array.
+	 *																route config array.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute;
-		$routeClass = $this->isRouteCfgDataLocalized($route) 
+		$routeClass = $this->isRouteCfgDataLocalized($routeCfgOrRoute) 
 			? self::$routeClassLocalized 
 			: self::$routeClass;
 		$instance = $routeClass::CreateInstance($routeCfgOrRoute);

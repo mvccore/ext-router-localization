@@ -91,6 +91,8 @@ trait UrlCompletion
 			)
 		) 
 			$localizationUrlPrefix = '/' . $localizationStr;
+		if ($route->GetMethod() !== \MvcCore\IRequest::METHOD_GET && $this->routeGetRequestsOnly) 
+			$localizationUrlPrefix = '';
 		
 		return $this->request->GetBasePath() 
 			. $localizationUrlPrefix

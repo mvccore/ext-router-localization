@@ -205,23 +205,21 @@ class Route extends \MvcCore\Route
 					$defaults[$key] = NULL;
 		} else if (is_array($constraints) && count($constraints) > 0 && is_array(current($constraints))) {
 			$this->defaultsLocalized = & $constraints;
-			foreach ($constraints as $localization => $constraintsLocalized) {
-				if (!isset($this->defaultsLocalized[$localization]))
-					$this->defaultsLocalized[$localization] = [];
-				$defaults = & $this->defaultsLocalized[$localization];
-				foreach ($constraintsLocalized as $key => $value)
-					if (!isset($defaults[$key]))
+			if (!isset($this->defaultsLocalized[$localization]))
+				$this->defaultsLocalized[$localization] = [];
+			$defaults = & $this->defaultsLocalized[$localization];
+			foreach ($constraints as $key => $value) {
+				if (!isset($defaults[$key]))
 						$defaults[$key] = NULL;
 			}
 		} else {
 			$this->constraints = & $constraints;
-			foreach ($constraints as $localization => $constraintItem) {
-				if (!isset($this->defaults[$localization]))
-					$this->defaults[$localization] = [];
-				$defaults = & $this->defaults[$localization];
-				foreach ($constraintItem as $key => $value)
-					if (!isset($defaults[$key]))
-						$defaults[$key] = NULL;
+			if (!isset($this->defaults[$localization]))
+				$this->defaults[$localization] = [];
+			$defaults = & $this->defaults[$localization];
+			foreach ($constraints as $key => $value) {
+				if (!isset($defaults[$key]))
+					$defaults[$key] = NULL;
 			}
 		}
 		return $this;
@@ -343,7 +341,7 @@ class Route extends \MvcCore\Route
 			if (isset($data->constraints)) 
 				$this->SetConstraints($data->constraints);
 			if (isset($data->method)) 
-				$data->method = strtoupper($data->method);
+				$this->method = strtoupper($data->method);
 		} else {
 			if (is_array($patternOrConfig)) {
 				$this->patternLocalized = $patternOrConfig;
@@ -509,7 +507,6 @@ class Route extends \MvcCore\Route
 	public function & InitAll () {
 		$router = & \MvcCore\Application::GetInstance()->GetRouter();
 		$localization = $router->GetLocalization();
-		var_dump($localization);
 		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr

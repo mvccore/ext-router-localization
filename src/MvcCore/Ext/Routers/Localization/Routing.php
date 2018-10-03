@@ -239,7 +239,7 @@ trait Routing
 		}
 		if (
 			$this->requestLocalization === NULL && 
-			(trim($requestPath, '/') === '' || $requestPath == $this->request->GetScriptName())
+			(trim($requestPath, '/') === '' && $requestPath !== $this->request->GetScriptName())
 		) {
 			$this->requestLocalization = $this->defaultLocalization;
 			$this->request->SetLang($this->requestLocalization[0]);
@@ -321,6 +321,8 @@ trait Routing
 		// if there is no localization in request and non-localized routes like 
 		// `/admin` are allowed, do not redirect to anywhere, do nothing and return
 		if (!$this->requestLocalization && $this->allowNonLocalizedRoutes) 
+			return TRUE;
+		if ($this->routeGetRequestsOnly && $this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET)
 			return TRUE;
 		// if there was first detection not with very precise result, 
 		// decide if to redirect to global or if to stay where we are
@@ -410,7 +412,14 @@ trait Routing
 		foreach ($this->routes as & $route) {
 			// skip non localized routes by configuration
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
-			if (!$localizationInRequest && $routeIsLocalized) continue;
+			// skip localized routes matching when request has no localization in path
+			if (!$localizationInRequest && $routeIsLocalized) {
+				// but do not skip localized routes matching when request has no localization in path and:
+				// - when method is post and router has not allowed to process other methods than GET
+				// - or when method is anything and router has allowed to process other methods than GET
+				if (!($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET)) 
+					continue;
+			}
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod, $routesLocalizationStr)) {
 				$this->currentRoute = & $route;
