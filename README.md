@@ -146,10 +146,9 @@ $router->SetAllowedLocalizations(/*'en-US', */'en-DE');
 ```php
 $router->SetRoutes([
 
-    // If you want to add non-localized route, you can use only
-    // definition like this to define router key with 
-    // `Namespace\Controller:Action` and `pattern` as '/admin' 
-    // bellow or you could put here any non-localized route instance:
+    // If you want to add automaticly localized route very easily, 
+	// you can use only definition like this to define router key with 
+    // `Namespace\Controller:Action` and `pattern` as '/something' 
     'Admin\Index:Index'        => '/admin',
     
     // Localized route with automaticly completed `match` 
