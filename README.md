@@ -4,7 +4,10 @@
 [![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md)
 ![PHP Version](https://img.shields.io/badge/PHP->=5.3-brightgreen.svg?style=plastic)
 
-MvcCore Router extension to have localized and non-localized URL addresses in your application, very configurable. URL addresses could contain localization by language code or by language and locale code together (`/en/custom/path` or `/en-US/custom/path` or `/any/non-localized/path`). The router works with any HTTP method and with multi or single language route patterns and reverses.
+MvcCore Router extension to have localized and non-localized URL addresses in your application, very configurable.  
+URL addresses could contain localization by language code or by language and locale code together (`/en/custom/path` or  
+`/en-US/custom/path` or `/any/non-localized/path`). 
+The router works with any HTTP method and with multi or single language route patterns and reverses.
 
 ## Outline  
 1. [Installation](#user-content-1-installation)  
@@ -38,8 +41,8 @@ composer require mvccore/ext-router-localization
 ## 2. Features
 
 ### 2.1. Features - Routing
-- Router routes requests in localization in URL address containing only international lowercase language code or containing both codes - international language code, dash and uppercase international locale code.
-- Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with `match` and `reverse`) by language keys or by language and locale keys if necessary.
+- Router works with requests with localization in URL address containing only international lowercase language code or containing both codes - international language code, dash and uppercase international locale code.
+- Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with explicit `match` and `reverse`) by language keys or by language and locale keys if necessary.
 - Router defines for all non-localized routes into request object and into itself localization from session first and if there is nothing in session, it defines configured default localization.
 - Router accepts only allowed languages or languages and locale codes in rewritten URL addresses or in `localization` query string param, all other values are redirected to default localization.
 - Router keeps only one URL address version for the default localization home page (under slash address - `/` or `/index.php`). Requests to the default localization homepage are redirected to slash URL address automatically.
