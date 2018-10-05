@@ -136,7 +136,7 @@ class Route extends \MvcCore\Route
 	 * @param string|array $localization 
 	 * @return array|\array[]
 	 */
-	public function GetDefaults ($localization = NULL) {
+	public function & GetDefaults ($localization = NULL) {
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->defaultsLocalized) && 
@@ -155,10 +155,12 @@ class Route extends \MvcCore\Route
 	public function & SetDefaults ($defaults = [], $localization = NULL) {
 		if ($localization !== NULL) {
 			$this->defaultsLocalized[$localization] = & $defaults;
-		} else if (is_array($defaults) && count($defaults) > 0 && is_array(current($defaults))) {
-			$this->defaultsLocalized = & $defaults;
 		} else {
-			$this->defaults = & $defaults;
+			if (static::recordIsLocalized($defaults)) {
+				$this->defaultsLocalized = $defaults;
+			} else {
+				$this->defaults = $defaults;	
+			}
 		}
 		return $this;
 	}
@@ -293,18 +295,20 @@ class Route extends \MvcCore\Route
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
-				list($this->controller, $this->action) = explode(':', $data->controllerAction);
+				list($ctrl, $action) = explode(':', $data->controllerAction);
+				if ($ctrl) $this->controller = $ctrl;
+				if ($action) $this->action = $action;
 				if (isset($data->name)) {
 					$this->name = $data->name;
 				} else {
 					$this->name = $data->controllerAction;
 				}
 			} else {
-				$this->controller = isset($data->controller) ? $data->controller : '';
-				$this->action = isset($data->action) ? $data->action : '';
+				$this->controller = isset($data->controller) ? $data->controller : NULL;
+				$this->action = isset($data->action) ? $data->action : NULL;
 				if (isset($data->name)) {
 					$this->name = $data->name;
-				} else if ($this->controller !== '' && $this->action !== '') {
+				} else if ($this->controller !== NULL && $this->action !== NULL) {
 					$this->name = $this->controller . ':' . $this->action;
 				} else {
 					$this->name = NULL;
@@ -331,35 +335,31 @@ class Route extends \MvcCore\Route
 					$this->reverse = $data->reverse;	
 				}
 			}
-			if (isset($data->defaults)) {
-				if (is_array($data->defaults)) {
-					$this->defaultsLocalized = $data->defaults;
-				} else {
-					$this->defaults = $data->defaults;	
-				}
-			}
+			if (isset($data->defaults)) 
+				$this->SetDefaults($data->defaults);
 			if (isset($data->constraints)) 
 				$this->SetConstraints($data->constraints);
 			if (isset($data->method)) 
 				$this->method = strtoupper($data->method);
 		} else {
-			if (is_array($patternOrConfig)) {
+			if (static::recordIsLocalized($patternOrConfig)) {
 				$this->patternLocalized = $patternOrConfig;
 			} else {
 				$this->pattern = $patternOrConfig;	
 			}
-			list($this->controller, $this->action) = explode(':', $controllerAction);
-			$this->name = '';
-			if (is_array($defaults)) {
-				$this->defaultsLocalized = $defaults;
-			} else {
-				$this->defaults = $defaults;
-			}
-			$this->SetConstraints($constraints);
-			if ($method !== NULL) $this->method = strtoupper($method);
+			if ($controllerAction !== NULL) 
+				list($this->controller, $this->action) = explode(':', $controllerAction);
+			if ($defaults !== NULL)
+				$this->SetDefaults($defaults);
+			if ($constraints !== NULL)
+				$this->SetConstraints($constraints);
+			if ($method !== NULL) 
+				$this->method = strtoupper($method);
 		}
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
-			list($this->controller, $this->action) = explode(':', $this->name);
+			list($ctrl, $action) = explode(':', $this->name);
+			if ($ctrl) $this->controller = $ctrl;
+			if ($action) $this->action = $action;
 		}
 	}
 
@@ -402,7 +402,7 @@ class Route extends \MvcCore\Route
 			$index = 0;
 			$matchedKeys = array_keys($matchedValues);
 			$matchedKeysCount = count($matchedKeys) - 1;
-			$defaults = $this->GetDefaults($localization);
+			$defaults = & $this->GetDefaults($localization);
 			while ($index < $matchedKeysCount) {
 				$matchedKey = $matchedKeys[$index];
 				$matchedValue = $matchedValues[$matchedKey];
@@ -562,5 +562,35 @@ class Route extends \MvcCore\Route
 			);
 		}
 		return [$match, $reverse];
+	}
+
+	/**
+	 * Get `TRUE` if given route record contains only allowed localization keys.
+	 * @param mixed $record 
+	 * @return bool
+	 */
+	protected static function recordIsLocalized ($record) {
+		static $allowedLocalizationKeys = [];
+		if (count($allowedLocalizationKeys) === 0) {
+			$router = & \MvcCore\Router::GetInstance();
+			$allowedLocalizations = $router->GetAllowedLocalizations();
+			if (!$router->GetRouteRecordsByLanguageAndLocale()) {
+				foreach ($allowedLocalizations as $allowedLocalization)	{
+					$dashPos = strpos($allowedLocalization, $router::LANG_AND_LOCALE_SEPARATOR);
+					if ($dashPos === FALSE) continue;
+					$allowedLocalization = substr($allowedLocalization, 0, $dashPos);
+					$allowedLocalizationKeys[$allowedLocalization] = $allowedLocalization;
+				}
+			}
+		}
+		$localizationKeys = TRUE;
+		$recordKeys = array_keys($record);
+		foreach ($recordKeys as $recordKey) {
+			if (!isset($allowedLocalizationKeys[$recordKey])) {
+				$localizationKeys = FALSE;
+				break;
+			}
+		}
+		return $localizationKeys;
 	}
 }

@@ -422,8 +422,11 @@ trait Routing
 			}
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod, $routesLocalizationStr)) {
-				$this->currentRoute = & $route;
-				$routeDefaultParams = $route->GetDefaults($routesLocalizationStr) ?: [];
+				$routeClone = clone $route;
+				$requestCtrlName = $matchedParams['controller'];
+				$requestActionName = $matchedParams['action'];
+				$this->currentRoute = & $routeClone;
+				$routeDefaultParams = $routeClone->GetDefaults($routesLocalizationStr) ?: [];
 				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
 				$request->SetParams($newParams);
 				$matchedParamsClone = array_merge([], $matchedParams);
