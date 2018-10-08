@@ -406,10 +406,6 @@ class Route extends \MvcCore\Route
 		return $matchedParams;
 	}
 
-	protected function matchesPrepare () {
-		
-	}
-
 	protected function matchesTrimLastParamTrailingSlash (& $matchedParams, $localization = NULL) {
 		if ($this->lastPatternParam === NULL) 
 			$this->reverseLocalized[$localization] = $this->initReverse($localization);
