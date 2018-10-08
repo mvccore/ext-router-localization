@@ -37,13 +37,26 @@ trait UrlCompletion
 	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
 	 * @param array $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []) {
-		$requestedUrlParams = $this->GetRequestedUrlParams();
-		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
-		
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self') {
+		$defaultParams = $this->GetDefaultParams();
 		$localizationParamName = static::LOCALIZATION_URL_PARAM;
+		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
+
+		if ($givenRouteName == 'self') {
+			$newParams = [];
+			foreach ($route->GetReverseParams() as $paramName) {
+				$newParams[$paramName] = isset($params[$paramName])
+					? $params[$paramName]
+					: $defaultParams[$paramName];
+			}
+			if ($localizedRoute && isset($params[$localizationParamName])) 
+				$newParams[$localizationParamName] = $params[$localizationParamName];
+			$params = $newParams;
+			unset($params['controller'], $params['action']);
+		}
 		
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
@@ -76,7 +89,7 @@ trait UrlCompletion
 			$params[static::SWITCH_LOCALIZATION_URL_PARAM] = $localizationStr;
 		
 		$result = $route->Url(
-			$params, $requestedUrlParams, $this->getQueryStringParamsSepatator()
+			$params, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 
 		$localizationUrlPrefix = '';

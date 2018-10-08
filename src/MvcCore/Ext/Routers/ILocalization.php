@@ -262,9 +262,10 @@ interface ILocalization
 	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\IRoute &$route
 	 * @param array $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []);
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self');
 
 	/**
 	 * Route current application request by configured routes list or by query string data.

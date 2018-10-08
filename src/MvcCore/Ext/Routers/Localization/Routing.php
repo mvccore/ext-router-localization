@@ -214,19 +214,19 @@ trait Routing
 			$langAndLocale = explode(static::LANG_AND_LOCALE_SEPARATOR, $localizationPart);
 			if (strlen($langAndLocale[0]) > 0) {
 				$this->requestLocalization = $langAndLocale;
+				$newPath = mb_substr($requestPath, strlen($localizationPart) + 1);
+				if ($newPath === '') $newPath = '/';
 				$this->request
 					->SetLang($langAndLocale[0])
-					->SetPath(
-						mb_substr($requestPath, strlen($localizationPart) + 1)
-					);
+					->SetPath($newPath);
 				if (count($langAndLocale) > 1 && strlen($langAndLocale[1]) > 0) 
 					$this->request->SetLocale($langAndLocale[1]);
 			}
 		} else if (isset($this->localizationEquivalents[$localizationPart])) {
 			$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localizationEquivalents[$localizationPart]);
-			$this->request->SetPath(
-				mb_substr($requestPath, strlen($localizationPart) + 1)
-			);
+			$newPath = mb_substr($requestPath, strlen($localizationPart) + 1);
+			if ($newPath === '') $newPath = '/';
+			$this->request->SetPath($newPath);
 			if ($this->stricModeBySession && $this->sessionLocalization) {
 				return $this->redirectToTargetLocalization(
 					$this->setUpLocalizationToContextAndSession($this->sessionLocalization)
@@ -343,7 +343,7 @@ trait Routing
 					. $request->GetQuery(TRUE, TRUE) 
 					. $request->GetFragment(TRUE, TRUE)
 				);
-				$request->SetPath('');
+				$request->SetPath('/');
 			} else if ($this->requestLocalization !== NULL) {
 				$targetLocalization = $this->requestLocalization;
 			} else {
@@ -390,15 +390,6 @@ trait Routing
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
-		if ($localizationInRequest) {
-			$requestPath = $request->GetPath();
-		} else {
-			$requestPath = $this->originalRequestPath;
-		}
-		if ($requestPath === '') {
-			$requestPath = '/';
-		}
-		$requestMethod = $request->GetMethod();
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
 		if ($this->routeRecordsByLanguageAndLocale) {
 			$routesLocalizationStr = $localizationStr;
@@ -409,6 +400,7 @@ trait Routing
 		}
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
+		$matchedParams = [];
 		foreach ($this->routes as & $route) {
 			// skip non localized routes by configuration
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
@@ -417,37 +409,45 @@ trait Routing
 				// but do not skip localized routes matching when request has no localization in path and:
 				// - when method is post and router has not allowed to process other methods than GET
 				// - or when method is anything and router has allowed to process other methods than GET
-				if (!($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET)) 
+				if (!($this->routeGetRequestsOnly && $request->GetMethod() !== \MvcCore\IRequest::METHOD_GET)) 
 					continue;
 			}
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
-			if ($matchedParams = $route->Matches($requestPath, $requestMethod, $routesLocalizationStr)) {
-				$routeClone = clone $route;
-				$requestCtrlName = $matchedParams['controller'];
-				$requestActionName = $matchedParams['action'];
-				$this->currentRoute = & $routeClone;
-				$routeDefaultParams = $routeClone->GetDefaults($routesLocalizationStr) ?: [];
-				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
-				$request->SetParams($newParams);
+			if ($matchedParams = $route->Matches($request, $routesLocalizationStr)) {
+				$this->currentRoute = clone $route;
+				// finalize matched params and requested url params
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
-				if ($matchedParamsClone) {
-					if ($this->requestedUrlParams) {
-						$requestedUrlParamsToMerge = $this->requestedUrlParams;
-					} else {
-						$requestedUrlParamsToMerge = [];
-					}
-					$this->requestedUrlParams = array_merge(
-						$requestedUrlParamsToMerge, $matchedParamsClone
+				if ($matchedParamsClone) 
+					$this->defaultParams = array_merge(
+						$this->defaultParams ?: [], $matchedParamsClone
 					);
-					$this->requestedUrlParams[static::LOCALIZATION_URL_PARAM] = $localizationStr;
+					$this->defaultParams[static::LOCALIZATION_URL_PARAM] = $localizationStr;
+				// finalize request params
+				$newParams = array_merge(
+					$this->currentRoute->GetDefaults($routesLocalizationStr), 
+					$matchedParams, $request->GetParams(FALSE)
+				);
+				$localizationUrlParamName = static::LOCALIZATION_URL_PARAM;
+				$localizationContained = isset($newParams[$localizationUrlParamName]);
+				$newParams[$localizationUrlParamName] = $localizationStr;
+				list($success, $filteredParams) = $route->Filter(
+					$newParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
+				);
+				if (!$localizationContained) unset($filteredParams[$localizationUrlParamName]);
+				if ($success === FALSE) {
+					$this->currentRoute = NULL;
+					$matchedParams = [];
+					continue;
 				}
+				$request->SetParams($filteredParams);
+				// breakt to stop routing
 				break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
 			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
-				$requestCtrlName, $requestActionName
+				$matchedParams['controller'], $matchedParams['action']
 			);
 	}
 }

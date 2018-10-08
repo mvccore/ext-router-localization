@@ -279,6 +279,7 @@ class Route extends \MvcCore\Route
 	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param array $defaults				Optional, default param values like: `["name" => "default-name", "page" => 1]`.
 	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param array	$filters				Optional, TODO
 	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
@@ -287,6 +288,7 @@ class Route extends \MvcCore\Route
 		$controllerAction = NULL,
 		$defaults = [],
 		$constraints = [],
+		$filters = [],
 		$method = NULL
 	) {
 		$args = func_get_args();
@@ -339,7 +341,9 @@ class Route extends \MvcCore\Route
 				$this->SetDefaults($data->defaults);
 			if (isset($data->constraints)) 
 				$this->SetConstraints($data->constraints);
-			if (isset($data->method)) 
+			if (isset($data->filters) && is_array($data->filters)) 
+				$this->SetFilters($data->filters);
+			if (isset($data->method) && is_string($data->method)) 
 				$this->method = strtoupper($data->method);
 		} else {
 			if (static::recordIsLocalized($patternOrConfig)) {
@@ -353,7 +357,9 @@ class Route extends \MvcCore\Route
 				$this->SetDefaults($defaults);
 			if ($constraints !== NULL)
 				$this->SetConstraints($constraints);
-			if ($method !== NULL) 
+			if (is_array($filters)) 
+				$this->SetFilters($filters);
+			if (is_string($method)) 
 				$this->method = strtoupper($method);
 		}
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
@@ -365,19 +371,19 @@ class Route extends \MvcCore\Route
 
 	/**
 	 * Return array of matched params, with matched controller and action names,
-	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
+	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
 	 *
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
-	 * @param string $requestPath Requested application path, never with any query string.
-	 * @param string $requestMethod Uppercase request http method.
+	 * @param \MvcCore\Request $request Request object instance.
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched params or controller and action params.
 	 */
-	public function & Matches ($requestPath, $requestMethod, $localization = NULL) {
+	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
 		$matchedParams = [];
-		if ($this->method !== NULL && $this->method !== $requestMethod) 
+		
+		if ($this->method !== NULL && $this->method !== $request->GetMethod()) 
 			return $matchedParams;
 		if ($this->match !== NULL) {
 			$match = $this->match;
@@ -390,42 +396,26 @@ class Route extends \MvcCore\Route
 			}
 			$match = $this->matchLocalized[$localization];
 		}
-		preg_match_all($match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
+
+		preg_match_all($match, $request->GetPath(TRUE), $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
-			$controllerName = $this->controller ?: '';
-			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			$matchedParams = [
-				'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(['_', '\\'], '/', $controllerName)),
-				'action'		=>	$toolClass::GetDashedFromPascalCase($this->action ?: ''),
-			];
-			array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.
-			$index = 0;
-			$matchedKeys = array_keys($matchedValues);
-			$matchedKeysCount = count($matchedKeys) - 1;
-			$defaults = & $this->GetDefaults($localization);
-			while ($index < $matchedKeysCount) {
-				$matchedKey = $matchedKeys[$index];
-				$matchedValue = $matchedValues[$matchedKey];
-				// if captured offset value is the same like in next matched record - skip next matched record:
-				if (isset($matchedKeys[$index + 1])) {
-					$nextKey = $matchedKeys[$index + 1];
-					$nextValue = $matchedValues[$nextKey];
-					if ($matchedValue[0][1] === $nextValue[0][1]) $index += 1;
-				}
-				// 1 line bellow is only for route debug panel, only for cases when you
-				// forget to define current rewrite param, this defines null value by default
-				if (!isset($defaults[$matchedKey])) $defaults[$matchedKey] = NULL;
-				$matchedParams[$matchedKey] = $matchedValue[0][0];
-				$index += 1;
-			}
-			if ($this->lastPatternParam === NULL) 
-				$this->reverseLocalized[$localization] = $this->initReverse($localization);
-			if (isset($matchedParams[$this->lastPatternParam])) {
-				$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
-			}
+			$this->matchesParseRewriteParams($matchedParams, $matchedValues, $this->GetDefaults($localization));
+			$this->matchesTrimLastParamTrailingSlash($matchedParams, $localization);
 		}
 		$this->matchedParams = $matchedParams;
 		return $matchedParams;
+	}
+
+	protected function matchesPrepare () {
+		
+	}
+
+	protected function matchesTrimLastParamTrailingSlash (& $matchedParams, $localization = NULL) {
+		if ($this->lastPatternParam === NULL) 
+			$this->reverseLocalized[$localization] = $this->initReverse($localization);
+		if (isset($matchedParams[$this->lastPatternParam])) {
+			$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
+		}
 	}
 
 	/**
@@ -472,7 +462,8 @@ class Route extends \MvcCore\Route
 			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
 		$result = $this->reverseLocalized[$routesLocalization];
 		$routeDefaults = $this->GetDefaults($routesLocalization);
-		$givenParamsKeys = array_merge([], $params);
+		// complete params for necessary values to build reverse pattern
+		$paramsClone = array_merge([], $params);
 		foreach ($this->reverseParams as $paramName) {
 			$paramKeyReplacement = '<'.$paramName.'>';
 			if (isset($params[$paramName])) {
@@ -484,16 +475,27 @@ class Route extends \MvcCore\Route
 			} else {
 				$paramValue = '';
 			}
+			$paramsClone[$paramName] = $paramValue;
+		}
+		// filter params out
+		$localizationContained = array_key_exists($localizationParamName, $paramsClone);
+		$paramsClone[$localizationParamName] = $localizationStr;
+		list(,$filteredParams) = $this->Filter($paramsClone, $requestedUrlParams, \MvcCore\IRoute::FILTER_OUT);
+		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
+		// build reverse pattern
+		foreach ($this->reverseParams as $paramName) {
+			$paramKeyReplacement = '<'.$paramName.'>';
+			$paramValue = $filteredParams[$paramName];
 			// convert possible XSS chars to entities (`< > & " ' &`):
 			$paramValue = htmlspecialchars($paramValue, ENT_QUOTES);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
-			unset($givenParamsKeys[$paramName]);
+			unset($filteredParams[$paramName]);
 		}
 		$result = & $this->correctTrailingSlashBehaviour($result);
-		if ($givenParamsKeys) {
+		if ($filteredParams) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. str_replace('%2F', '/', http_build_query($givenParamsKeys, '', $queryStringParamsSepatator));
+				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator));
 		}
 		return $result;
 	}
