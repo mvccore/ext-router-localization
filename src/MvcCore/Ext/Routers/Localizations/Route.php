@@ -41,6 +41,24 @@ class Route extends \MvcCore\Route
 	protected $constraintsLocalized = [];
 
 	/**
+	 * @var array
+	 */
+	protected $reverseParamsLocalized = [];
+
+	/**
+	 * Array with `string` by all reverse pattern params.
+	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
+	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
+	 * necessary, to be able to complete URL address string in method and sub
+	 * methods of `\MvcCore\Route::Url();`.
+	 * Example: 
+	 * // For pattern `/products-list/<name>/<color>`
+	 * `["name", "color"];`
+	 * @var \string[]|NULL
+	 */
+	protected $reverseParams	= NULL;
+
+	/**
 	 * @param string $localization
 	 * @return string|array|NULL
 	 */
@@ -124,10 +142,13 @@ class Route extends \MvcCore\Route
 	public function & SetReverse ($reverse, $localization = NULL) {
 		if ($localization !== NULL) {
 			$this->reverseLocalized[$localization] = $reverse;
+			$this->initFlagsByReverse($reverse);
 		} else if (is_array($reverse)) {
 			$this->reverseLocalized = $reverse;
+			$this->initFlagsByReverse(current($reverse));
 		} else {
 			$this->reverse = $reverse;
+			$this->initFlagsByReverse($reverse);
 		}
 		return $this;
 	}
@@ -181,17 +202,6 @@ class Route extends \MvcCore\Route
 	}
 
 	/**
-	 * Return parsed reverse params as array with param names from reverse pattern string.
-	 * Example: `array("name", "color");`
-	 * @return \string[]|NULL
-	 */
-	public function & GetReverseParams () {
-		if ($this->reverseParams === NULL) 
-			$this->initReverse();
-		return $this->reverseParams;
-	}
-
-	/**
 	 * @param array|\array[] $constraints
 	 * @param string $localization 
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
@@ -205,25 +215,49 @@ class Route extends \MvcCore\Route
 			foreach ($constraints as $key => $value)
 				if (!isset($defaults[$key]))
 					$defaults[$key] = NULL;
-		} else if (is_array($constraints) && count($constraints) > 0 && is_array(current($constraints))) {
-			$this->defaultsLocalized = & $constraints;
-			if (!isset($this->defaultsLocalized[$localization]))
-				$this->defaultsLocalized[$localization] = [];
-			$defaults = & $this->defaultsLocalized[$localization];
-			foreach ($constraints as $key => $value) {
-				if (!isset($defaults[$key]))
-						$defaults[$key] = NULL;
-			}
 		} else {
-			$this->constraints = & $constraints;
-			if (!isset($this->defaults[$localization]))
-				$this->defaults[$localization] = [];
-			$defaults = & $this->defaults[$localization];
-			foreach ($constraints as $key => $value) {
-				if (!isset($defaults[$key]))
-					$defaults[$key] = NULL;
+			$localizedConstraints = static::recordIsLocalized($constraints);
+			if ($localization === NULL && $localizedConstraints) {
+				$this->constraintsLocalized = & $constraints;
+				$defaults = & $this->defaultsLocalized;
+				foreach ($constraints as $localization => $constraintsLocalized) {
+					if (!isset($this->defaultsLocalized[$localization]))
+						$this->defaultsLocalized[$localization] = [];
+					$defaults = & $this->defaultsLocalized[$localization];
+					foreach ($constraintsLocalized as $key => $value)
+						if (!isset($defaults[$key]))
+							$defaults[$key] = NULL;
+				}
+			} else if ($localization === NULL && !$localizedConstraints) {
+				$this->constraints = & $constraints;
+				$defaults = & $this->defaults;
+				foreach ($constraints as $key => $value) {
+					if (!isset($defaults[$key]))
+						$defaults[$key] = NULL;
+				}
 			}
 		}
+		return $this;
+	}
+
+	/**
+	 * Return only reverse params names as `string`s array.
+	 * Example: `["name", "color"];`
+	 * @return \string[]|NULL
+	 */
+	public function GetReverseParams () {
+		return $this->reverseParams;
+	}
+
+	/**
+	 * Set up internal reverse params info.
+	 * @param array $reverseParams
+	 * @param string|NULL $localization
+	 * @return \MvcCore\Route
+	 */
+	protected function setReverseParams (array & $reverseParams = [], $localization = NULL) {
+		$this->reverseParamsLocalized[$localization] = & $reverseParams;
+		$this->reverseParams = array_keys($reverseParams);
 		return $this;
 	}
 
@@ -279,7 +313,7 @@ class Route extends \MvcCore\Route
 	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param array $defaults				Optional, default param values like: `["name" => "default-name", "page" => 1]`.
 	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array	$filters				Optional, TODO
+	 * @param array	$filters				Optional, callable function(s) under keys `"in" | "out"` to filter in and out params accepting arguments: `array $params, array $defaultParams, \MvcCore\IRequest $request`.
 	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
@@ -333,8 +367,10 @@ class Route extends \MvcCore\Route
 			if (isset($data->reverse)) {
 				if (is_array($data->reverse)) {
 					$this->reverseLocalized = $data->reverse;
+					$this->initFlagsByReverse(current($data->reverse));
 				} else {
-					$this->reverse = $data->reverse;	
+					$this->reverse = $data->reverse;
+					$this->initFlagsByReverse($data->reverse);
 				}
 			}
 			if (isset($data->defaults)) 
@@ -369,24 +405,10 @@ class Route extends \MvcCore\Route
 		}
 	}
 
-	/**
-	 * Return array of matched params, with matched controller and action names,
-	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
-	 *
-	 * This method is usually called in core request routing process
-	 * from `\MvcCore\Router::Route();` method and it's submethods.
-	 *
-	 * @param \MvcCore\Request $request Request object instance.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return array Matched and params array, keys are matched params or controller and action params.
-	 */
-	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
-		$matchedParams = [];
-		
-		if ($this->method !== NULL && $this->method !== $request->GetMethod()) 
-			return $matchedParams;
+	protected function matchesGetPattern (\MvcCore\IRequest & $request, $localization = NULL) {
 		if ($this->match !== NULL) {
 			$match = $this->match;
+			$this->matchLocalized[$localization] = $match;
 		} else {
 			if (!array_key_exists($localization, $this->matchLocalized)) {
 				list($match, $reverse) = $this->initMatch($localization);
@@ -396,21 +418,14 @@ class Route extends \MvcCore\Route
 			}
 			$match = $this->matchLocalized[$localization];
 		}
-
-		preg_match_all($match, $request->GetPath(TRUE), $matchedValues, PREG_OFFSET_CAPTURE);
-		if (isset($matchedValues[0]) && count($matchedValues[0])) {
-			$this->matchesParseRewriteParams($matchedParams, $matchedValues, $this->GetDefaults($localization));
-			$this->matchesTrimLastParamTrailingSlash($matchedParams, $localization);
-		}
-		$this->matchedParams = $matchedParams;
-		return $matchedParams;
+		return $match;
 	}
 
-	protected function matchesTrimLastParamTrailingSlash (& $matchedParams, $localization = NULL) {
-		if ($this->lastPatternParam === NULL) 
+	protected function matchesTrimLastParamTrailingSlash ($localization = NULL) {
+		if ($this->lastPatternParam === NULL && !array_key_exists($localization, $this->reverseLocalized)) 
 			$this->reverseLocalized[$localization] = $this->initReverse($localization);
-		if (isset($matchedParams[$this->lastPatternParam])) {
-			$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
+		if (isset($this->matchedParams[$this->lastPatternParam])) {
+			$this->matchedParams[$this->lastPatternParam] = rtrim($this->matchedParams[$this->lastPatternParam], '/');
 		}
 	}
 
@@ -433,13 +448,16 @@ class Route extends \MvcCore\Route
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param array $params
+	 * @param \MvcCore\Request $request Currently requested request object.
+	 * @param array $params URL params from application point completed by developer.
 	 * @param array $requestedUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
-	 * @return string
+	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
-	public function Url (& $params = [], & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
-		$router = & \MvcCore\Application::GetInstance()->GetRouter();
+	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
+		$absolute = $this->urlGetAbsoluteParam($params);
+		static $router = NULL;
+		if ($router === NULL) $router = & \MvcCore\Application::GetInstance()->GetRouter();
 		$localizationParamName = $router::LOCALIZATION_URL_PARAM;
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
@@ -454,38 +472,52 @@ class Route extends \MvcCore\Route
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
 			: $localization[0];
-		if ($this->reverseParams === NULL || !array_key_exists($routesLocalization, $this->reverseLocalized)) 
+		if (!array_key_exists($routesLocalization, $this->reverseParamsLocalized) || !array_key_exists($routesLocalization, $this->reverseLocalized)) 
 			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
-		$result = $this->reverseLocalized[$routesLocalization];
+		
 		$routeDefaults = $this->GetDefaults($routesLocalization);
 		// complete params for necessary values to build reverse pattern
-		$paramsClone = array_merge([], $params);
-		foreach ($this->reverseParams as $paramName) {
-			$paramKeyReplacement = '<'.$paramName.'>';
-			if (isset($params[$paramName])) {
-				$paramValue = $params[$paramName];
-			} else if (isset($requestedUrlParams[$paramName])) {
-				$paramValue = $requestedUrlParams[$paramName];
-			} else if (isset($routeDefaults[$paramName])) {
-				$paramValue = $routeDefaults[$paramName];
-			} else {
-				$paramValue = '';
-			}
-			$paramsClone[$paramName] = $paramValue;
+		$reverseParams = $this->reverseParamsLocalized[$routesLocalization];
+		$reverseParamsKeys = [];
+		$reverseParamsCount = count($reverseParams);
+		$noReverseParamsCount = $reverseParamsCount === 0;
+		if ($noReverseParamsCount) {
+			$allParamsClone = array_merge([], $params);
+		} else {
+			$reverseParamsKeys = array_keys($reverseParams);
+			$emptyReverseParams = array_fill_keys($reverseParamsKeys, '');
+			$allMergedParams = array_merge($routeDefaults, $requestedUrlParams, $params);
+			$allParamsClone = array_merge($emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params);
 		}
 		// filter params out
-		$localizationContained = array_key_exists($localizationParamName, $paramsClone);
-		$paramsClone[$localizationParamName] = $localizationStr;
-		list(,$filteredParams) = $this->Filter($paramsClone, $requestedUrlParams, \MvcCore\IRoute::FILTER_OUT);
+		$localizationContained = array_key_exists($localizationParamName, $allParamsClone);
+		$allParamsClone[$localizationParamName] = $localizationStr;
+		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::FILTER_OUT);
 		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
 		// build reverse pattern
-		foreach ($this->reverseParams as $paramName) {
-			$paramKeyReplacement = '<'.$paramName.'>';
-			$paramValue = $filteredParams[$paramName];
-			// convert possible XSS chars to entities (`< > & " ' &`):
-			$paramValue = htmlspecialchars($paramValue, ENT_QUOTES);
-			$result = str_replace($paramKeyReplacement, $paramValue, $result);
-			unset($filteredParams[$paramName]);
+		$resultPattern = $this->reverseLocalized[$routesLocalization];
+		if ($noReverseParamsCount) {
+			$result = $resultPattern;
+		} else {
+			$result = mb_substr($resultPattern, 0, $reverseParams[$reverseParamsKeys[0]][0]);
+			$current = 0;
+			while (TRUE) {
+				$paramName = $reverseParamsKeys[$current];
+				$currentEnd = $reverseParams[$paramName][1];
+				// convert possible XSS chars to entities (`< > & " ' &`):
+				$result .= htmlspecialchars($filteredParams[$paramName], ENT_QUOTES);
+				unset($filteredParams[$paramName]);
+				// try to get next record and shift
+				$next = $current + 1;
+				if ($next < $reverseParamsCount) {
+					$nextParamName = $reverseParamsKeys[$next];
+					$nextStart = $reverseParams[$nextParamName][0];
+					$result .= mb_substr($resultPattern, $currentEnd, $nextStart - $currentEnd);
+				} else {
+					$result .= mb_substr($resultPattern, $currentEnd);
+					break;
+				}
+			}
 		}
 		$result = & $this->correctTrailingSlashBehaviour($result);
 		if ($filteredParams) {
@@ -493,7 +525,7 @@ class Route extends \MvcCore\Route
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
 				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator));
 		}
-		return $result;
+		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $absolute);
 	}
 
 	/**
@@ -515,7 +547,7 @@ class Route extends \MvcCore\Route
 			if (!array_key_exists($routesLocalization, $this->reverseLocalized))
 				$this->reverseLocalized[$routesLocalization] = $reverse;
 		}
-		if ($this->lastPatternParam === NULL || $this->reverseParams === NULL) 
+		if (($this->lastPatternParam === NULL || $this->reverseParams === NULL) && !array_key_exists($routesLocalization, $this->reverseParamsLocalized)) 
 			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
 		return $this;
 	}
@@ -544,19 +576,17 @@ class Route extends \MvcCore\Route
 			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
-		// escape all regular expression special characters before parsing except `<` and `>`:
-		$matchPattern = addcslashes($pattern, "#[](){}-?!=^$.+|:\\");
 		// parse all presented `<param>` occurances in `$pattern` argument:
-		$matchPatternParams = $this->parsePatternParams($matchPattern);
+		list($matchPattern, $patternParams) = $this->parsePatternParams($pattern);
 		// compile match regular expression from parsed params and custom constraints:
 		$reverseVal = $this->GetReverse($localization);
 		if ($reverseVal === NULL) {
-			list($match, $reverse) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, TRUE, $localization
+			list($match, $reverse) = $this->initMatchAndReverse(
+				[$matchPattern, $pattern], $patternParams, TRUE, $localization
 			);
 		} else {
-			list($match, $reverse) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, FALSE, $localization
+			list($match, $reverse) = $this->initMatchAndReverse(
+				[$matchPattern, $pattern], $patternParams, FALSE, $localization
 			);
 		}
 		return [$match, $reverse];

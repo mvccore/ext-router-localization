@@ -400,8 +400,12 @@ trait Routing
 		}
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
-		$matchedParams = [];
+		$allMatchedParams = [];
+		$requestMethod = $request->GetMethod();
+		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
 		foreach ($this->routes as & $route) {
+			$routeMethod = $route->GetMethod();
+			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
 			// skip non localized routes by configuration
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 			// skip localized routes matching when request has no localization in path
@@ -409,45 +413,33 @@ trait Routing
 				// but do not skip localized routes matching when request has no localization in path and:
 				// - when method is post and router has not allowed to process other methods than GET
 				// - or when method is anything and router has allowed to process other methods than GET
-				if (!($this->routeGetRequestsOnly && $request->GetMethod() !== \MvcCore\IRequest::METHOD_GET)) 
-					continue;
+				if ($localizationRoutesSkipping) continue;
 			}
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
-			if ($matchedParams = $route->Matches($request, $routesLocalizationStr)) {
+			if ($allMatchedParams = $route->Matches($request, $routesLocalizationStr)) {
 				$this->currentRoute = clone $route;
-				// finalize matched params and requested url params
-				$matchedParamsClone = array_merge([], $matchedParams);
-				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
-				if ($matchedParamsClone) 
-					$this->defaultParams = array_merge(
-						$this->defaultParams ?: [], $matchedParamsClone
-					);
-					$this->defaultParams[static::LOCALIZATION_URL_PARAM] = $localizationStr;
-				// finalize request params
-				$newParams = array_merge(
-					$this->currentRoute->GetDefaults($routesLocalizationStr), 
-					$matchedParams, $request->GetParams(FALSE)
-				);
 				$localizationUrlParamName = static::LOCALIZATION_URL_PARAM;
-				$localizationContained = isset($newParams[$localizationUrlParamName]);
-				$newParams[$localizationUrlParamName] = $localizationStr;
-				list($success, $filteredParams) = $route->Filter(
-					$newParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
+				
+
+				$requestParams = $this->routeByRewriteRoutesSetRequestedAndDefaultParams(
+					$allMatchedParams
 				);
-				if (!$localizationContained) unset($filteredParams[$localizationUrlParamName]);
-				if ($success === FALSE) {
-					$this->currentRoute = NULL;
-					$matchedParams = [];
-					continue;
-				}
-				$request->SetParams($filteredParams);
-				// breakt to stop routing
-				break;
+				$this->defaultParams[$localizationUrlParamName] = $localizationStr;
+				
+
+				$localizationContained = isset($requestParams[$localizationUrlParamName]);
+				$requestParams[$localizationUrlParamName] = $localizationStr;
+
+				$break = $this->routeByRewriteRoutesSetRequestParams($allMatchedParams, $requestParams);
+
+				if (!$localizationContained) 
+					$this->request->RemoveParam($localizationUrlParamName);
+				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
 			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
-				$matchedParams['controller'], $matchedParams['action']
+				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
 	}
 }
