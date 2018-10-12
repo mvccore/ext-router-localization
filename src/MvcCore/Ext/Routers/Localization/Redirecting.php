@@ -24,7 +24,7 @@ trait Redirecting
 	protected function redirectToTargetLocalization ($targetLocalization) {
 		// unset site key switch param and redirect to no switch param uri version
 		$request = & $this->request;
-		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
+		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 
 		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
 		$targetLocalizationSameAsDefault = $targetLocalizationStr === $this->defaultLocalizationStr;

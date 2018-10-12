@@ -97,7 +97,7 @@ trait Routing
 		
 		// check it with any strict session configuration to have more flexible navigations
 		//if ($this->stricModeBySession) {
-			$sessStrictModeSwitchUrlParam = static::SWITCH_LOCALIZATION_URL_PARAM;
+			$sessStrictModeSwitchUrlParam = static::URL_PARAM_SWITCH_LOCALIZATION;
 			if (isset($this->requestGlobalGet[$sessStrictModeSwitchUrlParam])) {
 				$globalGetValue = strtolower($this->requestGlobalGet[$sessStrictModeSwitchUrlParam]);
 				$separatorPos = strpos($globalGetValue, static::LANG_AND_LOCALE_SEPARATOR);
@@ -111,8 +111,8 @@ trait Routing
 		
 		// look into session object if there are or not
 		// any record about lang from previous request
-		if (isset($this->session->{static::LOCALIZATION_URL_PARAM})) 
-			$this->sessionLocalization = $this->session->{static::LOCALIZATION_URL_PARAM};
+		if (isset($this->session->{static::URL_PARAM_LOCALIZATION})) 
+			$this->sessionLocalization = $this->session->{static::URL_PARAM_LOCALIZATION};
 		
 		// store path info localy for routing process
 		$this->originalRequestPath = $this->request->GetPath();
@@ -142,7 +142,7 @@ trait Routing
 	 */
 	protected function setUpRequestLocalizationFromUrlQueryString () {
 		$this->requestLocalization = NULL;
-		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
+		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$langAndLocaleSeparator = static::LANG_AND_LOCALE_SEPARATOR;
 		// try ty set up request localization by query string first - query string is always stronger value
 		$requestLocalization = $this->request->GetParam(
@@ -258,7 +258,7 @@ trait Routing
 	protected function manageLocalizationSwitchingAndRedirect () {
 		$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->switchUriParamLocalization);
 		// unset site key switch param
-		unset($this->requestGlobalGet[static::SWITCH_LOCALIZATION_URL_PARAM]);
+		unset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]);
 		// redirect to no switch param uri version
 		return $this->redirectToTargetLocalization(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)
@@ -303,7 +303,7 @@ trait Routing
 		}
 		if (!$this->localization) 
 			$this->localization = $this->defaultLocalization;
-		$localizationUrlParam = static::LOCALIZATION_URL_PARAM;
+		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$this->session->{$localizationUrlParam} = $this->localization;
 		$this->firstRequestLocalizationDetection = $firstRequestLocalizationDetection;
 	}
@@ -337,7 +337,7 @@ trait Routing
 				$targetLocalization = $this->defaultLocalization;
 				/** @var $request \MvcCore\Request */
 				$request = & $this->request;
-				$this->requestGlobalGet[static::REDIRECTED_SOURCE_URL_PARAM] = rawurlencode(
+				$this->requestGlobalGet[static::URL_PARAM_REDIRECTED_SOURCE] = rawurlencode(
 					$request->GetBaseUrl() 
 					. $request->GetOriginalPath()
 					. $request->GetQuery(TRUE, TRUE) 
@@ -372,7 +372,7 @@ trait Routing
 	 * @return \string[]
 	 */
 	protected function setUpLocalizationToContextAndSession ($targetLocalization) {
-		$this->session->{static::LOCALIZATION_URL_PARAM} = $targetLocalization;
+		$this->session->{static::URL_PARAM_LOCALIZATION} = $targetLocalization;
 		$this->localization = $targetLocalization;
 		return $targetLocalization;
 	}
@@ -418,7 +418,7 @@ trait Routing
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
 			if ($allMatchedParams = $route->Matches($request, $routesLocalizationStr)) {
 				$this->currentRoute = clone $route;
-				$localizationUrlParamName = static::LOCALIZATION_URL_PARAM;
+				$localizationUrlParamName = static::URL_PARAM_LOCALIZATION;
 				
 
 				$requestParams = $this->routeByRewriteRoutesSetRequestedAndDefaultParams(

@@ -458,7 +458,7 @@ class Route extends \MvcCore\Route
 		$absolute = $this->urlGetAbsoluteParam($params);
 		static $router = NULL;
 		if ($router === NULL) $router = & \MvcCore\Application::GetInstance()->GetRouter();
-		$localizationParamName = $router::LOCALIZATION_URL_PARAM;
+		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
 			unset($params[$localizationParamName]);

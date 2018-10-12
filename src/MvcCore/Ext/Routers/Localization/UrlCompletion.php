@@ -46,7 +46,7 @@ trait UrlCompletion
 		if ($givenRouteName == 'self') 
 			$params = array_merge($this->requestedParams, $params);
 
-		$localizationParamName = static::LOCALIZATION_URL_PARAM;
+		$localizationParamName = static::URL_PARAM_LOCALIZATION;
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 
 		if (isset($params[$localizationParamName])) {
@@ -77,7 +77,7 @@ trait UrlCompletion
 			$this->stricModeBySession && 
 			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
 		) 
-			$params[static::SWITCH_LOCALIZATION_URL_PARAM] = $localizationStr;
+			$params[static::URL_PARAM_SWITCH_LOCALIZATION] = $localizationStr;
 		
 		list($resultBase, $resultPathWithQuery) = $route->Url(
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()

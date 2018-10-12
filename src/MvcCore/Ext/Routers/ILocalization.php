@@ -25,22 +25,22 @@ interface ILocalization
 	 * Key name for language or/and locale in second argument $params in $router->Url();  method,
 	 * to tell $router->Url() method to generate url in different locale.
 	 */
-	const LOCALIZATION_URL_PARAM = 'localization';
+	const URL_PARAM_LOCALIZATION = 'localization';
 
 	/**
 	 * Special $_GET param name for session strict mode, how to change site locale version.
 	 */
-	const SWITCH_LOCALIZATION_URL_PARAM = 'switch_localization';
+	const URL_PARAM_SWITCH_LOCALIZATION = 'switch_localization';
+
+	/**
+	 * Source url param name, when first request is redirected to default localization by configuration.
+	 */
+	const URL_PARAM_REDIRECTED_SOURCE = 'source_url';
 
 	/**
 	 * International language and locale code separator used in url address.
 	 */
 	const LANG_AND_LOCALE_SEPARATOR = '-';
-
-	/**
-	 * Source url param name, when first request is redirected to default localization by configuration.
-	 */
-	const REDIRECTED_SOURCE_URL_PARAM = 'source_url';
 
 
 	/**
