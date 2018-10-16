@@ -530,11 +530,10 @@ trait PropsGettersSetters
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
-			return $routeCfgOrRoute;
+			return $routeCfgOrRoute->SetRouter($this);
 		$routeClass = $this->isRouteCfgDataLocalized($routeCfgOrRoute) 
 			? self::$routeClassLocalized 
 			: self::$routeClass;
-		$instance = $routeClass::CreateInstance($routeCfgOrRoute);
-		return $instance;
+		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 }

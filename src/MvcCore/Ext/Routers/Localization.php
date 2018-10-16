@@ -65,13 +65,17 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	 * @return bool
 	 */
 	public function Route () {
-		if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
-		list($routeByQueryString, $requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
+		$this->internalRequest = $this->request->IsInternalRequest();
+		if (!$this->internalRequest && !$this->routeByQueryString) 
+			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
+		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		$this->anyRoutesConfigured = count($this->routes) > 0;
 		$this->preRoutePrepare();
-		if (!$this->preRoutePrepareLocalization()) return FALSE;
-		if (!$this->preRouteLocalization()) return FALSE;
-		if ($routeByQueryString) {
+		if (!$this->internalRequest) {
+			if (!$this->preRoutePrepareLocalization()) return FALSE;
+			if (!$this->preRouteLocalization()) return FALSE;
+		}
+		if ($this->routeByQueryString) {
 			$this->routeByControllerAndActionQueryString(
 				$requestCtrlName, $requestActionName
 			);
@@ -83,7 +87,9 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 					return FALSE;
 			}
 		}
-		$this->routeSetUpDefaultForHomeIfNoMatch();
-		return $this->routeSetUpSelfRouteName();
+		if (!$this->routeProcessRouteRedirectionIfAny()) return FALSE;
+		return $this->routeSetUpDefaultForHomeIfNoMatch()
+					->routeSetUpSelfRouteNameIfAny()
+					->routeRedirect2CanonicalIfAny();
 	}
 }

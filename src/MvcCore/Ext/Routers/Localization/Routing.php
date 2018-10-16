@@ -416,29 +416,29 @@ trait Routing
 				if ($localizationRoutesSkipping) continue;
 			}
 			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
-			if ($allMatchedParams = $route->Matches($request, $routesLocalizationStr)) {
+			if ($routeIsLocalized) {
+				$allMatchedParams = $route->Matches($request, $routesLocalizationStr);
+			} else {
+				$allMatchedParams = $route->Matches($request);
+			}
+			if ($allMatchedParams) {
 				$this->currentRoute = clone $route;
+				$this->currentRoute->SetMatchedParams($allMatchedParams);
 				$localizationUrlParamName = static::URL_PARAM_LOCALIZATION;
-				
-
-				$requestParams = $this->routeByRewriteRoutesSetRequestedAndDefaultParams(
+				$requestParams = $this->routeByRRSetRequestedAndDefaultParams(
 					$allMatchedParams
 				);
 				$this->defaultParams[$localizationUrlParamName] = $localizationStr;
-				
-
 				$localizationContained = isset($requestParams[$localizationUrlParamName]);
 				$requestParams[$localizationUrlParamName] = $localizationStr;
-
-				$break = $this->routeByRewriteRoutesSetRequestParams($allMatchedParams, $requestParams);
-
+				$break = $this->routeByRRSetRequestParams($allMatchedParams, $requestParams);
 				if (!$localizationContained) 
 					$this->request->RemoveParam($localizationUrlParamName);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
+			$this->routeByRRSetUpRequestByCurrentRoute(
 				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
 	}

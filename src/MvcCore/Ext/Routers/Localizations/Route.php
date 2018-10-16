@@ -45,6 +45,8 @@ class Route extends \MvcCore\Route
 	 */
 	protected $reverseParamsLocalized = [];
 
+	protected $reverseSectionsLocalized = [];
+
 	/**
 	 * Array with `string` by all reverse pattern params.
 	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
@@ -142,13 +144,10 @@ class Route extends \MvcCore\Route
 	public function & SetReverse ($reverse, $localization = NULL) {
 		if ($localization !== NULL) {
 			$this->reverseLocalized[$localization] = $reverse;
-			$this->initFlagsByReverse($reverse);
 		} else if (is_array($reverse)) {
 			$this->reverseLocalized = $reverse;
-			$this->initFlagsByReverse(current($reverse));
 		} else {
 			$this->reverse = $reverse;
-			$this->initFlagsByReverse($reverse);
 		}
 		return $this;
 	}
@@ -177,7 +176,7 @@ class Route extends \MvcCore\Route
 		if ($localization !== NULL) {
 			$this->defaultsLocalized[$localization] = & $defaults;
 		} else {
-			if (static::recordIsLocalized($defaults)) {
+			if ($this->recordIsLocalized($defaults)) {
 				$this->defaultsLocalized = $defaults;
 			} else {
 				$this->defaults = $defaults;	
@@ -190,7 +189,7 @@ class Route extends \MvcCore\Route
 	 * @param string|array $localization 
 	 * @return array|\array[]
 	 */
-	public function GetConstraints ($localization = NULL) {
+	public function & GetConstraints ($localization = NULL) {
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->constraintsLocalized) && 
@@ -216,7 +215,7 @@ class Route extends \MvcCore\Route
 				if (!isset($defaults[$key]))
 					$defaults[$key] = NULL;
 		} else {
-			$localizedConstraints = static::recordIsLocalized($constraints);
+			$localizedConstraints = $this->recordIsLocalized($constraints);
 			if ($localization === NULL && $localizedConstraints) {
 				$this->constraintsLocalized = & $constraints;
 				$defaults = & $this->defaultsLocalized;
@@ -250,18 +249,7 @@ class Route extends \MvcCore\Route
 	}
 
 	/**
-	 * Set up internal reverse params info.
-	 * @param array $reverseParams
-	 * @param string|NULL $localization
-	 * @return \MvcCore\Route
-	 */
-	protected function setReverseParams (array & $reverseParams = [], $localization = NULL) {
-		$this->reverseParamsLocalized[$localization] = & $reverseParams;
-		$this->reverseParams = array_keys($reverseParams);
-		return $this;
-	}
-
-	/**
+	 * TODO: neaktuální
 	 * Create new route instance.
 	 * First argument should be configuration array or
 	 * route pattern value to parse into match and reverse patterns.
@@ -322,34 +310,11 @@ class Route extends \MvcCore\Route
 		$controllerAction = NULL,
 		$defaults = [],
 		$constraints = [],
-		$filters = [],
-		$method = NULL
+		$advancedConfiguration = []
 	) {
-		$args = func_get_args();
-		$argsCount = count($args);
-		if ($argsCount === 0) return;
+		if (count(func_get_args()) === 0) return;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
-			if (isset($data->controllerAction)) {
-				list($ctrl, $action) = explode(':', $data->controllerAction);
-				if ($ctrl) $this->controller = $ctrl;
-				if ($action) $this->action = $action;
-				if (isset($data->name)) {
-					$this->name = $data->name;
-				} else {
-					$this->name = $data->controllerAction;
-				}
-			} else {
-				$this->controller = isset($data->controller) ? $data->controller : NULL;
-				$this->action = isset($data->action) ? $data->action : NULL;
-				if (isset($data->name)) {
-					$this->name = $data->name;
-				} else if ($this->controller !== NULL && $this->action !== NULL) {
-					$this->name = $this->controller . ':' . $this->action;
-				} else {
-					$this->name = NULL;
-				}
-			}
 			if (isset($data->pattern)) {
 				if (is_array($data->pattern)) {
 					$this->patternLocalized = $data->pattern;
@@ -367,66 +332,66 @@ class Route extends \MvcCore\Route
 			if (isset($data->reverse)) {
 				if (is_array($data->reverse)) {
 					$this->reverseLocalized = $data->reverse;
-					$this->initFlagsByReverse(current($data->reverse));
 				} else {
 					$this->reverse = $data->reverse;
-					$this->initFlagsByReverse($data->reverse);
 				}
 			}
-			if (isset($data->defaults)) 
-				$this->SetDefaults($data->defaults);
-			if (isset($data->constraints)) 
-				$this->SetConstraints($data->constraints);
-			if (isset($data->filters) && is_array($data->filters)) 
-				$this->SetFilters($data->filters);
-			if (isset($data->method) && is_string($data->method)) 
-				$this->method = strtoupper($data->method);
+			$this->constructCtrlActionNameDefConstrAndAdvCfg($data);
 		} else {
-			if (static::recordIsLocalized($patternOrConfig)) {
+			if ($this->recordIsLocalized($patternOrConfig)) {
 				$this->patternLocalized = $patternOrConfig;
 			} else {
 				$this->pattern = $patternOrConfig;	
 			}
-			if ($controllerAction !== NULL) 
-				list($this->controller, $this->action) = explode(':', $controllerAction);
-			if ($defaults !== NULL)
-				$this->SetDefaults($defaults);
-			if ($constraints !== NULL)
-				$this->SetConstraints($constraints);
-			if (is_array($filters)) 
-				$this->SetFilters($filters);
-			if (is_string($method)) 
-				$this->method = strtoupper($method);
+			$this->constructCtrlActionDefConstrAndAdvCfg(
+				$controllerAction, $defaults, $constraints, $advancedConfiguration
+			);
 		}
-		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
-			list($ctrl, $action) = explode(':', $this->name);
-			if ($ctrl) $this->controller = $ctrl;
-			if ($action) $this->action = $action;
-		}
+		$this->constructCtrlOrActionByName();
 	}
 
-	protected function matchesGetPattern (\MvcCore\IRequest & $request, $localization = NULL) {
+	/**
+	 * Return array of matched params, with matched controller and action names,
+	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
+	 *
+	 * This method is usually called in core request routing process
+	 * from `\MvcCore\Router::Route();` method and it's submethods.
+	 *
+	 * @param \MvcCore\Request $request Request object instance.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @return array Matched and params array, keys are matched
+	 *				 params or controller and action params.
+	 */
+	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
+		$matchedParams = [];
+		$pattern = & $this->matchesGetPattern($localization);
+		$subject = $this->matchesGetSubject($request);
+		preg_match_all($pattern, $subject, $matchedValues);
+		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
+			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults($localization));
+			if (isset($matchedParams[$this->lastPatternParam])) 
+				$matchedParams[$this->lastPatternParam] = rtrim(
+				$matchedParams[$this->lastPatternParam], '/'
+			);
+		}
+		return $matchedParams;
+	}
+
+	protected function & matchesGetPattern ($localization = NULL) {
 		if ($this->match !== NULL) {
-			$match = $this->match;
-			$this->matchLocalized[$localization] = $match;
+			$match = & $this->match;
+			$this->matchLocalized[$localization] = & $match;
+			if (!array_key_exists($localization, $this->reverseSectionsLocalized))
+				$this->initReverse($localization);
 		} else {
-			if (!array_key_exists($localization, $this->matchLocalized)) {
-				list($match, $reverse) = $this->initMatch($localization);
-				$this->matchLocalized[$localization] = $match;
-				if (!array_key_exists($localization, $this->reverseLocalized))
-					$this->reverseLocalized[$localization] = $reverse;
+			if (array_key_exists($localization, $this->matchLocalized)) {
+				$this->initReverse($localization);
+			} else {
+				$this->initMatchAndReverse($localization);
 			}
-			$match = $this->matchLocalized[$localization];
+			$match = & $this->matchLocalized[$localization];
 		}
 		return $match;
-	}
-
-	protected function matchesTrimLastParamTrailingSlash ($localization = NULL) {
-		if ($this->lastPatternParam === NULL && !array_key_exists($localization, $this->reverseLocalized)) 
-			$this->reverseLocalized[$localization] = $this->initReverse($localization);
-		if (isset($this->matchedParams[$this->lastPatternParam])) {
-			$this->matchedParams[$this->lastPatternParam] = rtrim($this->matchedParams[$this->lastPatternParam], '/');
-		}
 	}
 
 	/**
@@ -455,9 +420,8 @@ class Route extends \MvcCore\Route
 	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
-		$absolute = $this->urlGetAbsoluteParam($params);
-		static $router = NULL;
-		if ($router === NULL) $router = & \MvcCore\Application::GetInstance()->GetRouter();
+		// initialize localization param and route localization key
+		$router = & $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
@@ -472,60 +436,47 @@ class Route extends \MvcCore\Route
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
 			: $localization[0];
+
+		// check reverse initialization
 		if (!array_key_exists($routesLocalization, $this->reverseParamsLocalized) || !array_key_exists($routesLocalization, $this->reverseLocalized)) 
-			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
+			$this->initReverse($routesLocalization);
 		
-		$routeDefaults = $this->GetDefaults($routesLocalization);
-		// complete params for necessary values to build reverse pattern
+		// complete and filter all params to build reverse pattern
 		$reverseParams = $this->reverseParamsLocalized[$routesLocalization];
-		$reverseParamsKeys = [];
-		$reverseParamsCount = count($reverseParams);
-		$noReverseParamsCount = $reverseParamsCount === 0;
-		if ($noReverseParamsCount) {
+		if (count($reverseParams) === 0) {
 			$allParamsClone = array_merge([], $params);
 		} else {
-			$reverseParamsKeys = array_keys($reverseParams);
-			$emptyReverseParams = array_fill_keys($reverseParamsKeys, '');
-			$allMergedParams = array_merge($routeDefaults, $requestedUrlParams, $params);
+			$emptyReverseParams = array_fill_keys(array_keys($reverseParams), '');
+			$allMergedParams = array_merge($this->GetDefaults($routesLocalization), $requestedUrlParams, $params);
 			$allParamsClone = array_merge($emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params);
 		}
-		// filter params out
+
+		// filter params
 		$localizationContained = array_key_exists($localizationParamName, $allParamsClone);
 		$allParamsClone[$localizationParamName] = $localizationStr;
-		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::FILTER_OUT);
+		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
 		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
+		
+		// split params into domain params array and into path and query params array
+		$domainParams = $this->urlGetAndRemoveDomainParams($filteredParams);
+
 		// build reverse pattern
-		$resultPattern = $this->reverseLocalized[$routesLocalization];
-		if ($noReverseParamsCount) {
-			$result = $resultPattern;
-		} else {
-			$result = mb_substr($resultPattern, 0, $reverseParams[$reverseParamsKeys[0]][0]);
-			$current = 0;
-			while (TRUE) {
-				$paramName = $reverseParamsKeys[$current];
-				$currentEnd = $reverseParams[$paramName][1];
-				// convert possible XSS chars to entities (`< > & " ' &`):
-				$result .= htmlspecialchars($filteredParams[$paramName], ENT_QUOTES);
-				unset($filteredParams[$paramName]);
-				// try to get next record and shift
-				$next = $current + 1;
-				if ($next < $reverseParamsCount) {
-					$nextParamName = $reverseParamsKeys[$next];
-					$nextStart = $reverseParams[$nextParamName][0];
-					$result .= mb_substr($resultPattern, $currentEnd, $nextStart - $currentEnd);
-				} else {
-					$result .= mb_substr($resultPattern, $currentEnd);
-					break;
-				}
-			}
-		}
-		$result = & $this->correctTrailingSlashBehaviour($result);
+		$result = $this->urlComposeByReverseSectionsAndParams(
+			$this->reverseLocalized[$routesLocalization], 
+			$this->reverseSectionsLocalized[$routesLocalization], 
+			$this->reverseParamsLocalized[$routesLocalization], 
+			$filteredParams, 
+			$this->GetDefaults($routesLocalization)
+		);
+
+		// add all remaining params to query string
 		if ($filteredParams) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator));
+				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986));
 		}
-		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $absolute);
+
+		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $domainParams);
 	}
 
 	/**
@@ -535,23 +486,145 @@ class Route extends \MvcCore\Route
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
-		$router = & \MvcCore\Application::GetInstance()->GetRouter();
+		$router = & $this->router;
 		$localization = $router->GetLocalization();
 		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
 			: $localization[0];
-		if ($this->match === NULL && !array_key_exists($routesLocalization, $this->matchLocalized)) {
-			list($match, $reverse) = $this->initMatch($routesLocalization);
-			$this->matchLocalized[$routesLocalization] = $match;
-			if (!array_key_exists($routesLocalization, $this->reverseLocalized))
-				$this->reverseLocalized[$routesLocalization] = $reverse;
+		$noMatch = $this->match === NULL && !array_key_exists($routesLocalization, $this->matchLocalized);
+		$noReverse = $this->reverse === NULL && !array_key_exists($routesLocalization, $this->reverseLocalized);
+		if ($noMatch && $noReverse) {
+			$this->initMatchAndReverse($routesLocalization);
+		} else if ($noReverse) {
+			$this->initReverse($routesLocalization);
 		}
-		if (($this->lastPatternParam === NULL || $this->reverseParams === NULL) && !array_key_exists($routesLocalization, $this->reverseParamsLocalized)) 
-			$this->reverseLocalized[$routesLocalization] = $this->initReverse($routesLocalization);
 		return $this;
 	}
 
+	protected function initMatchAndReverse ($localization = NULL) {
+		$pattern = NULL;
+		$reverse = NULL;
+		if ($this->pattern !== NULL) {
+			$pattern = $this->pattern;
+		} else if (isset($this->patternLocalized[$localization])) {
+			$pattern = $this->patternLocalized[$localization];
+		} else {
+			$this->throwExceptionIfNoPattern();
+		}
+		if ($this->reverse !== NULL) {
+			$reverse = $this->reverse;
+		} else if (isset($this->reverseLocalized[$localization])) {
+			$reverse = $this->reverseLocalized[$localization];
+		}
+		
+		$this->lastPatternParam = NULL;
+		$match = addcslashes($pattern, "#(){}-?!=^$.+|:*\\");
+		$reverse = $reverse !== NULL
+			? $reverse
+			: $pattern;
+
+		list($reverseSections, $matchSections) = $this->initSectionsInfoForMatchAndReverse(
+			$reverse, $match
+		);
+		$this->reverseSectionsLocalized[$localization] = & $reverseSections;
+		$this->reverseLocalized[$localization] = & $reverse;
+		$constraintsLocalized = & $this->GetConstraints($localization);
+		$reverseParams = $this->initReverseParams(
+			$reverse, $reverseSections, $constraintsLocalized, $match
+		);
+		$this->reverseParamsLocalized[$localization] = & $reverseParams;
+		$this->reverseParams = array_keys($reverseParams);
+		$this->initFlagsByPatternOrReverse($reverse);
+		$this->matchLocalized[$localization] = $this->initMatchComposeRegex(
+			$match, $matchSections, $reverseParams, $constraintsLocalized
+		);
+	}
+
+	protected function initReverse ($localization = NULL) {
+		$reverse = NULL;
+		if ($this->reverse !== NULL) {
+			$reverse = $this->reverse;
+		} else if (isset($this->reverseLocalized[$localization])) {
+			$reverse = $this->reverseLocalized[$localization];
+		} else if ($this->pattern !== NULL) {
+			$reverse = $this->pattern;
+		} else if (isset($this->patternLocalized[$localization])) {
+			$reverse = $this->patternLocalized[$localization];
+		} else {
+			if ($this->redirect !== NULL) {
+				$pattern = NULL;
+				$match = NULL;
+				if ($this->pattern !== NULL) {
+					$pattern = $this->pattern;
+				} else if (isset($this->patternLocalized[$localization])) {
+					$pattern = $this->patternLocalized[$localization];
+				}
+				if ($this->match !== NULL) {
+					$match = $this->match;
+				} else if (isset($this->matchLocalized[$localization])) {
+					$match = $this->matchLocalized[$localization];
+				}
+				return $this->initFlagsByPatternOrReverse(
+					$pattern !== NULL ? $pattern : str_replace(['\\', '(?', ')?', '/?'], '', $match)
+				);
+			}
+			$this->throwExceptionIfNoPattern();
+		}
+
+		$this->lastPatternParam = NULL;
+		
+		$reverseSections = $this->initSectionsInfo($reverse);
+		$this->reverseSectionsLocalized[$localization] = & $reverseSections;
+		$this->reverseLocalized[$localization] = & $reverse;
+
+		$match = NULL;
+		$reverseParams = $this->initReverseParams(
+			$reverse, $reverseSections, $this->GetConstraints($localization), $match
+		);
+		$this->reverseParamsLocalized[$localization] = & $reverseParams;
+		$this->reverseParams = array_keys($reverseParams);
+
+		$this->initFlagsByPatternOrReverse($reverse);
+	}
+
+	/**
+	 * Get `TRUE` if given route record contains only allowed localization keys.
+	 * @param mixed $record 
+	 * @return bool
+	 */
+	protected function recordIsLocalized ($record) {
+		static $allowedLocalizationKeys = [];
+		if (count($allowedLocalizationKeys) === 0) {
+			$router = & $this->router;
+			if ($router === NULL) {
+				static $routerStat = NULL;
+				if ($routerStat === NULL)
+					$routerStat = & \MvcCore\Application::GetInstance()->GetRouter();
+				$router = $routerStat;
+			}
+			$allowedLocalizations = $router->GetAllowedLocalizations();
+			if (!$router->GetRouteRecordsByLanguageAndLocale()) {
+				foreach ($allowedLocalizations as $allowedLocalization)	{
+					$dashPos = strpos($allowedLocalization, $router::LANG_AND_LOCALE_SEPARATOR);
+					if ($dashPos === FALSE) continue;
+					$allowedLocalization = substr($allowedLocalization, 0, $dashPos);
+					$allowedLocalizationKeys[$allowedLocalization] = $allowedLocalization;
+				}
+			}
+		}
+		$localizationKeys = TRUE;
+		$recordKeys = array_keys($record);
+		foreach ($recordKeys as $recordKey) {
+			if (!isset($allowedLocalizationKeys[$recordKey])) {
+				$localizationKeys = FALSE;
+				break;
+			}
+		}
+		return $localizationKeys;
+	}
+	
+	
 	/**
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
 	 * property) from `\MvcCore\Router::$Pattern`, optionaly initialize
@@ -565,7 +638,7 @@ class Route extends \MvcCore\Route
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \string[]
 	 */
-	protected function initMatch ($localization = NULL) {
+	protected function _old_initMatch ($localization = NULL) {
 		$match = NULL;
 		$reverse = NULL;
 		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
@@ -590,35 +663,5 @@ class Route extends \MvcCore\Route
 			);
 		}
 		return [$match, $reverse];
-	}
-
-	/**
-	 * Get `TRUE` if given route record contains only allowed localization keys.
-	 * @param mixed $record 
-	 * @return bool
-	 */
-	protected static function recordIsLocalized ($record) {
-		static $allowedLocalizationKeys = [];
-		if (count($allowedLocalizationKeys) === 0) {
-			$router = & \MvcCore\Router::GetInstance();
-			$allowedLocalizations = $router->GetAllowedLocalizations();
-			if (!$router->GetRouteRecordsByLanguageAndLocale()) {
-				foreach ($allowedLocalizations as $allowedLocalization)	{
-					$dashPos = strpos($allowedLocalization, $router::LANG_AND_LOCALE_SEPARATOR);
-					if ($dashPos === FALSE) continue;
-					$allowedLocalization = substr($allowedLocalization, 0, $dashPos);
-					$allowedLocalizationKeys[$allowedLocalization] = $allowedLocalization;
-				}
-			}
-		}
-		$localizationKeys = TRUE;
-		$recordKeys = array_keys($record);
-		foreach ($recordKeys as $recordKey) {
-			if (!isset($allowedLocalizationKeys[$recordKey])) {
-				$localizationKeys = FALSE;
-				break;
-			}
-		}
-		return $localizationKeys;
 	}
 }
