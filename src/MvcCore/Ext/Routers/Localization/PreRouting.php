@@ -167,7 +167,8 @@ trait PreRouting
 		} else if (($this->stricModeBySession && !$this->adminRequest) || $this->requestLocalization === NULL) {
 			$targetLocalization = $this->localization;
 		} else {
-			$targetLocalization = $this->setUpLocalizationToContextAndSession($this->requestLocalization);
+			$this->setUpLocalizationToContextAndSession($this->requestLocalization);
+			$targetLocalization = $this->requestLocalization;
 		}
 		$originalRequestPath = trim($this->originalRequestPath, '/');
 		if ($originalRequestPath === $this->defaultLocalizationStr) 

@@ -28,15 +28,20 @@ trait Redirecting
 		
 		$request = & $this->request;
 		if ($this->anyRoutesConfigured) {
-
 			$requestPath = $this->request->GetPath(TRUE);
-			if ($targetLocalizationUrlValue === static::MEDIA_VERSION_FULL && (
-				trim($requestPath, '/') === '' || $requestPath === $this->request->GetScriptName()
-			)) {
+			$requestedPathIsHome = trim($requestPath, '/') === '' || $requestPath === $request->GetScriptName();
+
+			if ($targetLocalizationUrlValue === static::MEDIA_VERSION_FULL && $requestedPathIsHome) {
 				$targetLocalizationPrefix = '';
 			} else {
 				$targetLocalizationPrefix = '/' . $targetLocalizationUrlValue;
 			}
+
+			if (
+				$requestedPathIsHome &&
+				$this->trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE &&
+				$targetLocalizationPrefix !== ''
+			) $requestPath = '';
 
 			$targetUrl = $request->GetBaseUrl() 
 				. $targetLocalizationPrefix
