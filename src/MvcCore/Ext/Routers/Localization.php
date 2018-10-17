@@ -25,14 +25,15 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 			\MvcCore\Ext\Routers\IExtended
 {
 	use \MvcCore\Ext\Routers\Extended;
+
 	use \MvcCore\Ext\Routers\Localization\PropsGettersSetters;
 	use \MvcCore\Ext\Routers\Localization\Preparing;
 	use \MvcCore\Ext\Routers\Localization\PreRouting;
-	use \MvcCore\Ext\Routers\Localization\Redirecting;
+	use \MvcCore\Ext\Routers\Localization\RedirectSections;
 	use \MvcCore\Ext\Routers\Localization\UrlByRouteSections;
 	use \MvcCore\Ext\Routers\Localization\UrlByRoute;
-	use \MvcCore\Ext\Routers\Localization\Routing;
 	use \MvcCore\Ext\Routers\Localization\RoutingByRoutes;
+	use \MvcCore\Ext\Routers\Localization\Routing;
 	
 	/**
 	 * MvcCore Extension - Router Lang - version:

@@ -16,6 +16,7 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlByRouteSections
 {
 	/**
+	 * TODO: neaktuální
 	 * Complete non-absolute, non-localized or localized url by route instance reverse info.
 	 * If there is key `localization` in `$params`, unset this param before
 	 * route url completing and place this param as url prefix to prepend 
@@ -38,7 +39,7 @@ trait UrlByRouteSections
 	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
 	 * @param array $params
 	 * @param string $urlParamRouteName
-	 * @return string
+	 * @return array `string $urlBaseSection, string $urlPathWithQuerySection, array $systemParams`
 	 */
 	protected function urlByRouteSections (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
 		/** @var $route \MvcCore\Route */
@@ -59,12 +60,16 @@ trait UrlByRouteSections
 			);
 			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
 		}
-		// check if localization value is valid
-		if (!isset($this->allowedLocalizations[$localizationStr])) {
+		// empty url version for not allowed values or not allowed request methods
+		$routeMethod = $route->GetMethod();
+		if ($this->routeGetRequestsOnly && $routeMethod !== NULL && $routeMethod !== \MvcCore\IRequest::METHOD_GET) {
+			$localizationStr = NULL;
+		} else if (!isset($this->allowedLocalizations[$localizationStr])) {
+			// check if localization value is valid
 			if (isset($this->localizationEquivalents[$localizationStr])) 
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
 			if (!isset($this->allowedLocalizations[$localizationStr])) {
-				$localizationStr = '';
+				$localizationStr = NULL;
 				trigger_error(
 					'['.__CLASS__.'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
@@ -75,44 +80,23 @@ trait UrlByRouteSections
 		}
 		// add special switching param to global get, if strict session mode and target version is different
 		if (
-			$this->stricModeBySession && 
+			$this->stricModeBySession && $localizationStr !== NULL &&
 			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
 		) 
 			$params[static::URL_PARAM_SWITCH_LOCALIZATION] = $localizationStr;
 		
 		// complete by given route base url address part and part with path and query string
-		list($resultBase, $resultPathWithQuery) = $route->Url(
+		list($urlBaseSection, $urlPathWithQuerySection) = $route->Url(
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 
-		// create localization prefix for all localized routes
-		// and for all url addresses except default language homepage
-		$localizationUrlPrefix = '';
-		$questionMarkPos = mb_strpos($resultPathWithQuery, '?');
-		$resultPath = $questionMarkPos !== FALSE 
-			? mb_substr($resultPathWithQuery, 0, $questionMarkPos)
-			: $resultPathWithQuery;
-		$resultPathTrimmed = trim($resultPath, '/');
-		if ($localizedRoute && !(
-			$resultPathTrimmed === '' && 
-			$localizationStr === $this->defaultLocalizationStr
-		)) $localizationUrlPrefix = '/' . $localizationStr;
+		$systemParams = [];
+		if ($localizationStr !== NULL) $systemParams[$localizationParamName] = $localizationStr;
 
-		// check route method and do not create any prefixes for POST (non GET) routes,
-		// if there is not allowed to route POST (non GET) requests
-		if ($this->routeGetRequestsOnly) {
-			$routeMethod = $route->GetMethod();
-			if ($routeMethod !== NULL && $routeMethod !== \MvcCore\IRequest::METHOD_GET) 
-				$localizationUrlPrefix = '';
-		}
-		
-		// finalizing possible trailing slash after prefix
-		if (
-			$resultPathTrimmed === '' &&
-			$this->trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE &&
-			$localizationUrlPrefix !== ''
-		) $resultPathWithQuery = ltrim($resultPathWithQuery, '/');
-		
-		return [$resultBase, $localizationUrlPrefix, $resultPathWithQuery];
+		return [
+			$urlBaseSection, 
+			$urlPathWithQuerySection, 
+			$systemParams
+		];
 	}
 }

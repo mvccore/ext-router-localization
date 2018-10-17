@@ -553,7 +553,7 @@ trait PropsGettersSetters
 			} else {
 				$this->requestGlobalGet[$localizationUrlParam] = $targetLocalizationStr;
 			}
-			$targetLocalizationUrlValue = '';
+			$targetLocalizationUrlValue = NULL;
 		} else {
 			$targetLocalizationUrlValue = $targetLocalizationStr;
 		}

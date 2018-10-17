@@ -41,6 +41,32 @@ trait UrlByRoute
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
-		return implode('', $this->urlByRouteSections($route, $params, $urlParamRouteName));
+		// get domain with base path url section, 
+		// path with query string url section 
+		// and system params for url prefixes
+		list($urlBaseSection, $urlPathWithQuerySection, $systemParams) = $route->urlByRouteSections(
+			$params, $urlParamRouteName
+		);
+
+		// remove localization prefix for non localized routes or
+		// remove localization prefix if url targets top homepage `/` on default language version
+		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
+		$localizationParamName = static::URL_PARAM_LOCALIZATION;
+		$urlPathWithQueryIsHome = NULL;
+		if (isset($systemParams[$localizationParamName])) {
+			if (!$localizedRoute) {
+				unset($systemParams[$localizationParamName]);
+			} else if ($systemParams[$localizationParamName] === $this->defaultLocalizationStr) {
+				// Get `TRUE` if path with query string target homepage - `/` (or `/index.php` - request script name)
+				$urlPathWithQueryIsHome = $this->urlIsHomePath($urlPathWithQuerySection);
+				if ($urlPathWithQueryIsHome)
+					unset($systemParams[$localizationParamName]);
+			}
+		}
+		
+		// create prefixed url
+		return $this->urlByRoutePrefixSystemParams(
+			$urlBaseSection, $urlPathWithQuerySection, $systemParams, $urlPathWithQueryIsHome
+		);
 	}
 }
