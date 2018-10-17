@@ -18,36 +18,26 @@ trait Redirecting
 	/**
 	 * Redirect to target localization version with path and by cloned request 
 	 * object global `$_GET` collection. Return always `FALSE`.
-	 * @param \string[] $targetLocalization 
+	 * @param array $targetSystemParams 
 	 * @return bool
 	 */
-	protected function redirectToTargetLocalization ($targetLocalization) {
+	protected function redirectToVersion ($targetSystemParams) {
 		// unset site key switch param and redirect to no switch param uri version
+		$targetLocalization = $targetSystemParams[\MvcCore\Ext\Routers\ILocalization::URL_PARAM_LOCALIZATION];
+		$targetLocalizationUrlValue = $this->redirectLocalizationGetPrefixAndUnsetGet($targetLocalization);
+		
 		$request = & $this->request;
-		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
-
-		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
-		$targetLocalizationSameAsDefault = $targetLocalizationStr === $this->defaultLocalizationStr;
-
-		if (isset($this->requestGlobalGet[$localizationUrlParam])) {
-			if ($targetLocalizationSameAsDefault) {
-				if (isset($this->requestGlobalGet[$localizationUrlParam]))
-					unset($this->requestGlobalGet[$localizationUrlParam]);
-			} else {
-				$this->requestGlobalGet[$localizationUrlParam] = $targetLocalizationStr;
-			}
-			$targetLocalizationPrefix = '';
-		} else {
-			$path = $request->GetPath(TRUE);
-			$targetLocalizationPrefix = (
-				$targetLocalizationSameAsDefault && 
-				(trim($path, '/') === '' || $path === $this->request->GetScriptName())
-			)
-				? ''
-				: '/' . $targetLocalizationStr;
-		}
-
 		if ($this->anyRoutesConfigured) {
+
+			$requestPath = $this->request->GetPath(TRUE);
+			if ($targetLocalizationUrlValue === static::MEDIA_VERSION_FULL && (
+				trim($requestPath, '/') === '' || $requestPath === $this->request->GetScriptName()
+			)) {
+				$targetLocalizationPrefix = '';
+			} else {
+				$targetLocalizationPrefix = '/' . $targetLocalizationUrlValue;
+			}
+
 			$targetUrl = $request->GetBaseUrl() 
 				. $targetLocalizationPrefix
 				. $request->GetPath(TRUE);

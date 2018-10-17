@@ -26,10 +26,13 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 {
 	use \MvcCore\Ext\Routers\Extended;
 	use \MvcCore\Ext\Routers\Localization\PropsGettersSetters;
+	use \MvcCore\Ext\Routers\Localization\Preparing;
 	use \MvcCore\Ext\Routers\Localization\PreRouting;
 	use \MvcCore\Ext\Routers\Localization\Redirecting;
-	use \MvcCore\Ext\Routers\Localization\UrlCompletion;
+	use \MvcCore\Ext\Routers\Localization\UrlByRouteSections;
+	use \MvcCore\Ext\Routers\Localization\UrlByRoute;
 	use \MvcCore\Ext\Routers\Localization\Routing;
+	use \MvcCore\Ext\Routers\Localization\RoutingByRoutes;
 	
 	/**
 	 * MvcCore Extension - Router Lang - version:

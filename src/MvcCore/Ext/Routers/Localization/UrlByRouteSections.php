@@ -13,7 +13,7 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
-trait UrlCompletion
+trait UrlByRouteSections
 {
 	/**
 	 * Complete non-absolute, non-localized or localized url by route instance reverse info.
@@ -40,15 +40,16 @@ trait UrlCompletion
 	 * @param string $urlParamRouteName
 	 * @return string
 	 */
-	protected function urlByRouteComponents (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
+	protected function urlByRouteSections (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
 		/** @var $route \MvcCore\Route */
 		$defaultParams = array_merge([], $this->GetDefaultParams() ?: []);
 		if ($urlParamRouteName == 'self') 
 			$params = array_merge($this->requestedParams, $params);
 
+		// get `$localizationStr` from `$params` to work with the version more specificly
+		// in route object to choose proper reverse pattern and to complete url prefix
 		$localizationParamName = static::URL_PARAM_LOCALIZATION;
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
-
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
 			//if (!$localizedRoute) unset($params[$localizationParamName]);
@@ -58,7 +59,7 @@ trait UrlCompletion
 			);
 			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
 		}
-
+		// check if localization value is valid
 		if (!isset($this->allowedLocalizations[$localizationStr])) {
 			if (isset($this->localizationEquivalents[$localizationStr])) 
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
@@ -72,36 +73,40 @@ trait UrlCompletion
 				);
 			}
 		}
-
+		// add special switching param to global get, if strict session mode and target version is different
 		if (
 			$this->stricModeBySession && 
 			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
 		) 
 			$params[static::URL_PARAM_SWITCH_LOCALIZATION] = $localizationStr;
 		
+		// complete by given route base url address part and part with path and query string
 		list($resultBase, $resultPathWithQuery) = $route->Url(
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 
+		// create localization prefix for all localized routes
+		// and for all url addresses except default language homepage
 		$localizationUrlPrefix = '';
 		$questionMarkPos = mb_strpos($resultPathWithQuery, '?');
 		$resultPath = $questionMarkPos !== FALSE 
 			? mb_substr($resultPathWithQuery, 0, $questionMarkPos)
 			: $resultPathWithQuery;
 		$resultPathTrimmed = trim($resultPath, '/');
-		if (
-			$localizedRoute && !(
-				$resultPathTrimmed === '' && 
-				$localizationStr === $this->defaultLocalizationStr
-			)
-		) 
-			$localizationUrlPrefix = '/' . $localizationStr;
+		if ($localizedRoute && !(
+			$resultPathTrimmed === '' && 
+			$localizationStr === $this->defaultLocalizationStr
+		)) $localizationUrlPrefix = '/' . $localizationStr;
+
+		// check route method and do not create any prefixes for POST (non GET) routes,
+		// if there is not allowed to route POST (non GET) requests
 		if ($this->routeGetRequestsOnly) {
 			$routeMethod = $route->GetMethod();
 			if ($routeMethod !== NULL && $routeMethod !== \MvcCore\IRequest::METHOD_GET) 
 				$localizationUrlPrefix = '';
 		}
-
+		
+		// finalizing possible trailing slash after prefix
 		if (
 			$resultPathTrimmed === '' &&
 			$this->trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE &&

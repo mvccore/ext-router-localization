@@ -119,10 +119,16 @@ trait PropsGettersSetters
 	protected $sessionLocalization = NULL;
 	
 	/**
-	 * Localization founded in request, parsed from previous requests.
+	 * Localization founded in request.
 	 * @var \string[]|NULL
 	 */
 	protected $requestLocalization = NULL;
+	
+	/**
+	 * Localization equivalent founded in request.
+	 * @var \string[]|NULL
+	 */
+	protected $requestLocalizationEquivalent = NULL;
 
 	/**
 	 * Localization value in specialy named `$_GET` param (if founded) 
@@ -535,5 +541,23 @@ trait PropsGettersSetters
 			? self::$routeClassLocalized 
 			: self::$routeClass;
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
+	}
+
+	// TODO: provizorní
+	protected function redirectLocalizationGetPrefixAndUnsetGet ($targetLocalization) {
+		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
+		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
+		if (isset($this->requestGlobalGet[$localizationUrlParam])) {
+			if ($targetLocalizationStr === $this->defaultLocalizationStr) {
+				unset($this->requestGlobalGet[$localizationUrlParam]);
+			} else {
+				$this->requestGlobalGet[$localizationUrlParam] = $targetLocalizationStr;
+			}
+			$targetLocalizationUrlValue = '';
+		} else {
+			$targetLocalizationUrlValue = $targetLocalizationStr;
+		}
+
+		return $targetLocalizationUrlValue;
 	}
 }
