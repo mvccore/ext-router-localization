@@ -544,7 +544,7 @@ trait PropsGettersSetters
 	}
 
 	// TODO: provizorní
-	protected function redirectLocalizationGetPrefixAndUnsetGet ($targetLocalization) {
+	protected function redirectLocalizationGetUrlValueAndUnsetGet ($targetLocalization) {
 		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
 		if (isset($this->requestGlobalGet[$localizationUrlParam])) {

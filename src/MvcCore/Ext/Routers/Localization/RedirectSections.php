@@ -29,19 +29,24 @@ trait RedirectSections
 
 		// unset site key switch param and redirect to no switch param uri version
 		$localizationParamName = static::URL_PARAM_LOCALIZATION;
-		$targetLocalizationUrlValue = $this->redirectLocalizationGetPrefixAndUnsetGet(
+		$targetLocalizationUrlValue = $this->redirectLocalizationGetUrlValueAndUnsetGet(
 			$systemParams[$localizationParamName]
 		);
 		
 		$urlPathWithQueryIsHome = NULL;
 		if ($this->anyRoutesConfigured) {
+			
 			if ($targetLocalizationUrlValue === NULL) {
 				unset($systemParams[$localizationParamName]);
-			} else if ($targetLocalizationUrlValue === $this->defaultLocalizationStr) {
-				$urlPathWithQueryIsHome = $this->urlIsHomePath($urlPathWithQuerySection);
-				if ($urlPathWithQueryIsHome)
-					unset($systemParams[$localizationParamName]);
+			} else {
+				$systemParams[$localizationParamName] = $targetLocalizationUrlValue;
+				if ($targetLocalizationUrlValue === $this->defaultLocalizationStr) {
+					$urlPathWithQueryIsHome = $this->urlIsHomePath($urlPathWithQuerySection);
+					if ($urlPathWithQueryIsHome)
+						unset($systemParams[$localizationParamName]);
+				}
 			}
+
 			$this->redirectAddAllRemainingInGlobalGet($urlPathWithQuerySection);
 		} else {
 			$this->removeDefaultCtrlActionFromGlobalGet();
