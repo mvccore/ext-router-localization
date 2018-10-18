@@ -53,11 +53,11 @@ trait Routing
 			if (!$this->preRouteLocalization()) return FALSE;
 		}
 		if ($this->routeByQueryString) {
-			$this->routeByControllerAndActionQueryString(
+			$this->queryStringRouting(
 				$requestCtrlName, $requestActionName
 			);
 		} else {
-			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
+			$this->rewriteRouting($requestCtrlName, $requestActionName);
 			if ($this->currentRoute === NULL && !$this->requestLocalization) {
 				$this->allowNonLocalizedRoutes = FALSE;
 				if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) 

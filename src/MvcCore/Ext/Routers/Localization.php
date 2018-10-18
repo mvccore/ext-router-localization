@@ -32,7 +32,7 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	use \MvcCore\Ext\Routers\Localization\RedirectSections;
 	use \MvcCore\Ext\Routers\Localization\UrlByRouteSections;
 	use \MvcCore\Ext\Routers\Localization\UrlByRoute;
-	use \MvcCore\Ext\Routers\Localization\RoutingByRoutes;
+	use \MvcCore\Ext\Routers\Localization\RewriteRouting;
 	use \MvcCore\Ext\Routers\Localization\Routing;
 	
 	/**

@@ -13,7 +13,7 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
-trait RoutingByRoutes
+trait RewriteRouting
 {
 	/**
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
@@ -25,7 +25,7 @@ trait RoutingByRoutes
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
+	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
@@ -38,9 +38,9 @@ trait RoutingByRoutes
 		}
 		/** @var $route \MvcCore\Route */
 		$requestMethod = $request->GetMethod();
-		$requestedPathFirstWord = $this->routeByRRGetRequestedPathFirstWord();
-		$this->routeByRRProcessPrehandlerIfAny($requestedPathFirstWord);
-		$routes = & $this->routeByRRGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
+		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
+		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
+		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
 		$allMatchedParams = [];
 		foreach ($routes as & $route) {
@@ -65,20 +65,20 @@ trait RoutingByRoutes
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
 				$localizationUrlParamName = static::URL_PARAM_LOCALIZATION;
-				$requestParams = $this->routeByRRSetRequestedAndDefaultParams(
+				$requestParams = $this->rewriteRoutingSetRequestedAndDefaultParams(
 					$allMatchedParams
 				);
 				$this->defaultParams[$localizationUrlParamName] = $localizationStr;
 				$localizationContained = isset($requestParams[$localizationUrlParamName]);
 				$requestParams[$localizationUrlParamName] = $localizationStr;
-				$break = $this->routeByRRSetRequestParams($allMatchedParams, $requestParams);
+				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams, $requestParams);
 				if (!$localizationContained) 
 					$this->request->RemoveParam($localizationUrlParamName);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->routeByRRSetUpRequestByCurrentRoute(
+			$this->rewriteRoutingSetUpRequestByCurrentRoute(
 				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
 	}

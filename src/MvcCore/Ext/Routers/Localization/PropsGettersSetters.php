@@ -676,7 +676,7 @@ trait PropsGettersSetters
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 
-	protected function & routeByRRGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
+	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
 		$routesGroupsKey = $firstPathWord;
 		if ($routesLocalizationStr !== NULL) 
 			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;
