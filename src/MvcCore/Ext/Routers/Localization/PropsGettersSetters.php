@@ -577,13 +577,16 @@ trait PropsGettersSetters
 	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
 		if ($autoInitialize) {
 			$this->routes = [];
-
 			$this->AddRoutes($routes, $groupNames);
-
 		} else {
 			$this->routes = $routes;
+			$routesAreEmpty = count($routes) === 0;
 			$noGroupNameDefined = $groupNames === NULL;
 			if ($noGroupNameDefined) {
+				if ($routesAreEmpty) {
+					$this->routesGroups = [];
+					$this->noUrlRoutes = [];
+				}
 				$this->routesGroups[''] = $routes;
 			} else if (is_string($groupNames)) {
 				$this->routesGroups[$groupNames] = $routes;
@@ -615,7 +618,7 @@ trait PropsGettersSetters
 					}
 				}
 			}
-			$this->anyRoutesConfigured = count($routes) > 0;
+			$this->anyRoutesConfigured = !$routesAreEmpty;
 		}
 		return $this;
 	}
@@ -673,11 +676,7 @@ trait PropsGettersSetters
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 
-	protected function & routeByRRGetRoutesToMatch ($routesLocalizationStr = NULL) {
-		$requestedPath = ltrim($this->request->GetPath(), '/');
-		$nextSlashPos = mb_strpos($requestedPath, '/');
-		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
-		$firstPathWord = mb_substr($requestedPath, 0, $nextSlashPos);
+	protected function & routeByRRGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
 		$routesGroupsKey = $firstPathWord;
 		if ($routesLocalizationStr !== NULL) 
 			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;

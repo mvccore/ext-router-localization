@@ -38,9 +38,10 @@ trait RoutingByRoutes
 		}
 		/** @var $route \MvcCore\Route */
 		$requestMethod = $request->GetMethod();
-		// TODO: zde byse volal PreRouteMatchingHandler()
+		$requestedPathFirstWord = $this->routeByRRGetRequestedPathFirstWord();
+		$this->routeByRRProcessPrehandlerIfAny($requestedPathFirstWord);
+		$routes = & $this->routeByRRGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
-		$routes = & $this->routeByRRGetRoutesToMatch($routesLocalizationStr);
 		$allMatchedParams = [];
 		foreach ($routes as & $route) {
 			$routeMethod = $route->GetMethod();
