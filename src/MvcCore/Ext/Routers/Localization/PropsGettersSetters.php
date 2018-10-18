@@ -490,6 +490,11 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										 `Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames Group name(s) is first matched/parsed word(s) in 
+	 *										requested path to group routes by to try to
+	 *										match only routes you realy need, not all of
+	 *										them. If `NULL` by default, routes are inserted 
+	 *										into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
 	 *						be prepended from the last to the first in
 	 *						given list, not appended.
@@ -499,12 +504,137 @@ trait PropsGettersSetters
 	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+	public function & AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		$routeClass = self::$routeClass;
 		self::$routeClass = self::$routeClassLocalized;
-		parent::AddRoutes($routes, $prepend, $throwExceptionForDuplication);
+		parent::AddRoutes($routes, $groupNames, $prepend, $throwExceptionForDuplication);
 		self::$routeClass = $routeClass;
 		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param \MvcCore\Route|\MvcCore\Ext\Routers\Localizations\Route $route 
+	 * @param string $routeName
+	 * @param string|\string[]|NULL $groupNames
+	 * @param bool $prepend 
+	 */
+	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupNames, $prepend) {
+		$routesGroupsKeys = [];
+		if ($groupNames === NULL) {
+			$routesGroupsKeys[] = '';
+		} else if (is_string($groupNames)) {
+			$routesGroupsKeys[] = $groupNames;
+			$route->SetGroupName($groupNames);
+		} else if (is_array($groupNames)) {
+			foreach ($groupNames as $routeLocalizationKey => $groupName)
+				$routesGroupsKeys[] = $routeLocalizationKey . '/' . $groupName;
+			if ($route instanceof \MvcCore\Ext\Routers\Localizations\Route) {
+				$route->SetGroupName($groupNames);
+			} else {
+				throw new \InvalidArgumentException (
+					"[".__CLASS__."] Localized routes group cannot contain non-localized route instance. "
+					. "(group names: ".json_encode($groupNames).", route: $route)"
+				);
+			}
+		}
+		foreach ($routesGroupsKeys as $routesGroupsKey) {
+			if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
+				$groupRoutes = $this->routesGroups[$routesGroupsKey];
+			} else {
+				$groupRoutes = [];
+			}
+			if ($prepend) {
+				$newItem = [$routeName => $route];
+				$groupRoutes = $newItem + $groupRoutes;
+			} else {
+				$groupRoutes[$routeName] = $route;
+			}
+			$this->routesGroups[$routesGroupsKey] = $groupRoutes;
+		}
+	}
+
+	/**
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										`Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames Group name is first matched/parsed word in 
+	 *									   requested path to group routes by to try to
+	 *									   match only routes you realy need, not all of
+	 *									   them. If `NULL` by default, routes are 
+	 *									   inserted into default group.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
+	 * @return \MvcCore\Router
+	 */
+	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
+		if ($autoInitialize) {
+			$this->routes = [];
+
+			$this->AddRoutes($routes, $groupNames);
+
+		} else {
+			$this->routes = $routes;
+			$noGroupNameDefined = $groupNames === NULL;
+			if ($noGroupNameDefined) {
+				$this->routesGroups[''] = $routes;
+			} else if (is_string($groupNames)) {
+				$this->routesGroups[$groupNames] = $routes;
+			} else if (is_array($groupNames)) {
+				foreach ($groupNames as $routesLocalizationKey => $groupName)
+					$this->routesGroups[$routesLocalizationKey . '/' . $groupName] = $routes;
+			}
+			$this->urlRoutes = [];
+			foreach ($routes as $route) {
+				$this->urlRoutes[$route->GetName()] = $route;
+				$controllerAction = $route->GetControllerAction();
+				if ($controllerAction !== ':') 
+					$this->urlRoutes[$controllerAction] = $route;
+				if ($noGroupNameDefined) {
+					$routeGroupNames = $route->GetGroupName();
+					$routesGroupsKeys = [];
+					if ($routeGroupNames === NULL) {
+						$routesGroupsKeys[] = '';
+					} else if (is_string($routeGroupNames)) {
+						$routesGroupsKeys[] = $routeGroupNames;
+					} else if (is_array($routeGroupNames)) {
+						foreach ($routeGroupNames as $routesLocalizationKey => $routeGroupName) 
+							$routesGroupsKeys[] = $routesLocalizationKey . '/' . $routeGroupName;
+					}
+					foreach ($routesGroupsKeys as $routesGroupKey) {
+						if (!array_key_exists($routesGroupKey, $this->routesGroups))
+							$this->routesGroups[$routesGroupKey] = [];
+						$this->routesGroups[$routesGroupKey][] = $route;
+					}
+				}
+			}
+			$this->anyRoutesConfigured = count($routes) > 0;
+		}
+		return $this;
+	}
+
+	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
+		$routeGroups = $route->GetGroupName();
+		$routesGroupsKeys = [];
+		if ($routeGroups === NULL) {
+			$routesGroupsKeys[] = '';
+		} else if (is_string($routeGroups)) {
+			$routesGroupsKeys[] = $routeGroups;
+		} else if (is_array($routeGroups)) {
+			foreach ($routeGroups as $routesLocalizationKey => $routeGroupName) 
+				$routesGroupsKeys[] = $routesLocalizationKey . '/' . $routeGroupName;
+		}
+		foreach ($routesGroupsKeys as $routesGroupKey) {
+			if (isset($this->routesGroups[$routesGroupKey])) 
+			unset($this->routesGroups[$routesGroupKey][$routeName]);
+		}
 	}
 	
 
@@ -541,6 +671,23 @@ trait PropsGettersSetters
 			? self::$routeClassLocalized 
 			: self::$routeClass;
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
+	}
+
+	protected function & routeByRRGetRoutesToMatch ($routesLocalizationStr = NULL) {
+		$requestedPath = ltrim($this->request->GetPath(), '/');
+		$nextSlashPos = mb_strpos($requestedPath, '/');
+		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
+		$firstPathWord = mb_substr($requestedPath, 0, $nextSlashPos);
+		$routesGroupsKey = $firstPathWord;
+		if ($routesLocalizationStr !== NULL) 
+			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;
+		if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
+			$routes = & $this->routesGroups[$routesGroupsKey];
+		} else {
+			$routes = & $this->routesGroups[''];
+		}
+		reset($routes);
+		return $routes;
 	}
 
 	// TODO: provizorní

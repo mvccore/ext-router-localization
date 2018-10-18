@@ -351,6 +351,24 @@ class Route extends \MvcCore\Route
 	}
 
 	/**
+	 * TODO: dopsat
+	 * @return string|array|NULL
+	 */
+	public function GetGroupName () {
+		return $this->groupName;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param string|array|NULL $groupName 
+	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 */
+	public function & SetGroupName ($groupName) {
+		$this->groupName = $groupName;
+		return $this;
+	}
+
+	/**
 	 * Return array of matched params, with matched controller and action names,
 	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
 	 *

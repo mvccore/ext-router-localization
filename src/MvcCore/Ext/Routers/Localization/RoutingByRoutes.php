@@ -29,19 +29,20 @@ trait RoutingByRoutes
 		$request = & $this->request;
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
-		if ($this->routeRecordsByLanguageAndLocale) {
-			$routesLocalizationStr = $localizationStr;
-		} else if (count($this->localization) > 0) {
-			$routesLocalizationStr = $this->localization[0];
+		if (count($this->localization) > 0) {
+			$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
+				? $localizationStr
+				: $this->localization[0];
 		} else {
 			$routesLocalizationStr = NULL;
 		}
 		/** @var $route \MvcCore\Route */
-		reset($this->routes);
-		$allMatchedParams = [];
 		$requestMethod = $request->GetMethod();
+		// TODO: zde byse volal PreRouteMatchingHandler()
 		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
-		foreach ($this->routes as & $route) {
+		$routes = & $this->routeByRRGetRoutesToMatch($routesLocalizationStr);
+		$allMatchedParams = [];
+		foreach ($routes as & $route) {
 			$routeMethod = $route->GetMethod();
 			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
 			// skip non localized routes by configuration
