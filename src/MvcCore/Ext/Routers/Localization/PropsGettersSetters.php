@@ -572,7 +572,7 @@ trait PropsGettersSetters
 	 *							   You can you `FALSE` to set routes without any 
 	 *							   change or autoinitialization, it could be usefull 
 	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|\MvcCore\Ext\Routers\Localization
 	 */
 	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
 		if ($autoInitialize) {
@@ -618,7 +618,7 @@ trait PropsGettersSetters
 					}
 				}
 			}
-			$this->anyRoutesConfigured = !$routesAreEmpty;
+			$this->anyRoutesConfigured = (!$routesAreEmpty) || $this->preRouteMatchingHandler !== NULL;
 		}
 		return $this;
 	}

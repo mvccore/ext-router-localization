@@ -65,21 +65,19 @@ trait RewriteRouting
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
 				$localizationUrlParamName = static::URL_PARAM_LOCALIZATION;
-				$requestParams = $this->rewriteRoutingSetRequestedAndDefaultParams(
-					$allMatchedParams
+				$this->rewriteRoutingSetRequestedAndDefaultParams(
+					$allMatchedParams, $requestCtrlName, $requestActionName
 				);
 				$this->defaultParams[$localizationUrlParamName] = $localizationStr;
 				$localizationContained = isset($requestParams[$localizationUrlParamName]);
 				$requestParams[$localizationUrlParamName] = $localizationStr;
-				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams, $requestParams);
+				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams);
 				if (!$localizationContained) 
 					$this->request->RemoveParam($localizationUrlParamName);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->rewriteRoutingSetUpRequestByCurrentRoute(
-				$allMatchedParams['controller'], $allMatchedParams['action']
-			);
+			$this->rewriteRoutingSetUpCurrentRouteByRequest();
 	}
 }
