@@ -74,9 +74,12 @@ trait PreRouting
 	 * @return bool
 	 */
 	protected function manageLocalizationSwitchingAndRedirect () {
-		$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->switchUriParamLocalization);
 		// unset site key switch param
-		unset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]);
+		$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->switchUriParamLocalization);
+		// it couldn't be there in module extended router, because this variable is 
+		// used by extended router to redirect non-valid values in 3rd level domains
+		if (isset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]))
+			unset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]);
 		// redirect to no switch param uri version
 		return $this->redirectToVersion(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)

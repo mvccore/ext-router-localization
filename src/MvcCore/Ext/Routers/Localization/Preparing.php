@@ -91,6 +91,15 @@ trait Preparing
 		$this->prepareRequestLocalizationFromUrlQueryString();
 		if ($this->requestLocalization === NULL && $this->anyRoutesConfigured) 
 			$this->prepareRequestLocalizationFromUrlPath();
+		if ($this->requestLocalization === NULL) {
+			$requestPath = $this->request->GetPath(TRUE);
+			if (trim($requestPath, '/') === '' && $requestPath !== $this->request->GetScriptName()) {
+				$this->requestLocalization = $this->defaultLocalization;
+				$this->request->SetLang($this->requestLocalization[0]);
+				if ($this->requestLocalization[1]) 
+					$this->request->SetLocale($this->requestLocalization[1]);
+			}
+		}
 	}
 
 	/**
@@ -98,7 +107,6 @@ trait Preparing
 	 * @return void
 	 */
 	protected function prepareRequestLocalizationFromUrlQueryString () {
-		$this->requestLocalization = NULL;
 		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$langAndLocaleSeparator = static::LANG_AND_LOCALE_SEPARATOR;
 		// try ty set up request localization by query string first - query string is always stronger value
@@ -106,27 +114,10 @@ trait Preparing
 			$localizationUrlParam, 
 			$langAndLocaleSeparator . 'a-zA-Z0-9'
 		);
-		$requestLocalizationValidStr = $requestLocalization && strlen($requestLocalization) > 0;
-		if ($requestLocalizationValidStr) {
-			$requestLocalization = strtolower($requestLocalization);
-			$separatorPos = strpos($requestLocalization, static::LANG_AND_LOCALE_SEPARATOR);
-			if ($separatorPos !== FALSE) 
-				$requestLocalization = substr($requestLocalization, 0, $separatorPos + 1)
-					. strtoupper(substr($requestLocalization, $separatorPos + 1));
-		}
-		if ($requestLocalizationValidStr && isset($this->allowedLocalizations[$requestLocalization])) {
-			$this->requestLocalization = explode($langAndLocaleSeparator, $requestLocalization);
-			$this->request->SetLang($this->requestLocalization[0]);
-			if ($this->requestLocalization[1]) $this->request->SetLocale($this->requestLocalization[1]);
-		} else if (isset($this->localizationEquivalents[$requestLocalization])) {
-			$targetLocalization = explode($langAndLocaleSeparator, $this->localizationEquivalents[$requestLocalization]);
-			if ($this->stricModeBySession && $this->sessionLocalization) {
-				$this->requestLocalizationEquivalent = $this->sessionLocalization;
-			} else {
-				$this->requestLocalizationEquivalent = $targetLocalization;
-			}
-		}
+		$this->prepareSetUpRequestLocalizationIfValid($requestLocalization, FALSE);
 	}
+
+	
 	
 	/**
 	 * Try to set up lang (or lang and locale) from request path.
@@ -158,41 +149,56 @@ trait Preparing
 			"#[^" . static::LANG_AND_LOCALE_SEPARATOR . "a-z0-9]#", 
 			'', strtolower($firstPathElm)
 		);
-		$separatorPos = strpos($localizationPart, static::LANG_AND_LOCALE_SEPARATOR);
-		if ($separatorPos !== FALSE) 
-			$localizationPart = substr($localizationPart, 0, $separatorPos + 1)
-				. strtoupper(substr($localizationPart, $separatorPos + 1));
-		if (isset($this->allowedLocalizations[$localizationPart])) {
-			$langAndLocale = explode(static::LANG_AND_LOCALE_SEPARATOR, $localizationPart);
-			if (strlen($langAndLocale[0]) > 0) {
-				$this->requestLocalization = $langAndLocale;
-				$newPath = mb_substr($requestPath, strlen($localizationPart) + 1);
+		$this->prepareSetUpRequestLocalizationIfValid($localizationPart, TRUE);
+	}
+
+	/**
+	 * @param string|NULL $rawRequestLocalization 
+	 * @param bool $correctRequestPath 
+	 * @return bool
+	 */
+	protected function prepareSetUpRequestLocalizationIfValid ($rawRequestLocalization, $correctRequestPath = FALSE) {
+		$result = FALSE;
+		$langAndLocaleSeparator = static::LANG_AND_LOCALE_SEPARATOR;
+		$requestLocalizationFormated = '';
+		$rawRequestLocalizationLength = $rawRequestLocalization ? strlen($rawRequestLocalization) : 0;
+		$requestLocalizationValidStr = $rawRequestLocalizationLength > 0;
+		if ($requestLocalizationValidStr) {
+			$requestLocalizationFormated = strtolower($rawRequestLocalization);
+			$separatorPos = strpos($rawRequestLocalization, static::LANG_AND_LOCALE_SEPARATOR);
+			if ($separatorPos !== FALSE) 
+				$requestLocalizationFormated = substr($requestLocalizationFormated, 0, $separatorPos + 1)
+					. strtoupper(substr($requestLocalizationFormated, $separatorPos + 1));
+		}
+		if (isset($this->allowedLocalizations[$requestLocalizationFormated])) {
+			$this->requestLocalization = explode($langAndLocaleSeparator, $requestLocalizationFormated);
+			$this->requestLocalizationEquivalent = NULL;
+			$this->request->SetLang($this->requestLocalization[0]);
+			$result = TRUE;
+			if (count($this->requestLocalization) > 1) 
+				$this->request->SetLocale($this->requestLocalization[1]);
+			if ($correctRequestPath) {
+				$requestPath = $this->request->GetPath(TRUE);
+				$newPath = mb_substr($requestPath, $rawRequestLocalizationLength + 1);
 				if ($newPath === '') $newPath = '/';
-				$this->request
-					->SetLang($langAndLocale[0])
-					->SetPath($newPath);
-				if (count($langAndLocale) > 1 && strlen($langAndLocale[1]) > 0) 
-					$this->request->SetLocale($langAndLocale[1]);
+				$this->request->SetPath($newPath);
 			}
-		} else if (isset($this->localizationEquivalents[$localizationPart])) {
-			$targetLocalization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localizationEquivalents[$localizationPart]);
-			$newPath = mb_substr($requestPath, strlen($localizationPart) + 1);
-			if ($newPath === '') $newPath = '/';
-			$this->request->SetPath($newPath);
+		} else if (isset($this->localizationEquivalents[$requestLocalizationFormated])) {
+			$targetLocalization = explode($langAndLocaleSeparator, $this->localizationEquivalents[$requestLocalizationFormated]);
 			if ($this->stricModeBySession && $this->sessionLocalization) {
 				$this->requestLocalizationEquivalent = $this->sessionLocalization;
+				$result = TRUE;
 			} else {
 				$this->requestLocalizationEquivalent = $targetLocalization;
+				$result = TRUE;
+			}
+			if ($correctRequestPath) {
+				$requestPath = $this->request->GetPath(TRUE);
+				$newPath = mb_substr($requestPath, $rawRequestLocalizationLength + 1);
+				if ($newPath === '') $newPath = '/';
+				$this->request->SetPath($newPath);
 			}
 		}
-		if (
-			$this->requestLocalization === NULL && 
-			(trim($requestPath, '/') === '' && $requestPath !== $this->request->GetScriptName())
-		) {
-			$this->requestLocalization = $this->defaultLocalization;
-			$this->request->SetLang($this->requestLocalization[0]);
-			if ($this->requestLocalization[1]) 
-				$this->request->SetLocale($this->requestLocalization[1]);
-		}
+		return $result;
 	}
 }
