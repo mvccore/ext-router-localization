@@ -30,6 +30,8 @@ trait Preparing
 	 * @return void
 	 */
 	protected function prepareLocalization () {
+		//if ($this->localization) return;
+
 		// check all necessary properties configured
 		if (!$this->defaultLocalization)
 			throw new \InvalidArgumentException("[".__CLASS__."] No default localization configured.");

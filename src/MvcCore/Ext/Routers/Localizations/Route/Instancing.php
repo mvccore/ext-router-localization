@@ -82,39 +82,65 @@ trait Instancing
 		if (count(func_get_args()) === 0) return;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
-			if (isset($data->pattern)) {
-				if (is_array($data->pattern)) {
-					$this->patternLocalized = $data->pattern;
-				} else {
-					$this->pattern = $data->pattern;	
-				}
-			}
-			if (isset($data->match)) {
-				if (is_array($data->match)) {
-					$this->matchLocalized = $data->match;
-				} else {
-					$this->match = $data->match;	
-				}
-			}
-			if (isset($data->reverse)) {
-				if (is_array($data->reverse)) {
-					$this->reverseLocalized = $data->reverse;
-				} else {
-					$this->reverse = $data->reverse;
-				}
-			}
-			$this->constructCtrlActionNameDefConstrAndAdvCfg($data);
+			$this->constructDataPatternsDefaultsConstraintsFilters($data);
+			$this->constructDataCtrlActionName($data);
+			$this->constructDataAdvConf($data);
 		} else {
-			if ($this->recordIsLocalized($patternOrConfig)) {
-				$this->patternLocalized = $patternOrConfig;
-			} else {
-				$this->pattern = $patternOrConfig;	
-			}
-			$this->constructCtrlActionDefConstrAndAdvCfg(
-				$controllerAction, $defaults, $constraints, $advancedConfiguration
+			$this->constructVarsPatternDefaultsConstraintsFilters(
+				$patternOrConfig, $defaults, $constraints, $advancedConfiguration
 			);
+			$this->constructVarCtrlActionNameByData($controllerAction);
+			$this->constructVarAdvConf($advancedConfiguration);
 		}
 		$this->constructCtrlOrActionByName();
+	}
+
+	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
+		if (isset($data->pattern)) {
+			if (is_array($data->pattern)) {
+				$this->patternLocalized = $data->pattern;
+			} else {
+				$this->pattern = $data->pattern;	
+			}
+		}
+		if (isset($data->match)) {
+			if (is_array($data->match)) {
+				$this->matchLocalized = $data->match;
+			} else {
+				$this->match = $data->match;	
+			}
+		}
+		if (isset($data->reverse)) {
+			if (is_array($data->reverse)) {
+				$this->reverseLocalized = $data->reverse;
+			} else {
+				$this->reverse = $data->reverse;
+			}
+		}
+		if (isset($data->defaults)) 
+			$this->SetDefaults($data->defaults);
+		if (isset($data->constraints)) 
+			$this->SetConstraints($data->constraints);
+		if (isset($data->filters) && is_array($data->filters)) 
+			$this->SetFilters($data->filters);
+	}
+
+	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
+		if ($this->is_array($pattern)) {
+			$this->patternLocalized = $pattern;
+		} else {
+			$this->pattern = $pattern;	
+		}
+		if ($defaults !== NULL)
+			$this->SetDefaults($defaults);
+		if ($constraints !== NULL)
+			$this->SetConstraints($constraints);
+		$filterInParam = static::CONFIG_FILTER_IN;
+		if (isset($advCfg[$filterInParam]))
+			$this->SetFilter($advCfg[$filterInParam], $filterInParam);
+		$filterOutParam = static::CONFIG_FILTER_OUT;
+		if (isset($advCfg[$filterOutParam]))
+			$this->SetFilter($advCfg[$filterOutParam], $filterOutParam);
 	}
 
 	/**

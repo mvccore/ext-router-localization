@@ -23,34 +23,36 @@ trait PreRouting
 	 * @return bool
 	 */
 	protected function preRouteLocalization () {
-		if (
-			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) &&
-			$this->switchUriParamLocalization !== NULL
-		) {
-			// if there is detected in requested url media site version switching param,
-			// store switching param value in session, remove param from `$_GET` 
-			// and redirect to the same page with new media site version:
-			if (!$this->manageLocalizationSwitchingAndRedirect()) return FALSE;
+		if (!$this->localization) {
+			if (
+				(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) &&
+				$this->switchUriParamLocalization !== NULL
+			) {
+				// if there is detected in requested url media site version switching param,
+				// store switching param value in session, remove param from `$_GET` 
+				// and redirect to the same page with new media site version:
+				if (!$this->manageLocalizationSwitchingAndRedirect()) return FALSE;
 
-		} else if ($this->requestLocalizationEquivalent !== NULL) {
-			// if there was catched localization equivalentm redirect to it's target
-			return $this->redirectToVersion(
-				$this->setUpLocalizationToContextAndSession($this->requestLocalizationEquivalent)
-			);
-		} else if (
-			(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) && 
-			$this->sessionLocalization === NULL
-		) {
-			// if there is no session record about media site version:
-			$this->manageLocalizationDetectionAndStoreInSession();
-			// check if media site version is the same as local media site version:
-			if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
+			} else if ($this->requestLocalizationEquivalent !== NULL) {
+				// if there was catched localization equivalentm redirect to it's target
+				return $this->redirectToVersion(
+					$this->setUpLocalizationToContextAndSession($this->requestLocalizationEquivalent)
+				);
+			} else if (
+				(($this->isGet && $this->routeGetRequestsOnly) || !$this->routeGetRequestsOnly) && 
+				$this->sessionLocalization === NULL
+			) {
+				// if there is no session record about media site version:
+				$this->manageLocalizationDetectionAndStoreInSession();
+				// check if media site version is the same as local media site version:
+				if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
 
-		} else {
-			// if there is media site version in session already:
-			$this->localization = $this->sessionLocalization;
-			// check if media site version is the same as local media site version:
-			if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
+			} else {
+				// if there is media site version in session already:
+				$this->localization = $this->sessionLocalization;
+				// check if media site version is the same as local media site version:
+				if (!$this->checkLocalizationWithUrlAndRedirectIfNecessary()) return FALSE;
+			}
 		}
 
 		// set up stored/detected localization into request:
@@ -58,6 +60,7 @@ trait PreRouting
 			$this->request->SetLang($this->localization[0]);
 			if (count($this->localization) > 1) 
 				$this->request->SetLocale($this->localization[1]);
+			$this->session->{static::URL_PARAM_LOCALIZATION} = $this->localization;
 		}
 
 		// return `TRUE` or `FALSE` to break or not the routing process
@@ -118,8 +121,7 @@ trait PreRouting
 		}
 		if (!$this->localization) 
 			$this->localization = $this->defaultLocalization;
-		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
-		$this->session->{$localizationUrlParam} = $this->localization;
+		$this->session->{static::URL_PARAM_LOCALIZATION} = $this->localization;
 		$this->firstRequestLocalizationDetection = $firstRequestLocalizationDetection;
 	}
 

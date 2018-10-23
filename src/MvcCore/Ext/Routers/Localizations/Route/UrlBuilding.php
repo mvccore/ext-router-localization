@@ -79,7 +79,7 @@ trait UrlBuilding
 		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
 		
 		// split params into domain params array and into path and query params array
-		$domainParams = $this->urlGetAndRemoveDomainParams($filteredParams);
+		$domainPercentageParams = $this->urlGetAndRemoveDomainPercentageParams($filteredParams);
 
 		// build reverse pattern
 		$result = $this->urlComposeByReverseSectionsAndParams(
@@ -94,9 +94,11 @@ trait UrlBuilding
 		if ($filteredParams) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986));
+				. str_replace('%2F', '/', http_build_query(
+					$filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986
+				));
 		}
 
-		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $domainParams);
+		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $domainPercentageParams);
 	}
 }
