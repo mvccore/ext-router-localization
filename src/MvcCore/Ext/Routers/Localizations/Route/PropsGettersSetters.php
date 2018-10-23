@@ -58,7 +58,7 @@ trait PropsGettersSetters
 	 * `["name", "color"];`
 	 * @var \string[]|NULL
 	 */
-	protected $reverseParams	= NULL;
+	#protected $reverseParams	= NULL;
 
 	/**
 	 * @param string $localization
