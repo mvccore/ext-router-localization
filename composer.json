@@ -1,7 +1,7 @@
 {
 	"name": "mvccore/ext-router-localization",
 	"type": "library",
-	"description": "MvcCore - Extension - Router - Localization - localized router by language and locale codes (optionaly) in url adresses. For any http method, multi or single language patterns and reverses, url adresses like '/en/custom/path', very configurable.",
+	"description": "MvcCore - Extension - Router - Media & Localization - extension to manage website localizations (language or language and locale). For any HTTP method, multi or single language (or lang. with locale) patterns and reverses, URL addresses like `/en/path` or `/en-US/path`, very configurable.",
 	"keywords": [
 		"mvc", 
 		"mvccore", 
