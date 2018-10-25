@@ -28,7 +28,7 @@ trait Matching
 	 *				 params or controller and action params.
 	 */
 	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
-		$matchedParams = [];
+		$matchedParams = NULL;
 		$pattern = & $this->matchesGetPattern($localization);
 		$subject = $this->matchesGetSubject($request);
 		preg_match_all($pattern, $subject, $matchedValues);

@@ -184,19 +184,22 @@ trait Preparing
 				$this->request->SetPath($newPath);
 			}
 		} else if (isset($this->localizationEquivalents[$requestLocalizationFormated])) {
-			$targetLocalization = explode($langAndLocaleSeparator, $this->localizationEquivalents[$requestLocalizationFormated]);
-			if ($this->stricModeBySession && $this->sessionLocalization) {
-				$this->requestLocalizationEquivalent = $this->sessionLocalization;
-				$result = TRUE;
-			} else {
-				$this->requestLocalizationEquivalent = $targetLocalization;
-				$result = TRUE;
-			}
-			if ($correctRequestPath) {
-				$requestPath = $this->request->GetPath(TRUE);
-				$newPath = mb_substr($requestPath, $rawRequestLocalizationLength + 1);
-				if ($newPath === '') $newPath = '/';
-				$this->request->SetPath($newPath);
+			$targetLocalizationStr = $this->localizationEquivalents[$requestLocalizationFormated];
+			if (isset($this->allowedLocalizations[$targetLocalizationStr])) {
+				$targetLocalization = explode($langAndLocaleSeparator, $targetLocalizationStr);
+				if ($this->stricModeBySession && $this->sessionLocalization) {
+					$this->requestLocalizationEquivalent = $this->sessionLocalization;
+					$result = TRUE;
+				} else {
+					$this->requestLocalizationEquivalent = $targetLocalization;
+					$result = TRUE;
+				}
+				if ($correctRequestPath) {
+					$requestPath = $this->request->GetPath(TRUE);
+					$newPath = mb_substr($requestPath, $rawRequestLocalizationLength + 1);
+					if ($newPath === '') $newPath = '/';
+					$this->request->SetPath($newPath);
+				}
 			}
 		}
 		return $result;

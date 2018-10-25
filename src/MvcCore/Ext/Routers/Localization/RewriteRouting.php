@@ -42,42 +42,41 @@ trait RewriteRouting
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
 		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
-		$allMatchedParams = [];
 		foreach ($routes as & $route) {
-			$routeMethod = $route->GetMethod();
-			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
-			// skip non localized routes by configuration
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
-			// skip localized routes matching when request has no localization in path
-			if (!$localizationInRequest && $routeIsLocalized) {
-				// but do not skip localized routes matching when request has no localization in path and:
-				// - when method is post and router has not allowed to process other methods than GET
-				// - or when method is anything and router has allowed to process other methods than GET
-				if ($localizationRoutesSkipping) continue;
-			}
-			if (!$this->allowNonLocalizedRoutes && !$routeIsLocalized) continue;
+			
+			if ($this->rewriteRoutingCheckRoute($route, [
+				$requestMethod, $localizationInRequest, $routeIsLocalized, $localizationRoutesSkipping
+			])) continue;
+
 			if ($routeIsLocalized) {
 				$allMatchedParams = $route->Matches($request, $routesLocalizationStr);
 			} else {
 				$allMatchedParams = $route->Matches($request);
 			}
-			if ($allMatchedParams) {
+
+			if ($allMatchedParams !== NULL) {
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
+				
 				$localizationUrlParamName = static::URL_PARAM_LOCALIZATION;
+				
 				$this->rewriteRoutingSetRequestedAndDefaultParams(
 					$allMatchedParams, $requestCtrlName, $requestActionName
 				);
+
 				$this->defaultParams[$localizationUrlParamName] = $localizationStr;
 				$localizationContained = isset($requestParams[$localizationUrlParamName]);
 				$requestParams[$localizationUrlParamName] = $localizationStr;
-				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams);
+				
+				if ($this->rewriteRoutingSetRequestParams($allMatchedParams)) continue;
+
 				if (!$localizationContained) 
 					$this->request->RemoveParam($localizationUrlParamName);
-				if ($break) break;
+				
+				$this->rewriteRoutingSetUpCurrentRouteByRequest();
+				break;
 			}
 		}
-		if ($this->currentRoute !== NULL) 
-			$this->rewriteRoutingSetUpCurrentRouteByRequest();
 	}
 }

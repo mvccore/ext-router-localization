@@ -180,8 +180,10 @@ trait PreRouting
 			return $this->redirectToVersion(
 				$this->setUpLocalizationToContextAndSession($this->requestLocalization)	
 			);
-		if ($targetLocalization === $this->requestLocalization) 
+		if ($targetLocalization === $this->requestLocalization) {
+			$this->localization = $targetLocalization;
 			return TRUE;
+		}
 		return $this->redirectToVersion(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)	
 		);
