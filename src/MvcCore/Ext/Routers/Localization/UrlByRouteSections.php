@@ -49,9 +49,12 @@ trait UrlByRouteSections
 		$routeMethod = $route->GetMethod();
 
 
-		list($localizationParamName, $localizationStr) = $this->urlByRouteSectionsLocalization(
-			$route, $params, $routeMethod
-		);
+		$multipleLocalizationsConfigured = count($this->allowedLocalizations) > 1;
+		$localizationParamName = $localizationStr = NULL;
+		if ($multipleLocalizationsConfigured) 
+			list($localizationParamName, $localizationStr) = $this->urlByRouteSectionsLocalization(
+				$route, $params, $routeMethod
+			);
 
 
 		// complete by given route base url address part and part with path and query string
@@ -59,8 +62,11 @@ trait UrlByRouteSections
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 
+
 		$systemParams = [];
-		if ($localizationStr !== NULL) $systemParams[$localizationParamName] = $localizationStr;
+		if ($multipleLocalizationsConfigured && $localizationStr !== NULL) 
+			$systemParams[$localizationParamName] = $localizationStr;
+
 
 		return [
 			$urlBaseSection, 

@@ -676,19 +676,6 @@ trait PropsGettersSetters
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 
-	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
-		$routesGroupsKey = $firstPathWord;
-		if ($routesLocalizationStr !== NULL) 
-			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;
-		if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
-			$routes = & $this->routesGroups[$routesGroupsKey];
-		} else {
-			$routes = & $this->routesGroups[''];
-		}
-		reset($routes);
-		return $routes;
-	}
-
 	// TODO: provizorní
 	protected function redirectLocalizationGetUrlValueAndUnsetGet ($targetLocalization) {
 		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;

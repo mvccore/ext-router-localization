@@ -30,17 +30,26 @@ trait Preparing
 	 * @return void
 	 */
 	protected function prepareLocalization () {
-		//if ($this->localization) return;
 
 		// check all necessary properties configured
 		if (!$this->defaultLocalization)
 			throw new \InvalidArgumentException("[".__CLASS__."] No default localization configured.");
+		
+		// store path info localy for routing process
+		$this->originalRequestPath = $this->request->GetPath();
 
 		// prepare possibly modified allowed localizations
 		$this->allowedLocalizations = array_combine($this->allowedLocalizations, $this->allowedLocalizations);
 		// add default localization into allowed langs for sure
 		$this->defaultLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocalization);
 		$this->allowedLocalizations[$this->defaultLocalizationStr] = $this->defaultLocalizationStr;
+
+		// if there is only one localized language, do not process anything else
+		if (count($this->allowedLocalizations) < 2) {
+			$this->localization = $this->defaultLocalization;
+			$this->requestLocalization = $this->defaultLocalization;
+			return;
+		}
 
 		// add automaticly into equivalents also all langs parsed from localizations if necessary
 		if ($this->detectLocalizationOnlyByLang) {
@@ -72,9 +81,6 @@ trait Preparing
 		// any record about lang from previous request
 		if (isset($this->session->{static::URL_PARAM_LOCALIZATION})) 
 			$this->sessionLocalization = $this->session->{static::URL_PARAM_LOCALIZATION};
-		
-		// store path info localy for routing process
-		$this->originalRequestPath = $this->request->GetPath();
 
 		// get current localization from requested url string
 		$this->prepareRequestLocalizationFromUrl();

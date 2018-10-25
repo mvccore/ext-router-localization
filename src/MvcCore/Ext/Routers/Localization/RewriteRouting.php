@@ -27,26 +27,29 @@ trait RewriteRouting
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
+
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
+		$routesLocalizationStr = NULL;
 		if (count($this->localization) > 0) {
 			$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
 				? $localizationStr
 				: $this->localization[0];
-		} else {
-			$routesLocalizationStr = NULL;
 		}
+
 		/** @var $route \MvcCore\Route */
 		$requestMethod = $request->GetMethod();
 		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
+
 		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
-		$localizationRoutesSkipping = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
+		$noSkipLocalRoutesForNonLocalRequests = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
+
 		foreach ($routes as & $route) {
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 			
 			if ($this->rewriteRoutingCheckRoute($route, [
-				$requestMethod, $localizationInRequest, $routeIsLocalized, $localizationRoutesSkipping
+				$requestMethod, $localizationInRequest, $routeIsLocalized, $noSkipLocalRoutesForNonLocalRequests
 			])) continue;
 
 			if ($routeIsLocalized) {
@@ -78,5 +81,18 @@ trait RewriteRouting
 				break;
 			}
 		}
+	}
+
+	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
+		$routesGroupsKey = $firstPathWord;
+		if ($routesLocalizationStr !== NULL) 
+			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;
+		if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
+			$routes = & $this->routesGroups[$routesGroupsKey];
+		} else {
+			$routes = & $this->routesGroups[''];
+		}
+		reset($routes);
+		return $routes;
 	}
 }

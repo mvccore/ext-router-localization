@@ -33,9 +33,11 @@ trait RedirectSections
 			$systemParams[$localizationParamName]
 		);
 		
+
 		$urlPathWithQueryIsHome = NULL;
 		if ($this->anyRoutesConfigured) {
 			
+
 			if ($targetLocalizationUrlValue === NULL) {
 				unset($systemParams[$localizationParamName]);
 			} else {
@@ -46,6 +48,7 @@ trait RedirectSections
 						unset($systemParams[$localizationParamName]);
 				}
 			}
+
 
 			$this->redirectAddAllRemainingInGlobalGet($urlPathWithQuerySection);
 		} else {

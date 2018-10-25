@@ -16,7 +16,7 @@ namespace MvcCore\Ext\Routers\Localization;
 trait RewriteRoutingChecks
 {
 	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
-		list ($requestMethod, $localizationInRequest, $routeIsLocalized, $localizationRoutesSkipping) = $additionalInfo;
+		list ($requestMethod, $localizationInRequest, $routeIsLocalized, $noSkipLocalRoutesForNonLocalRequests) = $additionalInfo;
 
 		$routeMethod = $route->GetMethod();
 		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
@@ -26,7 +26,7 @@ trait RewriteRoutingChecks
 			// but do not skip localized routes matching when request has no localization in path and:
 			// - when method is post and router has not allowed to process other methods than GET
 			// - or when method is anything and router has allowed to process other methods than GET
-			if ($localizationRoutesSkipping) return TRUE;
+			if ($noSkipLocalRoutesForNonLocalRequests) return TRUE;
 		}
 
 		if (!$routeIsLocalized && !$this->allowNonLocalizedRoutes) return TRUE;
