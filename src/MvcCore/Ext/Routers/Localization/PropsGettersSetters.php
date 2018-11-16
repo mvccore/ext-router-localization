@@ -20,9 +20,9 @@ trait PropsGettersSetters
 	 ************************************************************************************/
 
 	/**
-	 * Default language and locale. Language is always defined as two lowercase 
+	 * Default language and locale. Language is always defined as two lower case 
 	 * characters - internaltional language code and locale is always defined as
-	 * two or three uppercase characters or digits - international locale code.
+	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from url or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
@@ -60,8 +60,8 @@ trait PropsGettersSetters
 	/**
 	 * Detect localization only by language record from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
-	 * language code will be enough to choose final target aplication 
-	 * localization. It will be choosed first localization in allowed list with 
+	 * language code will be enough to choose final target application 
+	 * localization. It will be chosen first localization in allowed list with 
 	 * detected language. `TRUE` by default. If `FALSE`, then there is necessary 
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
@@ -72,7 +72,7 @@ trait PropsGettersSetters
 
 	/**
 	 * List of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. Define this list as array of 
+	 * localization will be allowed automatically. Define this list as array of 
 	 * strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash.
@@ -140,9 +140,9 @@ trait PropsGettersSetters
 	/**
 	 * If `NULL`, request wasn't first, there was something in session stored by previous requests.
 	 * If `TRUE` or `FALSE`, request is first, nothing is in session yet and `TRUE` means
-	 * the best localization match by sended http headers (`Accept-Language`).
+	 * the best localization match by sent http headers (`Accept-Language`).
 	 * `FALSE` then means that there was a match, but it could be a lower prioritized
-	 * language and locale from `Accept-Language` or it could be default aplication localization.
+	 * language and locale from `Accept-Language` or it could be default application localization.
 	 * @var bool|NULL
 	 */
 	protected $firstRequestLocalizationDetection = NULL;
@@ -165,9 +165,9 @@ trait PropsGettersSetters
 	 ************************************************************************************/
 	
 	/**
-	 * Get default language and locale. Language is always defined as two lowercase 
+	 * Get default language and locale. Language is always defined as two lower case 
 	 * characters - internaltional language code and locale is always defined as
-	 * two or three uppercase characters or digits - international locale code.
+	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from url or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
@@ -179,9 +179,9 @@ trait PropsGettersSetters
 	}
 	
 	/**
-	 * Set default language and locale. Language has to be defined as two lowercase 
+	 * Set default language and locale. Language has to be defined as two lower case 
 	 * characters - internaltional language code and locale has to be defined as
-	 * two or three uppercase characters or digits - international locale code.
+	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from url or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
@@ -291,8 +291,8 @@ trait PropsGettersSetters
 	/**
 	 * Get detect localization only by language record from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
-	 * language code will be enough to choose final target aplication 
-	 * localization. It will be choosed first localization in allowed list with 
+	 * language code will be enough to choose final target application 
+	 * localization. It will be chosen first localization in allowed list with 
 	 * detected language. `TRUE` by default. If `FALSE`, then there is necessary 
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
@@ -306,8 +306,8 @@ trait PropsGettersSetters
 	/**
 	 * Set detect localization only by language record from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
-	 * language code will be enough to choose final target aplication 
-	 * localization. It will be choosed first localization in allowed list with 
+	 * language code will be enough to choose final target application 
+	 * localization. It will be chosen first localization in allowed list with 
 	 * detected language. `TRUE` by default. If `FALSE`, then there is necessary 
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
@@ -322,7 +322,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List is returned as array of 
+	 * localization will be allowed automatically. List is returned as array of 
 	 * strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash.
@@ -334,12 +334,12 @@ trait PropsGettersSetters
 
 	/**
 	 * Set list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List has to be defined as array 
+	 * localization will be allowed automatically. List has to be defined as array 
 	 * of strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash. All previously defined allowed localizations will be replaced.
-	 * Default localization is always allowed automaticly.
-	 * @var string $allowedLocalizations..., International lowercase language code(s) (+ optinally dash character + uppercase international locale code(s))
+	 * Default localization is always allowed automatically.
+	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */) {
@@ -352,12 +352,12 @@ trait PropsGettersSetters
 
 	/**
 	 * Add list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List has to be defined as array 
+	 * localization will be allowed automatically. List has to be defined as array 
 	 * of strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash. 
-	 * Default localization is always allowed automaticly.
-	 * @var string $allowedLocalizations..., International lowercase language code(s) (+ optinally dash character + uppercase international locale code(s))
+	 * Default localization is always allowed automatically.
+	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */) {
@@ -492,7 +492,7 @@ trait PropsGettersSetters
 	 *										 `Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames Group name(s) is first matched/parsed word(s) in 
 	 *										requested path to group routes by to try to
-	 *										match only routes you realy need, not all of
+	 *										match only routes you really need, not all of
 	 *										them. If `NULL` by default, routes are inserted 
 	 *										into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
@@ -560,12 +560,12 @@ trait PropsGettersSetters
 	 *										`Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames Group name is first matched/parsed word in 
 	 *									   requested path to group routes by to try to
-	 *									   match only routes you realy need, not all of
+	 *									   match only routes you really need, not all of
 	 *									   them. If `NULL` by default, routes are 
 	 *									   inserted into default group.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.

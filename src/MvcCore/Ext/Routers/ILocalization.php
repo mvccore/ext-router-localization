@@ -15,7 +15,7 @@ namespace MvcCore\Ext\Routers;
 
 /**
  * Responsibility - recognize localizationn from url or from http header or session and set 
- *					up request object, complete automaticly rewrited url with remembered 
+ *					up request object, complete automatically rewritten url with remembered 
  *					localization version. Redirect to proper localization by configuration.
  *					Than route request like parent class does.
  */
@@ -44,9 +44,9 @@ interface ILocalization
 
 
 	/**
-	 * Get default language and locale. Language is always defined as two lowercase 
+	 * Get default language and locale. Language is always defined as two lower case 
 	 * characters - internaltional language code and locale is always defined as
-	 * two or three uppercase characters or digits - international locale code.
+	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from url or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
@@ -56,9 +56,9 @@ interface ILocalization
 	public function GetDefaultLocalization ();
 
 	/**
-	 * Set default language and locale. Language has to be defined as two lowercase 
+	 * Set default language and locale. Language has to be defined as two lower case 
 	 * characters - internaltional language code and locale has to be defined as
-	 * two or three uppercase characters or digits - international locale code.
+	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from url or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
@@ -130,8 +130,8 @@ interface ILocalization
 	/**
 	 * Get detect localization only by language record from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
-	 * language code will be enough to choose final target aplication 
-	 * localization. It will be choosed first localization in allowed list with 
+	 * language code will be enough to choose final target application 
+	 * localization. It will be chosen first localization in allowed list with 
 	 * detected language. `TRUE` by default. If `FALSE`, then there is necessary 
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
@@ -143,8 +143,8 @@ interface ILocalization
 	/**
 	 * Set detect localization only by language record from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
-	 * language code will be enough to choose final target aplication 
-	 * localization. It will be choosed first localization in allowed list with 
+	 * language code will be enough to choose final target application 
+	 * localization. It will be chosen first localization in allowed list with 
 	 * detected language. `TRUE` by default. If `FALSE`, then there is necessary 
 	 * to send into application in `Accept-Language` http header international 
 	 * language code together with international locale code with the only same 
@@ -156,7 +156,7 @@ interface ILocalization
 
 	/**
 	 * Get list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List is returned as array of 
+	 * localization will be allowed automatically. List is returned as array of 
 	 * strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash.
@@ -166,24 +166,24 @@ interface ILocalization
 
 	/**
 	 * Set list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List has to be defined as array 
+	 * localization will be allowed automatically. List has to be defined as array 
 	 * of strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash. All previously defined allowed localizations will be replaced.
-	 * Default localization is always allowed automaticly.
-	 * @var string $allowedLocalizations..., International lowercase language code(s) (+ optinally dash character + uppercase international locale code(s))
+	 * Default localization is always allowed automatically.
+	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */);
 
 	/**
 	 * Add list of allowed localization strings in your application, default 
-	 * localization will be allowed automaticly. List has to be defined as array 
+	 * localization will be allowed automatically. List has to be defined as array 
 	 * of strings. Every item has to be international language code or it has to be
 	 * international language code and international locale code separated by
 	 * dash. 
-	 * Default localization is always allowed automaticly.
-	 * @var string $allowedLocalizations..., International lowercase language code(s) (+ optinally dash character + uppercase international locale code(s))
+	 * Default localization is always allowed automatically.
+	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */);

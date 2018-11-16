@@ -15,7 +15,7 @@ namespace MvcCore\Ext\Routers;
 
 /**
  * Responsibility - recognize localizationn from url or from http header or session and set 
- *					up request object, complete automaticly rewrited url with remembered 
+ *					up request object, complete automatically rewritten url with remembered 
  *					localization version. Redirect to proper localization by configuration.
  *					Than route request like parent class does.
  */
@@ -39,7 +39,7 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	
 	/**
 	 * MvcCore Extension - Router Lang - version:
-	 * Comparation by PHP function version_compare();
+	 * Comparison by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
 	const VERSION = '5.0.0-alpha';
