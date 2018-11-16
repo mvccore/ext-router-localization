@@ -14,8 +14,8 @@
 namespace MvcCore\Ext\Routers;
 
 /**
- * Responsibility - recognize localizationn from url or from http header or session and set 
- *					up request object, complete automatically rewritten url with remembered 
+ * Responsibility - recognize localizationn from URL or from http header or session and set 
+ *					up request object, complete automatically rewritten URL with remembered 
  *					localization version. Redirect to proper localization by configuration.
  *					Than route request like parent class does.
  */

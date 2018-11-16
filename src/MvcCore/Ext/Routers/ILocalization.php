@@ -14,8 +14,8 @@
 namespace MvcCore\Ext\Routers;
 
 /**
- * Responsibility - recognize localizationn from url or from http header or session and set 
- *					up request object, complete automatically rewritten url with remembered 
+ * Responsibility - recognize localizationn from URL or from http header or session and set 
+ *					up request object, complete automatically rewritten URL with remembered 
  *					localization version. Redirect to proper localization by configuration.
  *					Than route request like parent class does.
  */
@@ -23,7 +23,7 @@ interface ILocalization
 {
 	/**
 	 * Key name for language or/and locale in second argument $params in $router->Url();  method,
-	 * to tell $router->Url() method to generate url in different locale.
+	 * to tell $router->Url() method to generate URL in different locale.
 	 */
 	const URL_PARAM_LOCALIZATION = 'localization';
 
@@ -33,12 +33,12 @@ interface ILocalization
 	const URL_PARAM_SWITCH_LOCALIZATION = 'switch_localization';
 
 	/**
-	 * Source url param name, when first request is redirected to default localization by configuration.
+	 * Source URL param name, when first request is redirected to default localization by configuration.
 	 */
 	const URL_PARAM_REDIRECTED_SOURCE = 'source_url';
 
 	/**
-	 * International language and locale code separator used in url address.
+	 * International language and locale code separator used in URL address.
 	 */
 	const LANG_AND_LOCALE_SEPARATOR = '-';
 
@@ -48,7 +48,7 @@ interface ILocalization
 	 * characters - internaltional language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
-	 * language and locale from url or when is not possible to detect language 
+	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
 	 * @return \string[]
@@ -60,7 +60,7 @@ interface ILocalization
 	 * characters - internaltional language code and locale has to be defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
-	 * language and locale from url or when is not possible to detect language 
+	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
 	 * @var string $defaultLocalizationOrLanguage It could be `en` or `en-US`, `en-GB`...
@@ -227,7 +227,7 @@ interface ILocalization
 	 * `reverse` or `defaults` has to be defined by international language code 
 	 * and international locale code, not only by language code by default.
 	 * This option is very rare, if different locales have different naming 
-	 * for url strings.
+	 * for URL strings.
 	 * @return bool
 	 */
 	public function GetRouteRecordsByLanguageAndLocale ();
@@ -237,7 +237,7 @@ interface ILocalization
 	 * `reverse` or `defaults` has to be defined by international language code 
 	 * and international locale code, not only by language code by default.
 	 * This option is very rare, if different locales have different naming 
-	 * for url strings.
+	 * for URL strings.
 	 * @param bool $routeRecordsByLanguageAndLocale
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */

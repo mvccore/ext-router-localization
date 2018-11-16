@@ -24,7 +24,7 @@ trait PropsGettersSetters
 	 * characters - internaltional language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
-	 * language and locale from url or when is not possible to detect language 
+	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
 	 * @var \string[]
@@ -95,7 +95,7 @@ trait PropsGettersSetters
 	 * `reverse` or `defaults` has to be defined by international language code 
 	 * and international locale code, not only by language code by default.
 	 * This option is very rare, if different locales have different naming 
-	 * for url strings.
+	 * for URL strings.
 	 * @var bool
 	 */
 	protected $routeRecordsByLanguageAndLocale = FALSE;
@@ -107,7 +107,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Localized route class name, never patched in application core, 
-	 * only used internaly in this class.
+	 * only used internally in this class.
 	 * @var string
 	 */
 	protected static $routeClassLocalized = '\MvcCore\Ext\Routers\Localizations\Route';
@@ -169,7 +169,7 @@ trait PropsGettersSetters
 	 * characters - internaltional language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
-	 * language and locale from url or when is not possible to detect language 
+	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
 	 * @return \string[]
@@ -183,7 +183,7 @@ trait PropsGettersSetters
 	 * characters - internaltional language code and locale has to be defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
-	 * language and locale from url or when is not possible to detect language 
+	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
 	 * @var string $defaultLocalizationOrLanguage It could be `en` or `en-US`, `en-GB`...
@@ -424,7 +424,7 @@ trait PropsGettersSetters
 	 * `reverse` or `defaults` has to be defined by international language code 
 	 * and international locale code, not only by language code by default.
 	 * This option is very rare, if different locales have different naming 
-	 * for url strings.
+	 * for URL strings.
 	 * @return bool
 	 */
 	public function GetRouteRecordsByLanguageAndLocale () {
@@ -436,7 +436,7 @@ trait PropsGettersSetters
 	 * `reverse` or `defaults` has to be defined by international language code 
 	 * and international locale code, not only by language code by default.
 	 * This option is very rare, if different locales have different naming 
-	 * for url strings.
+	 * for URL strings.
 	 * @param bool $routeRecordsByLanguageAndLocale
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
@@ -570,7 +570,7 @@ trait PropsGettersSetters
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router|\MvcCore\Ext\Routers\Localization
 	 */
