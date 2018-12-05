@@ -34,7 +34,7 @@ trait PreRouting
 				if (!$this->manageLocalizationSwitchingAndRedirect()) return FALSE;
 
 			} else if ($this->requestLocalizationEquivalent !== NULL) {
-				// if there was catched localization equivalentm redirect to it's target
+				// if there was caught localization equivalent redirect to it's target
 				return $this->redirectToVersion(
 					$this->setUpLocalizationToContextAndSession($this->requestLocalizationEquivalent)
 				);
@@ -80,14 +80,14 @@ trait PreRouting
 		// used by extended router to redirect non-valid values in 3rd level domains
 		if (isset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]))
 			unset($this->requestGlobalGet[static::URL_PARAM_SWITCH_LOCALIZATION]);
-		// redirect to no switch param uri version
+		// redirect to no switch param URL version
 		return $this->redirectToVersion(
 			$this->setUpLocalizationToContextAndSession($targetLocalization)
 		);
 	}
 
 	/**
-	 * Detect language and locale by sended `Accept-Language` http header string 
+	 * Detect language and locale by sent `Accept-Language` http header string 
 	 * and store detected result in session namespace for next requests.
 	 * Also store boolean property `$this->firstRequestLocalizationDetection` if there was
 	 * matched the very first accepted language and locale or not.

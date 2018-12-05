@@ -21,7 +21,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Default language and locale. Language is always defined as two lower case 
-	 * characters - internaltional language code and locale is always defined as
+	 * characters - international language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from URL or when is not possible to detect language 
@@ -51,7 +51,7 @@ trait PropsGettersSetters
 
 	/**
 	 * `TRUE` by default to allow routing with non-localized routes.
-	 * If `FALSE` non-localized routes are ingored and there is thrown an 
+	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @var bool
 	 */
@@ -83,7 +83,7 @@ trait PropsGettersSetters
 	/**
 	 * List of localization equivalents used in localization detection by http
 	 * header `Accept-Language` parsed in first request. It could be used for 
-	 * language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents.
 	 * @var array
@@ -131,7 +131,7 @@ trait PropsGettersSetters
 	protected $requestLocalizationEquivalent = NULL;
 
 	/**
-	 * Localization value in specialy named `$_GET` param (if founded) 
+	 * Localization value in specially named `$_GET` param (if founded) 
 	 * for strict session mode localization switching.
 	 * @var string
 	 */
@@ -166,7 +166,7 @@ trait PropsGettersSetters
 	
 	/**
 	 * Get default language and locale. Language is always defined as two lower case 
-	 * characters - internaltional language code and locale is always defined as
+	 * characters - international language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from URL or when is not possible to detect language 
@@ -180,7 +180,7 @@ trait PropsGettersSetters
 	
 	/**
 	 * Set default language and locale. Language has to be defined as two lower case 
-	 * characters - internaltional language code and locale has to be defined as
+	 * characters - international language code and locale has to be defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from URL or when is not possible to detect language 
@@ -191,6 +191,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		if ($defaultLocalizationOrLanguage === NULL)
 			throw new \InvalidArgumentException("[".__CLASS__."] Default localization must be defined at least by the language.");
 		if ($defaultLocale === NULL) {
@@ -235,6 +236,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalization ($lang, $locale = NULL) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		if ($lang === NULL)
 			throw new \InvalidArgumentException("[".__CLASS__."] Localization must be defined at least by the language.");
 		$this->localization[0] = $lang;
@@ -262,13 +264,14 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetRedirectFirstRequestToDefault ($redirectFirstRequestToDefault = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->redirectFirstRequestToDefault = $redirectFirstRequestToDefault;
 		return $this;
 	}
 
 	/**
 	 * `TRUE` by default to allow routing with non-localized routes.
-	 * If `FALSE` non-localized routes are ingored and there is thrown an 
+	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @return bool
 	 */
@@ -278,12 +281,13 @@ trait PropsGettersSetters
 
 	/**
 	 * `TRUE` by default to allow routing with non-localized routes.
-	 * If `FALSE` non-localized routes are ingored and there is thrown an 
+	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @param bool $allowNonLocalizedRoutes
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->allowNonLocalizedRoutes = $allowNonLocalizedRoutes;
 		return $this;
 	}
@@ -316,6 +320,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->detectLocalizationOnlyByLang = $detectLocalizationOnlyByLang;
 		return $this;
 	}
@@ -343,6 +348,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
 			$allowedLocalizations = $allowedLocalizations[0];
@@ -361,6 +367,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
 			$allowedLocalizations = $allowedLocalizations[0];
@@ -376,7 +383,7 @@ trait PropsGettersSetters
 	/**
 	 * Get list of localization equivalents used in localization detection by http
 	 * header `Accept-Language` parsed in first request. It could be used for 
-	 * language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents.
 	 * @return array
@@ -388,7 +395,7 @@ trait PropsGettersSetters
 	/**
 	 * Set list of localization equivalents used in localization detection by http
 	 * header `Accept-Language` parsed in first request. It could be used for 
-	 * language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be replaced with given configuration.
@@ -396,6 +403,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalizationEquivalents (array $localizationEquivalents = []) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->localizationEquivalents = [];
 		$this->AddLocalizationEquivalents($localizationEquivalents);
 		return $this;
@@ -404,7 +412,7 @@ trait PropsGettersSetters
 	/**
 	 * Add or merge items in list with localization equivalents used in localization 
 	 * detection by http header `Accept-Language` parsed in first request. It could 
-	 * be used for language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * be used for language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be merged with given configuration.
@@ -412,6 +420,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddLocalizationEquivalents (array $localizationEquivalents = []) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		foreach ($localizationEquivalents as $targetLocalization => $targetLocalizationEquivalents) {
 			foreach ($targetLocalizationEquivalents as $targetLocalizationEquivalent) 
 				$this->localizationEquivalents[$targetLocalizationEquivalent] = $targetLocalization;
@@ -441,11 +450,13 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->routeRecordsByLanguageAndLocale = $routeRecordsByLanguageAndLocale;
 		return $this;
 	}
 
 	/**
+	 * TODO: neaktualni
 	 * Append or prepend new request routes.
 	 * If there is no name configured in route array configuration,
 	 * set route name by given `$routes` array key, if key is not numeric.
@@ -501,10 +512,11 @@ trait PropsGettersSetters
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwriten by new one.
-	 * @return \MvcCore\Router
+	 *											 is overwritten by new one.
+	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$routeClass = self::$routeClass;
 		self::$routeClass = self::$routeClassLocalized;
 		parent::AddRoutes($routes, $groupNames, $prepend, $throwExceptionForDuplication);
@@ -514,7 +526,7 @@ trait PropsGettersSetters
 
 	/**
 	 * TODO: dopsat
-	 * @param \MvcCore\Route|\MvcCore\Ext\Routers\Localizations\Route $route 
+	 * @param \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route $route 
 	 * @param string $routeName
 	 * @param string|\string[]|NULL $groupNames
 	 * @param bool $prepend 
@@ -557,7 +569,7 @@ trait PropsGettersSetters
 	/**
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
-	 *										`Controller::Action` definitions.
+	 *										 `Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames Group name is first matched/parsed word in 
 	 *									   requested path to group routes by to try to
 	 *									   match only routes you really need, not all of
@@ -572,9 +584,10 @@ trait PropsGettersSetters
 	 *							   You can you `FALSE` to set routes without any 
 	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Router|\MvcCore\Ext\Routers\Localization
+	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
+		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		if ($autoInitialize) {
 			$this->routes = [];
 			$this->AddRoutes($routes, $groupNames);

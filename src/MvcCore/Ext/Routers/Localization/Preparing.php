@@ -19,7 +19,7 @@ trait Preparing
 	 * Prepare localizations processing:
 	 * - Check if any default localization configured.
 	 * - Complete allowed localizations into array keyed by it's values to check by `isset()`.
-	 * - Complete default localization string for comparations later.
+	 * - Complete default localization string for comparison later.
 	 * - Put default localization into allowed localizations for sure.
 	 * - Complete localization equivalents with language codes only by router configuration.
 	 * - Try to complete switching param from request object global `$_GET` collection.
@@ -35,12 +35,12 @@ trait Preparing
 		if (!$this->defaultLocalization)
 			throw new \InvalidArgumentException("[".__CLASS__."] No default localization configured.");
 		
-		// store path info localy for routing process
+		// store path info locally for routing process
 		$this->originalRequestPath = $this->request->GetPath();
 
 		// prepare possibly modified allowed localizations
 		$this->allowedLocalizations = array_combine($this->allowedLocalizations, $this->allowedLocalizations);
-		// add default localization into allowed langs for sure
+		// add default localization into allowed lang(s) for sure
 		$this->defaultLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocalization);
 		$this->allowedLocalizations[$this->defaultLocalizationStr] = $this->defaultLocalizationStr;
 
@@ -51,7 +51,7 @@ trait Preparing
 			return;
 		}
 
-		// add automaticly into equivalents also all langs parsed from localizations if necessary
+		// add automatically into equivalents also all lang(s) parsed from localizations if necessary
 		if ($this->detectLocalizationOnlyByLang) {
 			foreach ($this->allowedLocalizations as $allowedLocalization => $allowedLocalizationValue) {
 				$separatorPos = strpos($allowedLocalization, static::LANG_AND_LOCALE_SEPARATOR);
@@ -89,7 +89,7 @@ trait Preparing
 	/**
 	 * Try to set up lang (or lang and locale) from request query string and if 
 	 * there i no localization query param, try to set up localization from
-	 * request path if any routes defined. If there ss any lang detected (or 
+	 * request path if any routes defined. If there is any lang detected (or 
 	 * lang and locale detected), set up these values into request object.
 	 * @return void
 	 */
@@ -115,7 +115,7 @@ trait Preparing
 	protected function prepareRequestLocalizationFromUrlQueryString () {
 		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$langAndLocaleSeparator = static::LANG_AND_LOCALE_SEPARATOR;
-		// try ty set up request localization by query string first - query string is always stronger value
+		// try to set up request localization by query string first - query string is always stronger value
 		$requestLocalization = $this->request->GetParam(
 			$localizationUrlParam, 
 			$langAndLocaleSeparator . 'a-zA-Z0-9'

@@ -65,12 +65,12 @@ trait Instancing
 	 *		],
 	 * ]);`
 	 * @param string|array $patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
+	 * @param string $controllerAction		Optional, controller and action name in pascal case like: `"Photogallery:List"`.
 	 * @param array $defaults				Optional, default param values like: `["name" => "default-name", "page" => 1]`.
 	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
 	 * @param array	$filters				Optional, callable function(s) under keys `"in" | "out"` to filter in and out params accepting arguments: `array $params, array $defaultParams, \MvcCore\IRequest $request`.
-	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
-	 * @return \MvcCore\Route
+	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automatically converted to upper case.
+	 * @return void
 	 */
 	public function __construct (
 		$patternOrConfig = NULL,

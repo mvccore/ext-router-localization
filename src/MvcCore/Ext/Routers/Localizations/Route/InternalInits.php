@@ -17,11 +17,12 @@ trait InternalInits
 {
 	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
-	 * This method is not recomanded to use in production mode, it's
+	 * This method is not recommended to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
+		/** @var $this \MvcCore\IRoute */
 		$router = & $this->router;
 		$localization = $router->GetLocalization();
 		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
@@ -77,6 +78,11 @@ trait InternalInits
 		);
 	}
 
+	/**
+	 * TODO: dopsat
+	 * @param string|NULL $localization 
+	 * @return void
+	 */
 	protected function initReverse ($localization = NULL) {
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {

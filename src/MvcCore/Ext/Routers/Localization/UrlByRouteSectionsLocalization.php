@@ -16,7 +16,7 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlByRouteSectionsLocalization
 {
 	protected function urlByRouteSectionsLocalization (\MvcCore\IRoute & $route, array & $params = [], $routeMethod = NULL) {
-		// get `$localizationStr` from `$params` to work with the version more specificly
+		// get `$localizationStr` from `$params` to work with the version more specifically
 		// in route object to choose proper reverse pattern and to complete url prefix
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 		$localizationParamName = static::URL_PARAM_LOCALIZATION;

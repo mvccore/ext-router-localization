@@ -27,7 +27,7 @@ trait RedirectSections
 		$urlPathWithQuerySection = $request->GetPath(TRUE);
 
 
-		// unset site key switch param and redirect to no switch param uri version
+		// unset site key switch param and redirect to no switch param URL version
 		$localizationParamName = static::URL_PARAM_LOCALIZATION;
 		$targetLocalizationUrlValue = $this->redirectLocalizationGetUrlValueAndUnsetGet(
 			$systemParams[$localizationParamName]

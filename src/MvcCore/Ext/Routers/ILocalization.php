@@ -14,7 +14,7 @@
 namespace MvcCore\Ext\Routers;
 
 /**
- * Responsibility - recognize localizationn from URL or from http header or session and set 
+ * Responsibility - recognize localization from URL or from http header or session and set 
  *					up request object, complete automatically rewritten URL with remembered 
  *					localization version. Redirect to proper localization by configuration.
  *					Than route request like parent class does.
@@ -45,7 +45,7 @@ interface ILocalization
 
 	/**
 	 * Get default language and locale. Language is always defined as two lower case 
-	 * characters - internaltional language code and locale is always defined as
+	 * characters - international language code and locale is always defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from URL or when is not possible to detect language 
@@ -57,7 +57,7 @@ interface ILocalization
 
 	/**
 	 * Set default language and locale. Language has to be defined as two lower case 
-	 * characters - internaltional language code and locale has to be defined as
+	 * characters - international language code and locale has to be defined as
 	 * two or three upper case characters or digits - international locale code.
 	 * Default localization is used in cases, when is not possible to detect 
 	 * language and locale from URL or when is not possible to detect language 
@@ -112,7 +112,7 @@ interface ILocalization
 
 	/**
 	 * `TRUE` by default to allow routing with non-localized routes.
-	 * If `FALSE` non-localized routes are ingored and there is thrown an 
+	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @return bool
 	 */
@@ -120,7 +120,7 @@ interface ILocalization
 
 	/**
 	 * `TRUE` by default to allow routing with non-localized routes.
-	 * If `FALSE` non-localized routes are ingored and there is thrown an 
+	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @param bool $allowNonLocalizedRoutes
 	 * @return \MvcCore\Ext\Routers\ILocalization
@@ -191,7 +191,7 @@ interface ILocalization
 	/**
 	 * Get list of localization equivalents used in localization detection by http
 	 * header `Accept-Language` parsed in first request. It could be used for 
-	 * language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents.
 	 * @return array
@@ -201,7 +201,7 @@ interface ILocalization
 	/**
 	 * Set list of localization equivalents used in localization detection by http
 	 * header `Accept-Language` parsed in first request. It could be used for 
-	 * language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be replaced with given configuration.
@@ -213,7 +213,7 @@ interface ILocalization
 	/**
 	 * Add or merge items in list with localization equivalents used in localization 
 	 * detection by http header `Accept-Language` parsed in first request. It could 
-	 * be used for language very similar countries like Ukraine & Rusia, Czech & Slovakia ...
+	 * be used for language very similar countries like Ukraine & Russia, Czech & Slovakia ...
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be merged with given configuration.

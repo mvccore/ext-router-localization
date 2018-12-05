@@ -49,7 +49,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Array with `string` by all reverse pattern params.
-	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
+	 * This array is parsed automatically by method `\MvcCore\Route::initMatch();` 
 	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
 	 * necessary, to be able to complete URL address string in method and sub
 	 * methods of `\MvcCore\Route::Url();`.
@@ -81,6 +81,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetPattern ($pattern, $localization = NULL) {
+		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->patternLocalized[$localization] = $pattern;
 		} else if (is_array($pattern)) {
@@ -112,6 +113,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetMatch ($match, $localization = NULL) {
+		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->matchLocalized[$localization] = $match;
 		} else if (is_array($match)) {
@@ -142,6 +144,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetReverse ($reverse, $localization = NULL) {
+		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->reverseLocalized[$localization] = $reverse;
 		} else if (is_array($reverse)) {
@@ -173,6 +176,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetDefaults ($defaults = [], $localization = NULL) {
+		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->defaultsLocalized[$localization] = & $defaults;
 		} else {
@@ -206,6 +210,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
 	public function & SetConstraints ($constraints = [], $localization = NULL) {
+		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->constraintsLocalized[$localization] = & $constraints;
 			if (!isset($this->defaultsLocalized[$localization]))
@@ -262,6 +267,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & SetGroupName ($groupName) {
+		/** @var $this \MvcCore\IRoute */
 		$this->groupName = $groupName;
 		return $this;
 	}

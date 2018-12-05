@@ -48,7 +48,7 @@ composer require mvccore/ext-router-localization
 - Router replaces possibly founded localization prefix substring (containing lowercase international language code and optionally uppercase international locale code) in request path (`$request->GetPath();`) with an empty string. It keeps request path every time in the same form to process routing as usual.
 - Router completes `$request->GetLang()` and `$request->GetLocale();` (or `$router->GetLocalization();`) values to use them anywhere in your app.
 - Session strict mode for localization version (configurable) to drive application localization strictly by session value.
-- Router keeps only one URL address version for the default localization homepage (under slash address - `/` or `/index.php`). Requests to the default localization homepage are redirected to slash URL address automatically (so there is no page for example for default localization `en-US` on address `/en-US/`, this page is automaticly redirected to `/`).
+- Router keeps only one URL address version for the default localization homepage (under slash address - `/` or `/index.php`). Requests to the default localization homepage are redirected to slash URL address automatically (so there is no page for example for default localization `en-US` on address `/en-US/`, this page is automatically redirected to `/`).
 - Router accepts only allowed languages or it accepts allowed language and locale code pairs in rewritten URL addresses or it accepts allowed localizations in `localization` query string param, all other values are redirected to default localization.
 - Router accepts non-localized routes and localized routes with `pattern` and `defaults` (or with explicit `match` and `reverse`) by language keys or by language and locale keys if necessary.
 - Router defines for all non-localized routes localization record from session first into request object and into itself and if there is nothing in session, it defines configured default localization.
@@ -146,12 +146,12 @@ $router->SetAllowedLocalizations(/*'en-US', */'en-DE');
 ```php
 $router->SetRoutes([
 
-    // If you want to add automaticly localized route very easily, 
+    // If you want to add automatically localized route very easily, 
 	// you can use only definition like this to define router key with 
     // `Namespace\Controller:Action` and `pattern` as '/something' 
     'Admin\Index:Index'        => '/admin',
     
-    // Localized route with automaticly completed `match` 
+    // Localized route with automatically completed `match` 
     // and `reverse` records from `pattern` record:
     'Front\Product:List'    => [
         'pattern'                => [

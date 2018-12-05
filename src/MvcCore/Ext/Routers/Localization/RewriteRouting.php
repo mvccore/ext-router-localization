@@ -17,8 +17,8 @@ trait RewriteRouting
 {
 	/**
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
-	 * Go throught all configured routes and try to find matching route.
-	 * If there is catched any matching route - reset `\MvcCore\Request::$params`
+	 * Go through all configured routes and try to find matching route.
+	 * If there is caught any matching route - reset `\MvcCore\Request::$params`
 	 * with default route params, with params itself and with params parsed from 
 	 * matching process.
 	 * @param string $controllerName
