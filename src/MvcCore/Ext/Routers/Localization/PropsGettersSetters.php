@@ -192,8 +192,10 @@ trait PropsGettersSetters
 	 */
 	public function & SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
-		if ($defaultLocalizationOrLanguage === NULL)
-			throw new \InvalidArgumentException("[".__CLASS__."] Default localization must be defined at least by the language.");
+		if ($defaultLocalizationOrLanguage === NULL) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException("[".$selfClass."] Default localization must be defined at least by the language.");
+		}
 		if ($defaultLocale === NULL) {
 			$delimiterPos = strpos($defaultLocalizationOrLanguage, static::LANG_AND_LOCALE_SEPARATOR);
 			if ($delimiterPos !== FALSE) {
@@ -237,8 +239,10 @@ trait PropsGettersSetters
 	 */
 	public function & SetLocalization ($lang, $locale = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
-		if ($lang === NULL)
-			throw new \InvalidArgumentException("[".__CLASS__."] Localization must be defined at least by the language.");
+		if ($lang === NULL) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException("[".$selfClass."] Localization must be defined at least by the language.");
+		}
 		$this->localization[0] = $lang;
 		if ($locale !== NULL) $this->localization[1] = $locale;
 		return $this;
@@ -544,8 +548,9 @@ trait PropsGettersSetters
 			if ($route instanceof \MvcCore\Ext\Routers\Localizations\Route) {
 				$route->SetGroupName($groupNames);
 			} else {
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 				throw new \InvalidArgumentException (
-					"[".__CLASS__."] Localized routes group cannot contain non-localized route instance. "
+					"[".$selfClass."] Localized routes group cannot contain non-localized route instance. "
 					. "(group names: ".json_encode($groupNames).", route: $route)"
 				);
 			}

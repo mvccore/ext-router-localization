@@ -32,8 +32,10 @@ trait Preparing
 	protected function prepareLocalization () {
 
 		// check all necessary properties configured
-		if (!$this->defaultLocalization)
-			throw new \InvalidArgumentException("[".__CLASS__."] No default localization configured.");
+		if (!$this->defaultLocalization) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException("[".$selfClass."] No default localization configured.");
+		}
 		
 		// store path info locally for routing process
 		$this->originalRequestPath = $this->request->GetPath();

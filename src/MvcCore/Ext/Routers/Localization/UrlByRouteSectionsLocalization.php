@@ -38,8 +38,9 @@ trait UrlByRouteSectionsLocalization
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
 			if (!isset($this->allowedLocalizations[$localizationStr])) {
 				$localizationStr = NULL;
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 				trigger_error(
-					'['.__CLASS__.'] Not allowed localization used to generate url: `'
+					'['.$selfClass.'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
 					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.',
 					E_USER_ERROR
