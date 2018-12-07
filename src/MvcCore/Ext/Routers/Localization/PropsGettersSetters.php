@@ -460,7 +460,6 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * TODO: neaktualni
 	 * Append or prepend new request routes.
 	 * If there is no name configured in route array configuration,
 	 * set route name by given `$routes` array key, if key is not numeric.
@@ -469,7 +468,7 @@ trait PropsGettersSetters
 	 * Example:
 	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 *	], "eshop");`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		'products_list'	=> [
@@ -481,7 +480,7 @@ trait PropsGettersSetters
 	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
 	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		]
-	 *	]);`
+	 *	], ["en" => "eshop", "de" => "shop"]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		new Route(
@@ -529,11 +528,13 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * TODO: dopsat
-	 * @param \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route $route 
-	 * @param string $routeName
-	 * @param string|\string[]|NULL $groupNames
-	 * @param bool $prepend 
+	 * Add route instance into localized routes group defined by first parsed word from requested URL.
+	 * @param \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route $route Localized route instance.
+	 * @param string $routeName Route instance name.
+	 * @param string|\string[]|NULL $groupNames Group name or list of group names to assign given route instance into.
+	 * @param bool $prepend Prepend route instance in final group or not.
+	 * @throws \InvalidArgumentException Localized routes group cannot contain non-localized route instance.
+	 * @return void
 	 */
 	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupNames, $prepend) {
 		$routesGroupsKeys = [];
@@ -694,7 +695,16 @@ trait PropsGettersSetters
 		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 
-	// TODO: provizorní
+	/**
+	 * Return localization string value for redirection URL 
+	 * but if localization is defined by GET query string param,
+	 * return `NULL` and set target localization string into GET params
+	 * to complete query string later. If the target localization string
+	 * is the same as default localization, return `NULL` in query string
+	 * localization definition case.
+	 * @param \string[] $targetLocalization Localization array, it could have one or two elements - lang and locale string.
+	 * @return string|NULL
+	 */
 	protected function redirectLocalizationGetUrlValueAndUnsetGet ($targetLocalization) {
 		$localizationUrlParam = static::URL_PARAM_LOCALIZATION;
 		$targetLocalizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $targetLocalization);
