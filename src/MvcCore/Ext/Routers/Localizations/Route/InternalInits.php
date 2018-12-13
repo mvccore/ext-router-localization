@@ -47,7 +47,9 @@ trait InternalInits
 		} else if (isset($this->patternLocalized[$localization])) {
 			$pattern = $this->patternLocalized[$localization];
 		} else {
-			$this->throwExceptionIfNoPattern();
+			$this->throwExceptionIfKeyPropertyIsMissing(
+				'pattern', 'patternLocalized'
+			);
 		}
 		if ($this->reverse !== NULL) {
 			$reverse = $this->reverse;
@@ -111,7 +113,9 @@ trait InternalInits
 					$pattern !== NULL ? $pattern : str_replace(['\\', '(?', ')?', '/?'], '', $match)
 				);
 			}
-			$this->throwExceptionIfNoPattern();
+			$this->throwExceptionIfKeyPropertyIsMissing(
+				'reverse', 'reverseLocalized', 'pattern', 'patternLocalized'
+			);
 		}
 
 		$this->lastPatternParam = NULL;

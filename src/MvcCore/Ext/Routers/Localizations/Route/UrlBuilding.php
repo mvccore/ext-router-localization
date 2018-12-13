@@ -40,7 +40,7 @@ trait UrlBuilding
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automatically completed by router instance.
 	 * @return \string[] Result URL address in two parts - domain part with base path and path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&') {
+	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		// initialize localization param and route localization key
 		$router = & $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
@@ -98,7 +98,7 @@ trait UrlBuilding
 					$filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986
 				));
 		}
-
-		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $domainPercentageParams);
+		
+		return $this->urlAbsPartAndSplit($request, $result, $domainPercentageParams, $splitUrl);
 	}
 }
