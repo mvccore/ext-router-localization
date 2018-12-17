@@ -96,9 +96,9 @@ trait RewriteRouting
 
 	/**
 	 * Get specific routes group by first parsed word from request path if any.
-	 * If first path word is an empty string, there is returned routes with no group
-	 * word defined. If still there are no such routes in default group, returned 
-	 * is an empty array.
+	 * If first path word is an empty string, there is returned routes with no 
+	 * group word defined. If still there are no such routes in default group, 
+	 * returned is an empty array.
 	 * @param string $firstPathWord 
 	 * @param string|NULL $routesLocalizationStr 
 	 * @return array|\MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]

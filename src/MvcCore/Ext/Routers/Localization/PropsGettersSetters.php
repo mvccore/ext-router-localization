@@ -15,9 +15,9 @@ namespace MvcCore\Ext\Routers\Localization;
 
 trait PropsGettersSetters
 {
-	/*************************************************************************************
-	 *                              Configurable Properties                              *
-	 ************************************************************************************/
+	/***************************************************************************
+	 *                         Configurable Properties                         *
+	 **************************************************************************/
 
 	/**
 	 * Default language and locale. Language is always defined as two lower case 
@@ -101,9 +101,9 @@ trait PropsGettersSetters
 	protected $routeRecordsByLanguageAndLocale = FALSE;
 
 
-	/*************************************************************************************
-	 *                                Internal Properties                                *
-	 ************************************************************************************/
+	/***************************************************************************
+	 *                           Internal Properties                           *
+	 **************************************************************************/
 
 	/**
 	 * Localized route class name, never patched in application core, 
@@ -160,9 +160,9 @@ trait PropsGettersSetters
 	protected $originalRequestPath = NULL;
 	
 
-	/*************************************************************************************
-	 *                                  Public Methods                                   *
-	 ************************************************************************************/
+	/***************************************************************************
+	 *                             Public Methods                              *
+	 **************************************************************************/
 	
 	/**
 	 * Get default language and locale. Language is always defined as two lower case 
@@ -501,21 +501,21 @@ trait PropsGettersSetters
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
-	 *										  keys are route names or route
-	 *										  `Controller::Action` definitions.
-	 * @param string|array|NULL $groupNames Group name(s) is first matched/parsed word(s) in 
-	 *										requested path to group routes by to try to
-	 *										match only routes you really need, not all of
-	 *										them. If `NULL` by default, routes are inserted 
-	 *										into default group.
-	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
-	 *						be prepended from the last to the first in
-	 *						given list, not appended.
-	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
-	 *											 if route `name` or route `Controller:Action`
-	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwritten by new one.
+	 * @param \MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				`Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames 
+	 *				Group name(s) is first matched/parsed word(s) in requested 
+	 *				path to group routes by to try to match only routes you 
+	 *				really need, not all of them. If `NULL` by default, routes 
+	 *				are inserted into default group.
+	 * @param bool $prepend	
+	 *				Optional, if `TRUE`, all given routes will be prepended from 
+	 *				the last to the first in given list, not appended.
+	 * @param bool $throwExceptionForDuplication 
+	 *				`TRUE` by default. Throw an exception, if route `name` or 
+	 *				route `Controller:Action` has been defined already. If 
+	 *				`FALSE` old route is overwritten by new one.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
@@ -621,24 +621,23 @@ trait PropsGettersSetters
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										 `Controller::Action` definitions.
-	 * @param string|array|NULL $groupNames Group name is first matched/parsed word in 
-	 *									   requested path to group routes by to try to
-	 *									   match only routes you really need, not all of
-	 *									   them. If `NULL` by default, routes are 
-	 *									   inserted into default group.
-	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
-	 *							   then all routes (or configuration arrays) are 
-	 *							   sent into method `$router->AddRoutes();`, 
-	 *							   where are routes auto initialized for missing 
-	 *							   route names or route controller or route action
-	 *							   records, completed always from array keys.
-	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or auto-initialization, it could be useful 
-	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 * @param \MvcCore\Route[]|\MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				 `Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames 
+	 *				Group name is first matched/parsed word in requested path to 
+	 *				group routes by to try to match only routes you really need, 
+	 *				not all of them. If `NULL` by default, routes are inserted 
+	 *				into default group.
+	 * @param bool $autoInitialize 
+	 *				If `TRUE`, locale routes array is cleaned and then all 
+	 *				routes (or configuration arrays) are sent into method 
+	 *				`$router->AddRoutes();`, where are routes auto initialized 
+	 *				for missing route names or route controller or route action
+	 *				records, completed always from array keys. You can you 
+	 *				`FALSE` to set routes without any change or auto-init, it 
+	 *				could be useful to restore cached routes etc.
+	 * @return \MvcCore\Router|\MvcCore\IRouter|\MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
@@ -716,9 +715,9 @@ trait PropsGettersSetters
 	}
 	
 
-	/*************************************************************************************
-	 *           Protected Methods For Parent Class Setters and Adding Methods           *
-	 ************************************************************************************/
+	/***************************************************************************
+	 *      Protected Methods For Parent Class Setters and Adding Methods      *
+	 **************************************************************************/
 
 	/**
 	 * Detect and return `TRUE` if even one route configuration data are localized

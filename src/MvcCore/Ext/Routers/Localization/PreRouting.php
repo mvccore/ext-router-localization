@@ -16,10 +16,10 @@ namespace MvcCore\Ext\Routers\Localization;
 trait PreRouting
 {
 	/**
-	 * Detect localization by configured rules,
-	 * set up detected localization to current context,
-	 * into request and into session and redirect if necessary.
+	 * Detect localization by configured rules, set up detected localization to 
+	 * current context, into request and into session and redirect if necessary.
 	 * Return always `TRUE` and return `FALSE` if request is redirected.
+	 * This function is always called before routing.
 	 * @return bool
 	 */
 	protected function preRouteLocalization () {

@@ -16,10 +16,11 @@ namespace MvcCore\Ext\Routers\Localizations\Route;
 trait InternalInits
 {
 	/**
-	 * Initialize all possible protected values (`match`, `reverse` etc...)
-	 * This method is not recommended to use in production mode, it's
-	 * designed mostly for development purposes, to see what could be inside route.
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * Initialize all possible protected values (`match`, `reverse` etc...) for 
+	 * all configured localizations defined in localized router. This method is 
+	 * not recommended to use in production mode, it's designed mostly for 
+	 * development purposes, to see what could be inside route object.
+	 * @return \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function & InitAll () {
 		/** @var $this \MvcCore\IRoute */
@@ -39,6 +40,20 @@ trait InternalInits
 		return $this;
 	}
 
+	/**
+	 * Initialize properties `match`, `reverse` and other internal properties
+	 * about those values under specific localization key only. This method 
+	 * is called when there is necessary to prepare localized `pattern` value 
+	 * for: a) PHP `preg_match_all()` route match processing, b) for `reverse` 
+	 * value for later self URL building. This method is usually called in core 
+	 * request routing process from `\MvcCore\Router::Matches();` method on each 
+	 * route. 
+	 * @param string $localization	Lower case language code, optionally with 
+	 *								dash and upper case locale code.
+	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
+	 * @return void
+	 */
 	protected function initMatchAndReverse ($localization = NULL) {
 		$pattern = NULL;
 		$reverse = NULL;
@@ -81,8 +96,16 @@ trait InternalInits
 	}
 
 	/**
-	 * TODO: dopsat
-	 * @param string|NULL $localization 
+	 * Initialize property `reverse` and other internal properties about this 
+	 * value under specific localization key only. This method is called, when 
+	 * there is necessary to prepare it for: a) URL building, b) for request 
+	 * routing, when there is configured `match` property directly an when is 
+	 * necessary to initialize route flags from `reverse` to complete correctly 
+	 * subject to match.
+	 * @param string $localization	Lower case language code, optionally with 
+	 *								dash and upper case locale code.
+	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return void
 	 */
 	protected function initReverse ($localization = NULL) {

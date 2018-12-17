@@ -18,14 +18,19 @@ trait Preparing
 	/**
 	 * Prepare localizations processing:
 	 * - Check if any default localization configured.
-	 * - Complete allowed localizations into array keyed by it's values to check by `isset()`.
+	 * - Complete allowed localizations into array keyed by it's values to check 
+	 *   by `isset()`.
 	 * - Complete default localization string for comparison later.
 	 * - Put default localization into allowed localizations for sure.
-	 * - Complete localization equivalents with language codes only by router configuration.
-	 * - Try to complete switching param from request object global `$_GET` collection.
+	 * - Complete localization equivalents with language codes only by router 
+	 *   configuration.
+	 * - Try to complete switching param from request object global `$_GET` 
+	 *   collection.
 	 * - Try to complete session language and locale.
-	 * - Store request path before next request localization detection request path manipulation.
-	 * - Try to complete request language and locale from request query string or path.
+	 * - Store request path before next request localization detection request 
+	 *   path manipulation.
+	 * - Try to complete request language and locale from request query string 
+	 *   or path.
 	 * @throws \InvalidArgumentException No default localization configured
 	 * @return void
 	 */

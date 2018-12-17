@@ -16,11 +16,12 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlByRouteSections
 {
 	/**
-	 * TODO: neaktuální
-	 * Complete non-absolute, non-localized or localized url by route instance reverse info.
-	 * If there is key `localization` in `$params`, unset this param before
-	 * route url completing and place this param as url prefix to prepend 
-	 * completed url string.
+	 * Complete semi-finished result URL as two section strings and system 
+	 * params array. First section as base section with scheme, domain and base 
+	 * path, second section as application requested path and query string and 
+	 * third section as system params like `localization`.
+	 * Those params could be inserted between first two sections as system 
+	 * params in result URL by localized router behaviour and default values.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *	`[
@@ -35,8 +36,12 @@ trait UrlByRouteSections
 	 *			"localization"	=> "en-US",
 	 *		);`
 	 *	Output:
-	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
+	 *		`[
+	 *			"/application/base/bath", 
+	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL", 
+	 *			["localization" => "en-US"]
+	 *		]`
+	 * @param \MvcCore\Route|\MvcCore\IRoute & $route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return array `string $urlBaseSection, string $urlPathWithQuerySection, array $systemParams`

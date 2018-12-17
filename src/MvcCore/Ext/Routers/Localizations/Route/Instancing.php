@@ -16,26 +16,22 @@ namespace MvcCore\Ext\Routers\Localizations\Route;
 trait Instancing
 {
 	/**
-	 * TODO: neaktuální
-	 * Create new route instance.
+	 * Create new localized route instance.
 	 * First argument should be configuration array or
 	 * route pattern value to parse into match and reverse patterns.
 	 * Example:
-	 * `new Route(array(
+	 * `new Route([
 	 *		"pattern"			=> [
-	 *			"en"		=> "/products-list/<name>/<color>",
-	 *			"de"		=> "/produkt-liste/<name>/<color>"
+	 *			"en"			=> "/products-list/<name>/<color>",
+	 *			"de"			=> "/produkt-liste/<name>/<color>"
 	 *		],
 	 *		"controllerAction"	=> "Products:List",
 	 *		"defaults"			=> [
 	 *			"en" => ["name" => "default-name", "color" => "red"],
 	 *			"de" => ["name"	=> "standard-name","color" => "rot"],
 	 *		],
-	 *		"constraints"		=> [
-	 *			"name" => "[^/]*",			
-	 *			"color" => "[a-z]*"
-	 *		]
-	 * ));`
+	 *		"constraints"		=> ["name" => "[^/]+", "color" => "[a-z]+"]
+	 * ]);`
 	 * or:
 	 * `new Route(
 	 *		"/products-list/<name>/<color>",
@@ -44,7 +40,7 @@ trait Instancing
 	 *			"en" => ["name" => "default-name", "color" => "red"],
 	 *			"de" => ["name"	=> "standard-name","color" => "rot"],
 	 *		],
-	 *		["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		["name" => "[^/]+", "color" => "[a-z]+"]
 	 * );`
 	 * or:
 	 * `new Route([
@@ -64,12 +60,30 @@ trait Instancing
 	 *			"de" => ["name"	=> "standard-name","color" => "rot"],
 	 *		],
 	 * ]);`
-	 * @param string|array $patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param string $controllerAction		Optional, controller and action name in pascal case like: `"Photogallery:List"`.
-	 * @param array $defaults				Optional, default param values like: `["name" => "default-name", "page" => 1]`.
-	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array	$filters				Optional, callable function(s) under keys `"in" | "out"` to filter in and out params accepting arguments: `array $params, array $defaultParams, \MvcCore\IRequest $request`.
-	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automatically converted to upper case.
+	 * @param string|array $patternOrConfig	
+	 *				Required, configuration array or route pattern value to 
+	 *				parse into match and reverse patterns for all localizations.
+	 * @param string $controllerAction
+	 *				Optional, controller and action name in pascal case like: 
+	 *				`"Photogallery:List"`.
+	 * @param array $defaults
+	 *				Optional, default param values like: 
+	 *				`["name" => "default-name", "page" => 1]`
+	 *				or in localized  version like:
+	 *				`["en" => ["name" => "default-name", "page" => 1]],...`
+	 * @param array $constraints
+	 *				Optional, params regular expression constraints for regular 
+	 *				expression match if `"match"` property in configuration 
+	 *				array as first argument defined.
+	 * @param array	$filters
+	 *				Optional, callable function(s) under keys `"in" | "out"` 
+	 *				to filter in and out params accepting arguments:
+	 *				`array $params, array $defaultParams, \MvcCore\IRequest $request`.
+	 * @param array $method
+	 *				Optional, http method to only match requests by this method. 
+	 *				If `NULL` (by default), request with any http method could 
+	 *				be matched by this route. Given value is automatically 
+	 *				converted to upper case.
 	 * @return void
 	 */
 	public function __construct (
@@ -79,8 +93,9 @@ trait Instancing
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
-		if (count(func_get_args()) === 0) return;
-		if (is_array($patternOrConfig)) {
+		$argsCount = count(func_get_args());
+		if ($argsCount === 0) return;
+		if (is_array($patternOrConfig) && $argsCount == 1) {
 			$data = (object) $patternOrConfig;
 			$this->constructDataPatternsDefaultsConstraintsFilters($data);
 			$this->constructDataCtrlActionName($data);
@@ -97,6 +112,15 @@ trait Instancing
 		$this->constructCtrlOrActionByName();
 	}
 
+	/**
+	 * If route is initialized by single array argument with all data, 
+	 * initialize following properties if those exist in given object: 
+	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints` 
+	 * and `filters` exist in given object, initialize them by setter methods.
+	 * @param \stdClass $data	Object containing properties `pattern`, `match`, 
+	 *							`reverse`, `filters`, `constraints` and `defaults`.
+	 * @return void
+	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
 		if (isset($data->pattern)) {
 			if (is_array($data->pattern)) {
@@ -127,10 +151,28 @@ trait Instancing
 			$this->SetFilters($data->filters);
 	}
 
+	/**
+	 * If route is initialized by each constructor function arguments, 
+	 * initialize `pattern` if it is an array or not `NULL`. Also initialize 
+	 * `defaults` and `constraints` by setter methods if those properties are 
+	 * not `NULL` and initialize filter-in and filter-out by filter setter 
+	 * method from `$advCfg` array, if there are those filter keys found.
+	 * @param string|NULL	$pattern		Route pattern string.
+	 * @param array|NULL	$defaults		Route defaults array, keys are param 
+	 *										names, values are default values.
+	 * @param array|NULL	$constraints	Route params regular expression 
+	 *										constraints array, keys are param 
+	 *										names, values are allowed regular 
+	 *										expression rules.
+	 * @param array			$advCfg			An array with possible keys `in` and 
+	 *										`out` to define route filter in and 
+	 *										filter out callable.
+	 * @return void
+	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
-		if ($this->is_array($pattern)) {
+		if (is_array($pattern)) {
 			$this->patternLocalized = $pattern;
-		} else {
+		} else if ($pattern !== NULL) {
 			$this->pattern = $pattern;	
 		}
 		if ($defaults !== NULL)
@@ -152,6 +194,7 @@ trait Instancing
 	 */
 	protected function recordIsLocalized ($record) {
 		static $allowedLocalizationKeys = [];
+		// init local static property `$allowedLocalizationKeys` only once:
 		if (count($allowedLocalizationKeys) === 0) {
 			$router = & $this->router;
 			if ($router === NULL) {

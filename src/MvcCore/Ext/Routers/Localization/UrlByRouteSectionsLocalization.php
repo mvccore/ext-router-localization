@@ -15,6 +15,20 @@ namespace MvcCore\Ext\Routers\Localization;
 
 trait UrlByRouteSectionsLocalization
 {
+	/**
+	 * Return localization for result URL. If localization is specified in given 
+	 * params array, return this localization. If there is not any specific 
+	 * localization in params array and route is defined as localized, add 
+	 * localization from current request (which could be from session or from 
+	 * request). Change params array and add special localization switch param 
+	 * when router is configured to hold localization strictly in session. But 
+	 * do not return any localization for not allowed route methods and do not 
+	 * return any not allowed localizations.
+	 * @param \MvcCore\Route|\MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute $route 
+	 * @param array $params 
+	 * @param string|NULL $routeMethod 
+	 * @return array `[string $localizationParamName, string $localizationStr]`
+	 */
 	protected function urlByRouteSectionsLocalization (\MvcCore\IRoute & $route, array & $params = [], $routeMethod = NULL) {
 		// get `$localizationStr` from `$params` to work with the version more specifically
 		// in route object to choose proper reverse pattern and to complete url prefix
@@ -47,7 +61,8 @@ trait UrlByRouteSectionsLocalization
 				);
 			}
 		}
-		// add special switching param to global get, if strict session mode and target version is different
+		// add special switching param to global get, if strict 
+		// session mode and target version is different
 		if (
 			$this->stricModeBySession && 
 			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
