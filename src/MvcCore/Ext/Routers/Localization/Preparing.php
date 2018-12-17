@@ -139,7 +139,7 @@ trait Preparing
 		/**
 			* $requestPath = '/'					=> $secondSlashPos = FALSE	=> $firstPathElm = ''
 			* $requestPath = '/en'					=> $secondSlashPos = FALSE	=> $firstPathElm = 'en'
-			* $requestPath = '/en/'				=> $secondSlashPos = 3		=> $firstPathElm = 'en'
+			* $requestPath = '/en/'					=> $secondSlashPos = 3		=> $firstPathElm = 'en'
 			* $requestPath = '/en/move...'			=> $secondSlashPos = 3		=> $firstPathElm = 'en'
 			* $requestPath = '/any-thing'			=> $secondSlashPos = FALSE	=> $firstPathElm = 'any-thing'
 			* $requestPath = '/any-thing/'			=> $secondSlashPos = 10		=> $firstPathElm = 'any-thing'
@@ -161,6 +161,11 @@ trait Preparing
 	}
 
 	/**
+	 * Try to format given localization and check if localization is allowed. 
+	 * If localization is allowed, set up request localization and re-set up
+	 * request path by second function argument. Or if localization is in 
+	 * localization equivalent array, also correct request path if necessary
+	 * and set up target localization for later redirection.
 	 * @param string|NULL $rawRequestLocalization 
 	 * @param bool $correctRequestPath 
 	 * @return bool

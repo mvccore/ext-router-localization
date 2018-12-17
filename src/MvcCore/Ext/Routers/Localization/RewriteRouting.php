@@ -16,13 +16,24 @@ namespace MvcCore\Ext\Routers\Localization;
 trait RewriteRouting
 {
 	/**
-	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
-	 * Go through all configured routes and try to find matching route.
-	 * If there is caught any matching route - reset `\MvcCore\Request::$params`
-	 * with default route params, with params itself and with params parsed from 
-	 * matching process.
-	 * @param string $controllerName
-	 * @param string $actionName
+	 * Try to parse first word from request path to get proper routes group.
+	 * If there is no first word in request path, get default routes group. 
+	 * 
+	 * If there is any configured pre-routing handler, execute the handler to
+	 * for example load only specific routes from database or anything else.
+	 * 
+	 * Go through all chosen routes and check if route is possible to use for 
+	 * current request. Then try to match route by given request. If route doesn't 
+	 * match the request, continue to another route and try to complete current
+	 * route object. If route matches the request, set up default and request 
+	 * params and try to process route filtering in. If it is successful, set 
+	 * up current route object and end route matching process.
+	 * @param string|NULL $requestCtrlName		Possible controller name value or `NULL` assigned directly 
+	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param string|NULL $requestActionName	Possible action name value or `NULL` assigned directly 
+	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
@@ -83,6 +94,15 @@ trait RewriteRouting
 		}
 	}
 
+	/**
+	 * Get specific routes group by first parsed word from request path if any.
+	 * If first path word is an empty string, there is returned routes with no group
+	 * word defined. If still there are no such routes in default group, returned 
+	 * is an empty array.
+	 * @param string $firstPathWord 
+	 * @param string|NULL $routesLocalizationStr 
+	 * @return array|\MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]
+	 */
 	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
 		$routesGroupsKey = $firstPathWord;
 		if ($routesLocalizationStr !== NULL) 

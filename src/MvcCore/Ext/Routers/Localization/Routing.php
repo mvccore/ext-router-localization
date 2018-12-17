@@ -16,30 +16,33 @@ namespace MvcCore\Ext\Routers\Localization;
 trait Routing
 {
 	/**
-	 * Route current application request by configured routes list or by query string data.
-	 * - Complete before every request from requested path requested localization string
-	 *   (language and locale codes) and compare it with session by configuration. If there
-	 *   is nothing from previous requests, recognize browser language by `Accept-Language`
-	 *   http header, store it in session if anything parsed and continue or redirect by configuration.
-	 * - If there is strictly defined `controller` and `action` value in query string,
-	 *   route request by given values, add new route and complete new empty
-	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
-	 * - If there is no strictly defined `controller` and `action` value in query string,
-	 *   go through all configured routes and try to find matching route:
-	 *   - If there is caught any matching route:
-	 *	 - Set up `\MvcCore\Router::$currentRoute`.
-	 *	 - Reset `\MvcCore\Request::$params` again with default route params,
-	 *	   with request params itself and with params parsed from matching process.
-	 * - If there is no route matching the request and also if the request is targeting homepage
-	 *   or there is no route matching the request and also if the request is targeting something
-	 *   else and also router is configured to route to default controller and action if no route
-	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automatically created route
-	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
-	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
-	 * - Return `TRUE` if routing has no redirection or `FALSE` for redirection.
-	 *
-	 * This method is always called from core routing by:
-	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * Route current app request by configured routes lists or by query string.
+	 * 1. Check if request is targeting any internal action in internal ctrl.
+	 * 2. Choose route strategy by request path and existing query string 
+	 *    controller and/or action values - strategy by query string or by 
+	 *    rewrite routes.
+	 * 3. If request is not internal, redirect to possible better URL form by
+	 *    configured trailing slash strategy and return `FALSE` for redirection.
+	 * 4. Prepare localization properties and redirect if necessary.
+	 * 5. Try to complete current route object by chosen strategy.
+	 * 6. If there was not found any rewrite route in rewrite routes strategy, 
+	 *    also if there is no localization in request, disallow non localized
+	 *    route and re-call localization preparing method and redirect if 
+	 *    necessary. It means any request path will be redirected into default 
+	 *    localization.
+	 * 7. If any current route found and if route contains redirection, do it.
+	 * 8. If there is no current route and request is targeting homepage, create
+	 *    new empty route by default values if ctrl configuration allows it.
+	 * 9. If there is any current route completed, complete self route name by 
+	 *    it to generate `self` routes and canonical URL later.
+	 * 10.If there is necessary, try to complete canonical URL and if canonical 
+	 *    URL is shorter than requested URL, redirect user to shorter version.
+	 * If there was necessary to redirect user in routing process, return 
+	 * immediately `FALSE` and return from this method. Else continue to next 
+	 * step and return `TRUE`. This method is always called from core routing by:
+	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return bool
 	 */
 	public function Route () {

@@ -501,9 +501,9 @@ trait PropsGettersSetters
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										 `Controller::Action` definitions.
+	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
+	 *										  keys are route names or route
+	 *										  `Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames Group name(s) is first matched/parsed word(s) in 
 	 *										requested path to group routes by to try to
 	 *										match only routes you really need, not all of
@@ -528,12 +528,18 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Add route instance into localized routes group defined by first parsed word from requested URL.
-	 * @param \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route $route Localized route instance.
-	 * @param string $routeName Route instance name.
-	 * @param string|\string[]|NULL $groupNames Group name or list of group names to assign given route instance into.
-	 * @param bool $prepend Prepend route instance in final group or not.
-	 * @throws \InvalidArgumentException Localized routes group cannot contain non-localized route instance.
+	 * Add route instance into named routes group. Every routes group is chosen 
+	 * in routing moment by first parsed word from requested URL.
+	 * @param \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route $route 
+	 *		  Localized route instance.
+	 * @param string $routeName 
+	 *		  A route instance name.
+	 * @param string|\string[]|NULL $groupNames 
+	 *		  Group name or list of group names to assign given route instance into.
+	 * @param bool $prepend 
+	 *		  If `TRUE`, prepend route instance in final group or not.
+	 * @throws \InvalidArgumentException 
+	 *		  Localized routes group cannot contain non-localized route instance.
 	 * @return void
 	 */
 	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupNames, $prepend) {
@@ -573,6 +579,48 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Clear all possible previously configured routes
+	 * and set new given request routes again.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	], "eshop");`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		'products_list'	=> [
+	 *			"pattern"			=>  [
+	 *				"en"				=> "/products-list/<name>/<color>",
+	 *				"de"				=> "/produkt-liste/<name>/<color>"
+	 *			],
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	], ["en" => "eshop", "de" => "shop"]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		)
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
+	 *		)
+	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										 `Controller::Action` definitions.
@@ -586,7 +634,7 @@ trait PropsGettersSetters
 	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
-	 *							   record, completed always from array keys.
+	 *							   records, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
 	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
@@ -642,6 +690,14 @@ trait PropsGettersSetters
 		return $this;
 	}
 
+	/**
+	 * Unset route from defined group. This method doesn't unset the route
+	 * from router object to not be possible to create URL by given route anymore.
+	 * This does route method: `\MvcCore\Route::RemoveRoute($routeName);`.
+	 * @param \MvcCore\IRoute $route 
+	 * @param string $routeName 
+	 * @return void
+	 */
 	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
 		$routeGroups = $route->GetGroupName();
 		$routesGroupsKeys = [];
@@ -687,6 +743,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
+		/** @var $this \MvcCore\IRouter */
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute->SetRouter($this);
 		$routeClass = $this->isRouteCfgDataLocalized($routeCfgOrRoute) 
