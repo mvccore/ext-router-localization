@@ -27,6 +27,13 @@ extends		\MvcCore\Router
 implements	\MvcCore\Ext\Routers\ILocalization,
 			\MvcCore\Ext\Routers\IExtended
 {
+	/**
+	 * MvcCore Extension - Router Media - version:
+	 * Comparison by PHP function version_compare();
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '5.0.0-alpha';
+
 	use \MvcCore\Ext\Routers\Extended;
 
 	use \MvcCore\Ext\Routers\Localization\Preparing;
@@ -39,11 +46,4 @@ implements	\MvcCore\Ext\Routers\ILocalization,
 	use \MvcCore\Ext\Routers\Localization\UrlByRoute;
 	use \MvcCore\Ext\Routers\Localization\UrlByRouteSections;
 	use \MvcCore\Ext\Routers\Localization\UrlByRouteSectionsLocalization;
-	
-	/**
-	 * MvcCore Extension - Router Lang - version:
-	 * Comparison by PHP function version_compare();
-	 * @see http://php.net/manual/en/function.version-compare.php
-	 */
-	const VERSION = '5.0.0-alpha';
 }
