@@ -764,13 +764,14 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Return localization string value for redirection URL 
-	 * but if localization is defined by GET query string param,
-	 * return `NULL` and set target localization string into GET params
-	 * to complete query string later. If the target localization string
-	 * is the same as default localization, return `NULL` in query string
-	 * localization definition case.
-	 * @param \string[] $targetLocalization Localization array, it could have one or two elements - lang and locale string.
+	 * Return localization string value for redirection URL but if localization 
+	 * is defined by `GET` query string param, return `NULL` and set target 
+	 * localization string into `GET` params to complete query string params 
+	 * into redirect URL later. But if the target localization string is the same 
+	 * as default localization, unset this param from `GET` params array return 
+	 * `NULL` in query string localization definition case.
+	 * @param \string[] $targetLocalization	Localization array, it could have one 
+	 *										or two elements - lang and locale string.
 	 * @return string|NULL
 	 */
 	protected function redirectLocalizationGetUrlValueAndUnsetGet ($targetLocalization) {

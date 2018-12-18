@@ -16,7 +16,8 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlByRouteSectionsLocalization
 {
 	/**
-	 * Return localization for result URL. If localization is specified in given 
+	 * Return localization for result URL as localization param name string and 
+	 * localization param value string. If localization is specified in given 
 	 * params array, return this localization. If there is not any specific 
 	 * localization in params array and route is defined as localized, add 
 	 * localization from current request (which could be from session or from 
