@@ -348,7 +348,10 @@ trait PropsGettersSetters
 	 * international language code and international locale code separated by
 	 * dash. All previously defined allowed localizations will be replaced.
 	 * Default localization is always allowed automatically.
-	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
+	 * @var string $allowedLocalizations...,	International lower case language 
+	 *											code(s) (+ optionally dash character 
+	 *											+ upper case international locale 
+	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */) {
@@ -367,7 +370,10 @@ trait PropsGettersSetters
 	 * international language code and international locale code separated by
 	 * dash. 
 	 * Default localization is always allowed automatically.
-	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
+	 * @var string $allowedLocalizations...,	International lower case language 
+	 *											code(s) (+ optionally dash character 
+	 *											+ upper case international locale 
+	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */) {
@@ -403,7 +409,9 @@ trait PropsGettersSetters
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be replaced with given configuration.
-	 * @param array $localizationEquivalents Keys in this array is target localization, value is an array with target localization equivalents.
+	 * @param array $localizationEquivalents	Keys in this array is target 
+	 *											localization, value is an array 
+	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalizationEquivalents (array $localizationEquivalents = []) {
@@ -420,7 +428,9 @@ trait PropsGettersSetters
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be merged with given configuration.
-	 * @param array $localizationEquivalents Keys in this array is target localization, value is an array with target localization equivalents.
+	 * @param array $localizationEquivalents	Keys in this array is target 
+	 *											localization, value is an array 
+	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddLocalizationEquivalents (array $localizationEquivalents = []) {
@@ -480,7 +490,7 @@ trait PropsGettersSetters
 	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
 	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		]
-	 *	], ["en" => "eshop", "de" => "shop"]);`
+	 *	], ["en" => "eshop", "de" => "einkaufen"]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		new Route(
@@ -505,10 +515,11 @@ trait PropsGettersSetters
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames 
-	 *				Group name(s) is first matched/parsed word(s) in requested 
-	 *				path to group routes by to try to match only routes you 
-	 *				really need, not all of them. If `NULL` by default, routes 
-	 *				are inserted into default group.
+	 *				Group name or names is first matched/parsed word(s) in 
+	 *				requested path to group routes by to try to match only routes 
+	 *				you really need, not all of them. If `NULL` by default, routes 
+	 *				are inserted into default group. If argument is an array, it 
+	 *				must contain localization keys and localized group names.
 	 * @param bool $prepend	
 	 *				Optional, if `TRUE`, all given routes will be prepended from 
 	 *				the last to the first in given list, not appended.
@@ -600,7 +611,7 @@ trait PropsGettersSetters
 	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
 	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		]
-	 *	], ["en" => "eshop", "de" => "shop"]);`
+	 *	], ["en" => "eshop", "de" => "einkaufen"]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
 	 *		new Route(
@@ -625,10 +636,11 @@ trait PropsGettersSetters
 	 *				Keyed array with routes, keys are route names or route
 	 *				 `Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames 
-	 *				Group name is first matched/parsed word in requested path to 
-	 *				group routes by to try to match only routes you really need, 
-	 *				not all of them. If `NULL` by default, routes are inserted 
-	 *				into default group.
+	 *				Group name or names is first matched/parsed word(s) in 
+	 *				requested path to group routes by to try to match only routes 
+	 *				you really need, not all of them. If `NULL` by default, routes 
+	 *				are inserted into default group. If argument is an array, it 
+	 *				must contain localization keys and localized group names.
 	 * @param bool $autoInitialize 
 	 *				If `TRUE`, locale routes array is cleaned and then all 
 	 *				routes (or configuration arrays) are sent into method 

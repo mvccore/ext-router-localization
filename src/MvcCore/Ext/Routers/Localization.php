@@ -18,7 +18,9 @@ namespace MvcCore\Ext\Routers;
  *					session and set up request object, complete automatically 
  *					rewritten URL with remembered localization version. Redirect 
  *					to proper localization by configuration. Than route request 
- *					like parent class does.
+ *					like parent class does. Generate URL addresses with prefixed 
+ *					localization for localized routes or add only localization 
+ *					into query string where necessary.
  */
 class		Localization 
 extends		\MvcCore\Router

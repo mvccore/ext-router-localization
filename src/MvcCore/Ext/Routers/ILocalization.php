@@ -14,26 +14,32 @@
 namespace MvcCore\Ext\Routers;
 
 /**
- * Responsibility - recognize localization from URL or from http header or session and set 
- *					up request object, complete automatically rewritten URL with remembered 
- *					localization version. Redirect to proper localization by configuration.
- *					Than route request like parent class does.
+ * Responsibility - recognize localization from URL or from http header or 
+ *					session and set up request object, complete automatically 
+ *					rewritten URL with remembered localization version. Redirect 
+ *					to proper localization by configuration. Than route request 
+ *					like parent class does. Generate URL addresses with prefixed 
+ *					localization for localized routes or add only localization 
+ *					into query string where necessary.
  */
 interface ILocalization
 {
 	/**
-	 * Key name for language or/and locale in second argument $params in $router->Url();  method,
-	 * to tell $router->Url() method to generate URL in different locale.
+	 * Key name for language or/and locale in second argument `$params` in 
+	 * `$router->Url();` method. To tell to the method to generate URL in 
+	 * different localization.
 	 */
 	const URL_PARAM_LOCALIZATION = 'localization';
 
 	/**
-	 * Special $_GET param name for session strict mode, how to change site locale version.
+	 * Special `$_GET` param name for session strict mode, how to change 
+	 * site localization version.
 	 */
 	const URL_PARAM_SWITCH_LOCALIZATION = 'switch_localization';
 
 	/**
-	 * Source URL param name, when first request is redirected to default localization by configuration.
+	 * Source URL param name, when first request is redirected to default 
+	 * localization by configuration.
 	 */
 	const URL_PARAM_REDIRECTED_SOURCE = 'source_url';
 
@@ -171,7 +177,10 @@ interface ILocalization
 	 * international language code and international locale code separated by
 	 * dash. All previously defined allowed localizations will be replaced.
 	 * Default localization is always allowed automatically.
-	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
+	 * @var string $allowedLocalizations...,	International lower case language 
+	 *											code(s) (+ optionally dash character 
+	 *											+ upper case international locale 
+	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */);
@@ -183,7 +192,10 @@ interface ILocalization
 	 * international language code and international locale code separated by
 	 * dash. 
 	 * Default localization is always allowed automatically.
-	 * @var string $allowedLocalizations..., International lower case language code(s) (+ optionally dash character + upper case international locale code(s))
+	 * @var string $allowedLocalizations...,	International lower case language 
+	 *											code(s) (+ optionally dash character 
+	 *											+ upper case international locale 
+	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */);
@@ -205,7 +217,9 @@ interface ILocalization
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be replaced with given configuration.
-	 * @param array $localizationEquivalents Keys in this array is target localization, value is an array with target localization equivalents.
+	 * @param array $localizationEquivalents	Keys in this array is target 
+	 *											localization, value is an array 
+	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetLocalizationEquivalents (array $localizationEquivalents = []);
@@ -217,7 +231,9 @@ interface ILocalization
 	 * Keys in this array is target localization, value is an array with target 
 	 * localization equivalents. All previously configured localization equivalents
 	 * will be merged with given configuration.
-	 * @param array $localizationEquivalents Keys in this array is target localization, value is an array with target localization equivalents.
+	 * @param array $localizationEquivalents	Keys in this array is target 
+	 *											localization, value is an array 
+	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & AddLocalizationEquivalents (array $localizationEquivalents = []);
@@ -242,4 +258,189 @@ interface ILocalization
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
 	public function & SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE);
+
+	/**
+	 * Append or prepend new request routes.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	], "eshop");`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		'products_list'	=> [
+	 *			"pattern"			=>  [
+	 *				"en"				=> "/products-list/<name>/<color>",
+	 *				"de"				=> "/produkt-liste/<name>/<color>"
+	 *			],
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	], ["en" => "eshop", "de" => "einkaufen"]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		)
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
+	 *		)
+	 *	]);`
+	 * @param \MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				`Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames 
+	 *				Group name or names is first matched/parsed word(s) in 
+	 *				requested path to group routes by to try to match only routes 
+	 *				you really need, not all of them. If `NULL` by default, routes 
+	 *				are inserted into default group. If argument is an array, it 
+	 *				must contain localization keys and localized group names.
+	 * @param bool $prepend	
+	 *				Optional, if `TRUE`, all given routes will be prepended from 
+	 *				the last to the first in given list, not appended.
+	 * @param bool $throwExceptionForDuplication 
+	 *				`TRUE` by default. Throw an exception, if route `name` or 
+	 *				route `Controller:Action` has been defined already. If 
+	 *				`FALSE` old route is overwritten by new one.
+	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 */
+	public function & AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+
+	/**
+	 * Clear all possible previously configured routes
+	 * and set new given request routes again.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	], "eshop");`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		'products_list'	=> [
+	 *			"pattern"			=>  [
+	 *				"en"				=> "/products-list/<name>/<color>",
+	 *				"de"				=> "/produkt-liste/<name>/<color>"
+	 *			],
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	], ["en" => "eshop", "de" => "einkaufen"]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		)
+	 *	]);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
+	 *		)
+	 *	]);`
+	 * @param \MvcCore\Route[]|\MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				 `Controller::Action` definitions.
+	 * @param string|array|NULL $groupNames 
+	 *				Group name or names is first matched/parsed word(s) in 
+	 *				requested path to group routes by to try to match only routes 
+	 *				you really need, not all of them. If `NULL` by default, routes 
+	 *				are inserted into default group. If argument is an array, it 
+	 *				must contain localization keys and localized group names.
+	 * @param bool $autoInitialize 
+	 *				If `TRUE`, locale routes array is cleaned and then all 
+	 *				routes (or configuration arrays) are sent into method 
+	 *				`$router->AddRoutes();`, where are routes auto initialized 
+	 *				for missing route names or route controller or route action
+	 *				records, completed always from array keys. You can you 
+	 *				`FALSE` to set routes without any change or auto-init, it 
+	 *				could be useful to restore cached routes etc.
+	 * @return \MvcCore\Router|\MvcCore\IRouter|\MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 */
+	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE);
+
+	/**
+	 * Route current app request by configured routes lists or by query string.
+	 * 1. Check if request is targeting any internal action in internal ctrl.
+	 * 2. Choose route strategy by request path and existing query string 
+	 *    controller and/or action values - strategy by query string or by 
+	 *    rewrite routes.
+	 * 3. If request is not internal, redirect to possible better URL form by
+	 *    configured trailing slash strategy and return `FALSE` for redirection.
+	 * 4. Prepare localization properties and redirect if necessary.
+	 * 5. Try to complete current route object by chosen strategy.
+	 * 6. If there was not found any rewrite route in rewrite routes strategy, 
+	 *    also if there is no localization in request, disallow non localized
+	 *    route and re-call localization preparing method and redirect if 
+	 *    necessary. It means any request path will be redirected into default 
+	 *    localization.
+	 * 7. If any current route found and if route contains redirection, do it.
+	 * 8. If there is no current route and request is targeting homepage, create
+	 *    new empty route by default values if ctrl configuration allows it.
+	 * 9. If there is any current route completed, complete self route name by 
+	 *    it to generate `self` routes and canonical URL later.
+	 * 10.If there is necessary, try to complete canonical URL and if canonical 
+	 *    URL is shorter than requested URL, redirect user to shorter version.
+	 * If there was necessary to redirect user in routing process, return 
+	 * immediately `FALSE` and return from this method. Else continue to next 
+	 * step and return `TRUE`. This method is always called from core routing by:
+	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
+	 * @return bool
+	 */
+	public function Route ();
+
+	/**
+	 * Complete non-absolute, non-localized url by route instance reverse info.
+	 * If there is key `media_version` in `$params`, unset this param before
+	 * route url completing and choose by this param url prefix to prepend 
+	 * completed url string.
+	 * If there is key `localization` in `$params`, unset this param before
+	 * route url completing and place this param as url prefix to prepend 
+	 * completed url string and to prepend media site version prefix.
+	 * Example:
+	 *	Input (`\MvcCore\Route::$reverse`):
+	 *		`"/products-list/<name>/<color>"`
+	 *	Input ($params):
+	 *		`array(
+	 *			"name"			=> "cool-product-name",
+	 *			"color"			=> "red",
+	 *			"variant"		=> ["L", "XL"],
+	 *			"localization"	=> "en-US",
+	 *		);`
+	 *	Output:
+	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
+	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
+	 * @param array $params
+	 * @param string $urlParamRouteName
+	 * @return string
+	 */
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL);
 }
