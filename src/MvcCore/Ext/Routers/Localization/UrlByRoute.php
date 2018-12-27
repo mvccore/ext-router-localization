@@ -16,13 +16,10 @@ namespace MvcCore\Ext\Routers\Localization;
 trait UrlByRoute
 {
 	/**
-	 * Complete non-absolute, non-localized url by route instance reverse info.
-	 * If there is key `media_version` in `$params`, unset this param before
-	 * route url completing and choose by this param url prefix to prepend 
-	 * completed url string.
-	 * If there is key `localization` in `$params`, unset this param before
-	 * route url completing and place this param as url prefix to prepend 
-	 * completed url string and to prepend media site version prefix.
+	 * Complete non-absolute, localized or non-localized URL by route instance 
+	 * reverse info. If there is key `localization` in `$params`, unset this 
+	 * param before route URL completing and place this param as URL prefix to 
+	 * prepend completed URL string and to prepend media site version prefix.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color>"`

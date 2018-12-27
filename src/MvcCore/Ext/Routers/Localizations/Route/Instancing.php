@@ -16,9 +16,10 @@ namespace MvcCore\Ext\Routers\Localizations\Route;
 trait Instancing
 {
 	/**
-	 * Create new localized route instance.
-	 * First argument should be configuration array or
-	 * route pattern value to parse into match and reverse patterns.
+	 * Create new localized route instance. First argument could be configuration  
+	 * array with all necessary constructor values or all separated arguments -   
+	 * first is route pattern value to parse into match and reverse values, then 
+	 * controller with action, params default values and constraints.
 	 * Example:
 	 * `new Route([
 	 *		"pattern"			=> [
