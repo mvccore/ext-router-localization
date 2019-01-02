@@ -267,7 +267,10 @@ $router
     ]);
 ...
 // somewhere in template or in controller (if router has matched localization `de-DE`):
-$this->Url('Front\Product:Detail', ['id' => 50]);    // `/de-DE/produkt/50`
+$this->Url('Front\Product:Detail', [
+    'id' => 50
+]);
+// will return: `/de-DE/produkt/50`
 ```
 
 If there is put a non-localized route name, returned is non-localized URL.
@@ -285,7 +288,12 @@ $router->AddRoutes([
 ]);
 ...
 // somewhere in template or in controller (if router has matched any localization):
-$this->Url('admin', ['controller' => 'products', 'action' => 'update', 'id' => 50]);    // `/admin/products/update/50`
+$this->Url('admin', [
+    'controller' => 'products', 
+    'action'     => 'update', 
+    'id'         => 50
+]);
+// will return: `/admin/products/update/50`
 ```
 
 [go to top](#user-content-outline)
