@@ -250,20 +250,23 @@ $router->SetRedirectFirstRequestToDefault(TRUE);
 If you put into `Url()` method as first param localized route name, there is generated localized URL automatically:
 ```php
 // somewhere in Bootstrap.php:
-$router->SetLocalization('de', 'DE');
-$router->AddRoutes([
-    'Front\Product:Detail' => [
-        'pattern'              => [
-            'en'               '/product/<id>',
-            'de'               '/produkt/<id>',
-        ],
-        'constraints'          => [
-            'id'               => '\d+',
+$router
+    ->SetDefaultLocalization('en-US')
+    ->SetAllowedLocalizations('de-DE')
+    ->SetRouteRecordsByLanguageAndLocale(FALSE)
+    ->AddRoutes([
+        'Front\Product:Detail' => [
+            'pattern'              => [
+                'en'               '/product/<id>',
+                'de'               '/produkt/<id>',
+            ],
+            'constraints'          => [
+                'id'               => '\d+',
+            ]
         ]
-    ]
-]);
+    ]);
 ...
-// somewhere in template or in controller:
+// somewhere in template or in controller (if router has matched localization `de-DE`):
 $this->Url('Front\Product:Detail', ['id' => 50]);    // `/de-DE/produkt/50`
 ```
 
@@ -281,7 +284,7 @@ $router->AddRoutes([
     ]
 ]);
 ...
-// somewhere in template or in controller:
+// somewhere in template or in controller (if router has matched any localization):
 $this->Url('admin', ['controller' => 'products', 'action' => 'update', 'id' => 50]);    // `/admin/products/update/50`
 ```
 
