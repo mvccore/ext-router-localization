@@ -244,14 +244,57 @@ $router->SetRedirectFirstRequestToDefault(TRUE);
 
 [go to top](#user-content-outline)
 
-## 4.10. Usage - Localized URL In Non-Localized Request
+## 4.10. Usage - Generate Localized URL Or Non-Localized URL
+
+If you put into `Url()` method as first param localized route name, there is generated localized URL automatically:
+```php
+// somewhere in Bootstrap.php:
+$router->SetLocalization('de', 'DE');
+$router->AddRoutes([
+    'Front\Product:Detail' => [
+        'pattern'              => [
+            'en'               '/product/<id>',
+            'de'               '/produkt/<id>',
+        ],
+	    'constraints'          => [
+            'id'               => '\d+',
+	    ]
+    ]
+]);
+...
+// somewhere in template or in controller:
+$this->Url('Front\Product:Detail', ['id' => 50]);    // `/de-DE/produkt/50`
+```
+
+If there is put a non-localized route name, returned is non-localized URL.
+```php
+// somewhere in Bootstrap.php:
+$router->AddRoutes([
+    'admin' => [
+        'pattern'              => '/admin/<controller>/<action>[/<id>]',
+	    'constraints'          => [
+            'controller'       => '-a-z0-9',
+            'action'           => '-a-z0-9',
+            'id'               => '\d+',
+	    ]
+    ]
+]);
+...
+// somewhere in template or in controller:
+$this->Url('admin', ['controller' => 'products', 'action' => 'update', 'id' => 50]);    // `/admin/products/update/50`
+```
+
+[go to top](#user-content-outline)
+
+## 4.11. Usage - Localized URL In Non-Localized Request
 If request is routed on any non-localized route and request object has some strange localization from session or default localization (if there was nothing in session), you still could generate differently localized URL addresses, for example for email messages in CRON scripts like so:
 ```php
 $router->SetLocalization('de', 'DE');
 ...
+// anywhere you have $router instance:
 $router->Url('Front\Product:Detail', ['id' => 50]);    // `/de-DE/produkt/50`
-
-// or somewhere in template or in controller
+...
+// or somewhere in template or in controller:
 $this->Url('Front\Product:Detail', ['id' => 50]);    // `/de-DE/produkt/50`
 ```
 
