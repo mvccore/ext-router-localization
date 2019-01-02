@@ -184,10 +184,8 @@ $router->SetRoutes([
     // with the same values `/<path>`, `constraints` are never localized:
     'Front\Index:Index'    => [
         'pattern'          => '/<path>',
-        // constraints are never localized
-        'constraints'      => [
-            'path'         => '[-a-zA-Z0-9_/]*'
-        ]
+        // constraints are never localized:
+        'constraints'      => ['path' => '[-a-zA-Z0-9_/]+']
     ],
     
 ]);
