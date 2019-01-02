@@ -147,45 +147,45 @@ $router->SetAllowedLocalizations(/*'en-US', */'en-DE');
 $router->SetRoutes([
 
     // If you want to add automatically localized route very easily, 
-	// you can use only definition like this to define router key with 
+    // you can use only definition like this to define router key with 
     // `Namespace\Controller:Action` and `pattern` as '/something' 
-    'Admin\Index:Index'        => '/admin',
+    'Admin\Index:Index'    => '/admin',
     
     // Localized route with automatically completed `match` 
     // and `reverse` records from `pattern` record:
-    'Front\Product:List'    => [
-        'pattern'                => [
-            'en'                    => "/products-list",
-            'de'                    => "/produkte-liste",
+    'Front\Products:List'   => [
+        'pattern'          => [
+            'en'           => "/products-list[/<page>]",
+            'de'           => "/produkte-liste[/<page>]",
         ],
+        'defaults'         => ['page' => 1],
+        'constraints'      => ['page' => '\d+'],
     ],
     
     // Localized route with explicitly defined `match` and `reverse` 
     // records with also localized `defaults` values:
-    'Front\Product:Detail'    => [
-        'match'                    => [
-            'en'                    => '#^/product/(?<id>\d+)#',
-            'de'                    => '#^/produkt/(?<id>\d+)#'
+    'Front\Products:Detail' => [
+        'match'            => [
+            'en'           => '#^/product/(?<id>\d+)(/(?<color>[a-z]+))?/?#',
+            'de'           => '#^/produkt/(?<id>\d+)(/(?<color>[a-z]+))?/?#'
         ],
-        'reverse'                => [
-            'en'                    => '/product/<id>',
-            'de'                    => '/produkt/<id>'
+        'reverse'          => [
+            'en'           => '/product/<id>[/<color>]',
+            'de'           => '/produkt/<id>[/<color>]'
         ],
-        'defaults'                => [
-            'en'                    => 'red',
-            'de'                    => 'rot'
+        'defaults'         => [
+            'en'           => ['color' => 'red'],
+            'de'           => ['color' => 'rot'],
         ]
     ],
     
     // Automatically localized route, `pattern` record and later 
     // `match` and `reverse` records are defined for all localizations
     // with the same values `/<path>`, `constraints` are never localized:
-    'Front\Index:Index'        => [
-        'pattern'                => '/<path>',
-        // constraints are never localized
-        'constraints'            => [
-            'path'                     => '[-a-zA-Z0-9_/]*'
-        ]
+    'Front\Index:Index'    => [
+        'pattern'          => '/<path>',
+        // constraints are never localized:
+        'constraints'      => ['path' => '[-a-zA-Z0-9_/]+']
     ],
     
 ]);
