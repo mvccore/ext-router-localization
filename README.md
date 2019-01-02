@@ -170,8 +170,8 @@ $router->SetRoutes([
             'de'           => '#^/produkt/(?<id>\d+)(/(?<color>[a-z]+))?/?#'
         ],
         'reverse'          => [
-            'en'           => '/product/<id>[/color>]',
-            'de'           => '/produkt/<id>[/color>]'
+            'en'           => '/product/<id>[/<color>]',
+            'de'           => '/produkt/<id>[/<color>]'
         ],
         'defaults'         => [
             'en'           => ['color' => 'red'],
