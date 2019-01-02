@@ -259,7 +259,7 @@ $router->AddRoutes([
         ],
         'constraints'          => [
             'id'               => '\d+',
-	    ]
+        ]
     ]
 ]);
 ...
@@ -277,7 +277,7 @@ $router->AddRoutes([
             'controller'       => '-a-z0-9',
             'action'           => '-a-z0-9',
             'id'               => '\d+',
-	    ]
+        ]
     ]
 ]);
 ...
