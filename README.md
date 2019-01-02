@@ -158,7 +158,7 @@ $router->SetRoutes([
             'en'			=> "/products-list[/<page>]",
             'de'			=> "/produkte-liste[/<page>]",
         ],
-		'defaults'			=> ['page' => 1],
+		'defaults'		=> ['page' => 1],
 		'constraints'		=> ['page' => '\d+'],
     ],
     
