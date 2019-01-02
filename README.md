@@ -153,7 +153,7 @@ $router->SetRoutes([
     
     // Localized route with automatically completed `match` 
     // and `reverse` records from `pattern` record:
-    'Front\Product:List'   => [
+    'Front\Products:List'   => [
         'pattern'          => [
             'en'           => "/products-list[/<page>]",
             'de'           => "/produkte-liste[/<page>]",
@@ -164,7 +164,7 @@ $router->SetRoutes([
     
     // Localized route with explicitly defined `match` and `reverse` 
     // records with also localized `defaults` values:
-    'Front\Product:Detail' => [
+    'Front\Products:Detail' => [
         'match'            => [
             'en'           => '#^/product/(?<id>\d+)(/(?<color>[a-z]+))?/?#',
             'de'           => '#^/produkt/(?<id>\d+)(/(?<color>[a-z]+))?/?#'
