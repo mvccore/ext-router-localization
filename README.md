@@ -257,7 +257,7 @@ $router->AddRoutes([
             'en'               '/product/<id>',
             'de'               '/produkt/<id>',
         ],
-	    'constraints'          => [
+        'constraints'          => [
             'id'               => '\d+',
 	    ]
     ]
@@ -273,7 +273,7 @@ If there is put a non-localized route name, returned is non-localized URL.
 $router->AddRoutes([
     'admin' => [
         'pattern'              => '/admin/<controller>/<action>[/<id>]',
-	    'constraints'          => [
+        'constraints'          => [
             'controller'       => '-a-z0-9',
             'action'           => '-a-z0-9',
             'id'               => '\d+',
