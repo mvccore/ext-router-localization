@@ -27,7 +27,7 @@ The router works with any HTTP method and with multi or single language route pa
     4.7. [Usage - Localization Equivalents](#user-content-47-usage---localization-equivalents)  
     4.8. [Usage - Route Records By Language And Locale](#user-content-48-usage---route-records-by-language-and-locale)  
     4.9. [Usage - Redirect To Default And Back In First Request](#user-content-49-usage---redirect-to-default-and-back-in-first-request)  
-    4.10. [Usage - Generate Localized URL Or Non-Localized URL](#user-content-410-usage---generate-localized-url-or-non-localized-url)
+    4.10. [Usage - Generate Localized URL Or Non-Localized URL](#user-content-410-usage---generate-localized-url-or-non-localized-url)  
     4.11. [Usage - Localized URL In Non-Localized Request](#user-content-411-usage---localized-url-in-non-localized-request)  
 5. [Advanced Configuration](#user-content-5-advanced-configuration)  
     5.1. [Advanced Configuration - Session Expiration](#user-content-51-advanced-configuration---session-expiration)  
