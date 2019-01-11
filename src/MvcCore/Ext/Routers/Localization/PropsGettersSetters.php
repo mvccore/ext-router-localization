@@ -312,7 +312,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set detect localization only by language record from `Accept-Language` http 
+	 * Set detect localization only by language from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
 	 * language code will be enough to choose final target application 
 	 * localization. It will be chosen first localization in allowed list with 
@@ -354,7 +354,7 @@ trait PropsGettersSetters
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */) {
+	public function & SetAllowedLocalizations ($allowedLocalizations) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
@@ -376,7 +376,7 @@ trait PropsGettersSetters
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */) {
+	public function & AddAllowedLocalizations ($allowedLocalizations) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 

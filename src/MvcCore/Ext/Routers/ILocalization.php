@@ -147,7 +147,7 @@ interface ILocalization
 	public function GetDetectLocalizationOnlyByLang ();
 
 	/**
-	 * Set detect localization only by language record from `Accept-Language` http 
+	 * Set detect localization only by language from `Accept-Language` http 
 	 * header record, not together with locale code. Parsed international 
 	 * language code will be enough to choose final target application 
 	 * localization. It will be chosen first localization in allowed list with 
@@ -183,7 +183,7 @@ interface ILocalization
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetAllowedLocalizations (/* ...$allowedLocalizations */);
+	public function & SetAllowedLocalizations ($allowedLocalizations);
 
 	/**
 	 * Add list of allowed localization strings in your application, default 
@@ -198,7 +198,7 @@ interface ILocalization
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & AddAllowedLocalizations (/* ...$allowedLocalizations */);
+	public function & AddAllowedLocalizations ($allowedLocalizations);
 	
 	/**
 	 * Get list of localization equivalents used in localization detection by http
