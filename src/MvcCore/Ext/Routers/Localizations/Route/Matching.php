@@ -34,8 +34,9 @@ trait Matching
 	 */
 	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
 		$matchedParams = NULL;
-		$pattern = & $this->matchesGetPattern($localization);
 		$subject = $this->matchesGetSubject($request);
+		$pattern = $this->matchesGetPattern($subject, $localization);
+
 		preg_match_all($pattern, $subject, $matchedValues);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
 			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults($localization));
@@ -61,13 +62,14 @@ trait Matching
 	 * equivalents) and complete regular expression into result match and 
 	 * metadata about `reverse` property (or localized `reverse` value) to 
 	 * build URL address any time later on this route.
+	 * @param string $subject		Subject to match.
 	 * @param string $localization	Lower case language code, optionally with 
 	 *								dash and upper case locale code.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return string
 	 */
-	protected function & matchesGetPattern ($localization = NULL) {
+	protected function matchesGetPattern (& $subject, $localization = NULL) {
 		if ($this->match !== NULL) {
 			$match = & $this->match;
 			$this->matchLocalized[$localization] = & $match;
@@ -79,7 +81,14 @@ trait Matching
 			} else {
 				$this->initMatchAndReverse($localization);
 			}
-			$match = & $this->matchLocalized[$localization];
+			$match = $this->matchLocalized[$localization];
+		}
+		$match = $this->match;
+		// add UTF-8 modifier if subject string contains higher chars than ASCII
+		if (preg_match('#[^\x20-\x7f]#', $subject)) {
+			$lastHashPos = mb_strrpos($match, '#');
+			if (mb_strpos($match, 'u', $lastHashPos + 1) === FALSE)
+				$match .= 'u';
 		}
 		return $match;
 	}
