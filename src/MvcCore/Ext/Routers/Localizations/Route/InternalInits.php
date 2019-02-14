@@ -25,17 +25,22 @@ trait InternalInits
 	public function & InitAll () {
 		/** @var $this \MvcCore\IRoute */
 		$router = & $this->router;
-		$localization = $router->GetLocalization();
-		$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
-		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
-			? $localizationStr
-			: $localization[0];
-		$noMatch = $this->match === NULL && !array_key_exists($routesLocalization, $this->matchLocalized);
-		$noReverse = $this->reverse === NULL && !array_key_exists($routesLocalization, $this->reverseLocalized);
-		if ($noMatch && $noReverse) {
-			$this->initMatchAndReverse($routesLocalization);
-		} else if ($noReverse) {
-			$this->initReverse($routesLocalization);
+		$allowedLocalizations = $router->GetAllowedLocalizations();
+		$routeRecordsByLanguageAndLocale = $router->getRouteRecordsByLanguageAndLocale();
+		foreach ($allowedLocalizations as $allowedLocalization) {
+			if ($routeRecordsByLanguageAndLocale) {
+				$routeLocalization = $allowedLocalization;
+			} else {
+				$allowedLocalizationExpl = explode($router::LANG_AND_LOCALE_SEPARATOR, $allowedLocalization);
+				$routeLocalization = strtolower($allowedLocalizationExpl[0]);
+			}
+			$noMatch = $this->match === NULL && !array_key_exists($routeLocalization, $this->matchLocalized);
+			$noReverse = $this->reverse === NULL && !array_key_exists($routeLocalization, $this->reverseLocalized);
+			if ($noMatch && $noReverse) {
+				$this->initMatchAndReverse($routeLocalization);
+			} else if ($noReverse) {
+				$this->initReverse($routeLocalization);
+			}
 		}
 		return $this;
 	}
