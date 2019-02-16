@@ -97,29 +97,31 @@ trait PreRouting
 		$firstRequestLocalizationDetection = FALSE;
 		$requestClass = $this->application->GetRequestClass();
 		$requestGlobalServer = $this->request->GetGlobalCollection('server');
-		$allLanguagesAndLocales = $requestClass::ParseHttpAcceptLang($requestGlobalServer['HTTP_ACCEPT_LANGUAGE']);
-		$counter = 1;
-		foreach ($allLanguagesAndLocales as /*$priority =>*/ $languagesAndLocales) {
-			foreach ($languagesAndLocales as $languageAndLocale) {
-				$languageAndLocaleCount = count($languageAndLocale);
-				if (!$languageAndLocaleCount || $languageAndLocale[0] === NULL) {
+		if (isset($requestGlobalServer['HTTP_ACCEPT_LANGUAGE'])) {
+			$allLanguagesAndLocales = $requestClass::ParseHttpAcceptLang($requestGlobalServer['HTTP_ACCEPT_LANGUAGE']);
+			$counter = 1;
+			foreach ($allLanguagesAndLocales as /*$priority =>*/ $languagesAndLocales) {
+				foreach ($languagesAndLocales as $languageAndLocale) {
+					$languageAndLocaleCount = count($languageAndLocale);
+					if (!$languageAndLocaleCount || $languageAndLocale[0] === NULL) {
+						$counter++;
+						continue;
+					}
+					$localizationStr = strtolower($languageAndLocale[0]);
+					if ($languageAndLocaleCount > 1 && $languageAndLocale[1] !== NULL) 
+						$localizationStr .= static::LANG_AND_LOCALE_SEPARATOR . strtoupper($languageAndLocale[1]);
+					if (isset($this->allowedLocalizations[$localizationStr])) {
+						$this->localization = $languageAndLocale;
+						if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
+						break 2;
+					}
+					if (isset($this->localizationEquivalents[$localizationStr])) {
+						$this->localization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localizationEquivalents[$localizationStr]);
+						if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
+						break 2;
+					}
 					$counter++;
-					continue;
 				}
-				$localizationStr = strtolower($languageAndLocale[0]);
-				if ($languageAndLocaleCount > 1 && $languageAndLocale[1] !== NULL) 
-					$localizationStr .= static::LANG_AND_LOCALE_SEPARATOR . strtoupper($languageAndLocale[1]);
-				if (isset($this->allowedLocalizations[$localizationStr])) {
-					$this->localization = $languageAndLocale;
-					if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
-					break 2;
-				}
-				if (isset($this->localizationEquivalents[$localizationStr])) {
-					$this->localization = explode(static::LANG_AND_LOCALE_SEPARATOR, $this->localizationEquivalents[$localizationStr]);
-					if ($counter === 1) $firstRequestLocalizationDetection = TRUE;
-					break 2;
-				}
-				$counter++;
 			}
 		}
 		if (!$this->localization) 
