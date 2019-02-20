@@ -81,6 +81,6 @@ trait Matching
 			}
 			$match = $this->matchLocalized[$localization];
 		}
-		return $this->match;
+		return $match;
 	}
 }
