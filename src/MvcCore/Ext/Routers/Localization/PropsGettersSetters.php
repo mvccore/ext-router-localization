@@ -172,10 +172,14 @@ trait PropsGettersSetters
 	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
-	 * @return \string[]
+	 * @param bool $asString `FALSE` by default to get array with lang and locale, 
+	 *						 `TRUE` to get lang and locale as string.
+	 * @return string|\string[]
 	 */
-	public function GetDefaultLocalization () {
-		return $this->defaultLocalization;
+	public function GetDefaultLocalization ($asString = FALSE) {
+		return $asString
+			? implode(static::LANG_AND_LOCALE_SEPARATOR, $this->defaultLocalization)
+			: $this->defaultLocalization;
 	}
 	
 	/**
@@ -220,12 +224,12 @@ trait PropsGettersSetters
 	 * If there are no language and locale detected, returned array is empty.
 	 * @param bool $asString `FALSE` by default to get array with lang and locale, 
 	 *						 `TRUE` to get lang and locale as string.
-	 * @return string|array
+	 * @return string|\string[]
 	 */
 	public function GetLocalization ($asString = FALSE) {
 		return $asString
-			? implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
-			: $this->localization;
+			? implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization ?: $this->defaultLocalization)
+			: ($this->localization ?: $this->defaultLocalization);
 	}
 
 	/**

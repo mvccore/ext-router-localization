@@ -57,9 +57,11 @@ interface ILocalization
 	 * language and locale from URL or when is not possible to detect language 
 	 * and locale from `Accept-Language` http header or not possible to get 
 	 * previous localization from session.
-	 * @return \string[]
+	 * @param bool $asString `FALSE` by default to get array with lang and locale, 
+	 *						 `TRUE` to get lang and locale as string.
+	 * @return string|\string[]
 	 */
-	public function GetDefaultLocalization ();
+	public function GetDefaultLocalization ($asString = FALSE);
 
 	/**
 	 * Set default language and locale. Language has to be defined as two lower case 

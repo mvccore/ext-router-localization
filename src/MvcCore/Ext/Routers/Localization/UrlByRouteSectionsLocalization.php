@@ -66,7 +66,7 @@ trait UrlByRouteSectionsLocalization
 		// session mode and target version is different
 		if (
 			$this->stricModeBySession && 
-			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization)
+			$localizationStr !== implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization ?: $this->defaultLocalization)
 		) 
 			$params[static::URL_PARAM_SWITCH_LOCALIZATION] = $localizationStr;
 
