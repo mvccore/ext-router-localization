@@ -40,13 +40,13 @@ trait RewriteRouting
 		$request = & $this->request;
 
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
-		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $this->localization);
+		$localization = $this->localization ?: $this->defaultLocalization;
+		$localizationStr = implode(static::LANG_AND_LOCALE_SEPARATOR, $localization);
 		$routesLocalizationStr = NULL;
-		if (count($this->localization) > 0) {
+		if (count($localization) > 0) 
 			$routesLocalizationStr = $this->routeRecordsByLanguageAndLocale
 				? $localizationStr
-				: $this->localization[0];
-		}
+				: $localization[0];
 
 		/** @var $route \MvcCore\Route */
 		$requestMethod = $request->GetMethod();
