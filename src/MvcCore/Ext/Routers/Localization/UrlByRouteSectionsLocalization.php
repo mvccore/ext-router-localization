@@ -40,7 +40,7 @@ trait UrlByRouteSectionsLocalization
 			//if (!$localizedRoute) unset($params[$localizationParamName]);
 		} else {
 			$localizationStr = implode(
-				static::LANG_AND_LOCALE_SEPARATOR, $this->localization
+				static::LANG_AND_LOCALE_SEPARATOR, $this->localization ?: $this->defaultLocalization
 			);
 			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
 		}
