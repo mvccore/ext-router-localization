@@ -60,6 +60,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initMatchAndReverse ($localization = NULL) {
+		if (array_key_exists($localization, $this->reverseSectionsLocalized)) return;
 		$pattern = NULL;
 		$reverse = NULL;
 		if ($this->pattern !== NULL) {
@@ -114,6 +115,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initReverse ($localization = NULL) {
+		if (array_key_exists($localization, $this->reverseSectionsLocalized)) return;
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {
 			$reverse = $this->reverse;
@@ -145,12 +147,12 @@ trait InternalInits
 				'reverse', 'reverseLocalized', 'pattern', 'patternLocalized'
 			);
 		}
-
+		
 		$this->lastPatternParam = NULL;
 		
 		$reverseSections = $this->initSectionsInfo($reverse);
-		$this->reverseSectionsLocalized[$localization] = & $reverseSections;
-		$this->reverseLocalized[$localization] = & $reverse;
+		$this->reverseSectionsLocalized[$localization] = $reverseSections;
+		$this->reverseLocalized[$localization] = $reverse;
 
 		$match = NULL;
 		$reverseParams = $this->initReverseParams(

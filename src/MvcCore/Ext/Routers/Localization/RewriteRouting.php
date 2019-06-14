@@ -55,14 +55,14 @@ trait RewriteRouting
 
 		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$noSkipLocalRoutesForNonLocalRequests = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
-
+		
 		foreach ($routes as & $route) {
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 			
 			if ($this->rewriteRoutingCheckRoute($route, [
 				$requestMethod, $localizationInRequest, $routeIsLocalized, $noSkipLocalRoutesForNonLocalRequests
 			])) continue;
-
+			
 			if ($routeIsLocalized) {
 				$allMatchedParams = $route->Matches($request, $routesLocalizationStr);
 			} else {
