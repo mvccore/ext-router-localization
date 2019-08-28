@@ -127,21 +127,21 @@ trait Instancing
 			if (is_array($data->pattern)) {
 				$this->patternLocalized = $data->pattern;
 			} else {
-				$this->pattern = $data->pattern;	
+				$this->pattern = utf8_encode($data->pattern);
 			}
 		}
 		if (isset($data->match)) {
 			if (is_array($data->match)) {
 				$this->matchLocalized = $data->match;
 			} else {
-				$this->match = $data->match;	
+				$this->match = utf8_encode($data->match);	
 			}
 		}
 		if (isset($data->reverse)) {
 			if (is_array($data->reverse)) {
 				$this->reverseLocalized = $data->reverse;
 			} else {
-				$this->reverse = $data->reverse;
+				$this->reverse = utf8_encode($data->reverse);
 			}
 		}
 		if (isset($data->defaults)) 
@@ -174,7 +174,7 @@ trait Instancing
 		if (is_array($pattern)) {
 			$this->patternLocalized = $pattern;
 		} else if ($pattern !== NULL) {
-			$this->pattern = $pattern;	
+			$this->pattern = utf8_encode($pattern);
 		}
 		if ($defaults !== NULL)
 			$this->SetDefaults($defaults);
