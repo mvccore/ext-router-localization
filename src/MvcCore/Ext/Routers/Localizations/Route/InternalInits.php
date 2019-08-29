@@ -66,7 +66,7 @@ trait InternalInits
 		if ($this->pattern !== NULL) {
 			$pattern = $this->pattern;
 		} else if (isset($this->patternLocalized[$localization])) {
-			$pattern = utf8_encode($this->patternLocalized[$localization]);
+			$pattern = $this->patternLocalized[$localization];
 		} else {
 			$this->throwExceptionIfKeyPropertyIsMissing(
 				'pattern', 'patternLocalized'
@@ -75,7 +75,7 @@ trait InternalInits
 		if ($this->reverse !== NULL) {
 			$reverse = $this->reverse;
 		} else if (isset($this->reverseLocalized[$localization])) {
-			$reverse = utf8_encode($this->reverseLocalized[$localization]);
+			$reverse = $this->reverseLocalized[$localization];
 		}
 		
 		$this->lastPatternParam = NULL;
@@ -120,11 +120,11 @@ trait InternalInits
 		if ($this->reverse !== NULL) {
 			$reverse = $this->reverse;
 		} else if (isset($this->reverseLocalized[$localization])) {
-			$reverse = utf8_encode($this->reverseLocalized[$localization]);
+			$reverse = $this->reverseLocalized[$localization];
 		} else if ($this->pattern !== NULL) {
 			$reverse = $this->pattern;
 		} else if (isset($this->patternLocalized[$localization])) {
-			$reverse = utf8_encode($this->patternLocalized[$localization]);
+			$reverse = $this->patternLocalized[$localization];
 		} else {
 			if ($this->redirect !== NULL) {
 				$pattern = NULL;
@@ -132,12 +132,12 @@ trait InternalInits
 				if ($this->pattern !== NULL) {
 					$pattern = $this->pattern;
 				} else if (isset($this->patternLocalized[$localization])) {
-					$pattern = utf8_encode($this->patternLocalized[$localization]);
+					$pattern = $this->patternLocalized[$localization];
 				}
 				if ($this->match !== NULL) {
 					$match = $this->match;
 				} else if (isset($this->matchLocalized[$localization])) {
-					$match = utf8_encode($this->matchLocalized[$localization]);
+					$match = $this->matchLocalized[$localization];
 				}
 				return $this->initFlagsByPatternOrReverse(
 					$pattern !== NULL ? $pattern : str_replace(['\\', '(?', ')?', '/?'], '', $match)
