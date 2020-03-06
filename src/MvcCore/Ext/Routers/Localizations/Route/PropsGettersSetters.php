@@ -127,7 +127,7 @@ trait PropsGettersSetters
 	 *									 with dash and upper case locale code.
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
-	public function & SetPattern ($pattern, $localization = NULL) {
+	public function SetPattern ($pattern, $localization = NULL) {
 		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->patternLocalized[$localization] = $pattern;
@@ -185,7 +185,7 @@ trait PropsGettersSetters
 	 *									 with dash and upper case locale code.
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
-	public function & SetMatch ($match, $localization = NULL) {
+	public function SetMatch ($match, $localization = NULL) {
 		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->matchLocalized[$localization] = $match;
@@ -238,7 +238,7 @@ trait PropsGettersSetters
 	 *									with dash and upper case locale code.
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
-	public function & SetReverse ($reverse, $localization = NULL) {
+	public function SetReverse ($reverse, $localization = NULL) {
 		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
 			$this->reverseLocalized[$localization] = $reverse;
@@ -291,10 +291,10 @@ trait PropsGettersSetters
 	 *									with dash and upper case locale code.
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
-	public function & SetDefaults ($defaults = [], $localization = NULL) {
+	public function SetDefaults ($defaults = [], $localization = NULL) {
 		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
-			$this->defaultsLocalized[$localization] = & $defaults;
+			$this->defaultsLocalized[$localization] = $defaults;
 		} else {
 			if ($this->recordIsLocalized($defaults)) {
 				$this->defaultsLocalized = $defaults;
@@ -350,32 +350,32 @@ trait PropsGettersSetters
 	 *									with dash and upper case locale code.
 	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
 	 */
-	public function & SetConstraints ($constraints = [], $localization = NULL) {
+	public function SetConstraints ($constraints = [], $localization = NULL) {
 		/** @var $this \MvcCore\IRoute */
 		if ($localization !== NULL) {
-			$this->constraintsLocalized[$localization] = & $constraints;
+			$this->constraintsLocalized[$localization] = $constraints;
 			if (!isset($this->defaultsLocalized[$localization]))
 				$this->defaultsLocalized[$localization] = [];
-			$defaults = & $this->defaultsLocalized[$localization];
+			$defaults = $this->defaultsLocalized[$localization];
 			foreach ($constraints as $key => $value)
 				if (!isset($defaults[$key]))
 					$defaults[$key] = NULL;
 		} else {
 			$localizedConstraints = $this->recordIsLocalized($constraints);
 			if ($localization === NULL && $localizedConstraints) {
-				$this->constraintsLocalized = & $constraints;
-				$defaults = & $this->defaultsLocalized;
+				$this->constraintsLocalized = $constraints;
+				$defaults = $this->defaultsLocalized;
 				foreach ($constraints as $localization => $constraintsLocalized) {
 					if (!isset($this->defaultsLocalized[$localization]))
 						$this->defaultsLocalized[$localization] = [];
-					$defaults = & $this->defaultsLocalized[$localization];
+					$defaults = $this->defaultsLocalized[$localization];
 					foreach ($constraintsLocalized as $key => $value)
 						if (!isset($defaults[$key]))
 							$defaults[$key] = NULL;
 				}
 			} else if ($localization === NULL && !$localizedConstraints) {
-				$this->constraints = & $constraints;
-				$defaults = & $this->defaults;
+				$this->constraints = $constraints;
+				$defaults = $this->defaults;
 				foreach ($constraints as $key => $value) {
 					if (!isset($defaults[$key]))
 						$defaults[$key] = NULL;
@@ -419,7 +419,7 @@ trait PropsGettersSetters
 	 * @param string|array|NULL $groupName 
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
-	public function & SetGroupName ($groupName) {
+	public function SetGroupName ($groupName) {
 		/** @var $this \MvcCore\IRoute */
 		$this->groupName = $groupName;
 		return $this;

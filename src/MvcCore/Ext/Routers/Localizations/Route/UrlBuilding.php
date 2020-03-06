@@ -62,9 +62,9 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		// initialize localization param and route localization key
-		$router = & $this->router;
+		$router = $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];

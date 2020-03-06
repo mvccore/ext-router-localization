@@ -31,7 +31,7 @@ trait RewriteRoutingChecks
 	 *				this function.
 	 * @return bool
 	 */
-	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
+	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute $route, array $additionalInfo) {
 		list ($requestMethod, $localizationInRequest, $routeIsLocalized, $noSkipLocalRoutesForNonLocalRequests) = $additionalInfo;
 
 		$routeMethod = $route->GetMethod();

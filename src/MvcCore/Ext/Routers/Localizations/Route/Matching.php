@@ -32,7 +32,7 @@ trait Matching
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
+	public function & Matches (\MvcCore\IRequest $request, $localization = NULL) {
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern($localization);
 		$subject = $this->matchesGetSubject($request);
@@ -69,8 +69,8 @@ trait Matching
 	 */
 	protected function matchesGetPattern ($localization = NULL) {
 		if ($this->match !== NULL) {
-			$match = & $this->match;
-			$this->matchLocalized[$localization] = & $match;
+			$match = $this->match;
+			$this->matchLocalized[$localization] = $match;
 			if (!array_key_exists($localization, $this->reverseSectionsLocalized))
 				$this->initReverse($localization);
 		} else {

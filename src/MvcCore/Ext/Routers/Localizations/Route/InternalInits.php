@@ -22,9 +22,9 @@ trait InternalInits
 	 * development purposes, to see what could be inside route object.
 	 * @return \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route
 	 */
-	public function & InitAll () {
+	public function InitAll () {
 		/** @var $this \MvcCore\IRoute */
-		$router = & $this->router;
+		$router = $this->router;
 		$allowedLocalizations = $router->GetAllowedLocalizations();
 		$routeRecordsByLanguageAndLocale = $router->getRouteRecordsByLanguageAndLocale();
 		foreach ($allowedLocalizations as $allowedLocalization) {
@@ -87,13 +87,13 @@ trait InternalInits
 		list($reverseSections, $matchSections) = $this->initSectionsInfoForMatchAndReverse(
 			$reverse, $match
 		);
-		$this->reverseSectionsLocalized[$localization] = & $reverseSections;
-		$this->reverseLocalized[$localization] = & $reverse;
-		$constraintsLocalized = & $this->GetConstraints($localization);
+		$this->reverseSectionsLocalized[$localization] = $reverseSections;
+		$this->reverseLocalized[$localization] = $reverse;
+		$constraintsLocalized = $this->GetConstraints($localization);
 		$reverseParams = $this->initReverseParams(
 			$reverse, $reverseSections, $constraintsLocalized, $match
 		);
-		$this->reverseParamsLocalized[$localization] = & $reverseParams;
+		$this->reverseParamsLocalized[$localization] = $reverseParams;
 		$this->reverseParams = array_keys($reverseParams);
 		$this->initFlagsByPatternOrReverse($reverse);
 		$this->matchLocalized[$localization] = $this->initMatchComposeRegex(
@@ -158,7 +158,7 @@ trait InternalInits
 		$reverseParams = $this->initReverseParams(
 			$reverse, $reverseSections, $this->GetConstraints($localization), $match
 		);
-		$this->reverseParamsLocalized[$localization] = & $reverseParams;
+		$this->reverseParamsLocalized[$localization] = $reverseParams;
 		$this->reverseParams = array_keys($reverseParams);
 
 		$this->initFlagsByPatternOrReverse($reverse);

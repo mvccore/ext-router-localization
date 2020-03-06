@@ -101,14 +101,14 @@ trait Instancing
 			$this->constructDataPatternsDefaultsConstraintsFilters($data);
 			$this->constructDataCtrlActionName($data);
 			$this->constructDataAdvConf($data);
-			$this->config = & $patternOrConfig;
+			$this->config = $patternOrConfig;
 		} else {
 			$this->constructVarsPatternDefaultsConstraintsFilters(
 				$patternOrConfig, $defaults, $constraints, $advancedConfiguration
 			);
 			$this->constructVarCtrlActionNameByData($controllerAction);
 			$this->constructVarAdvConf($advancedConfiguration);
-			$this->config = & $advancedConfiguration;
+			$this->config = $advancedConfiguration;
 		}
 		$this->constructCtrlOrActionByName();
 	}
@@ -197,11 +197,11 @@ trait Instancing
 		static $allowedLocalizationKeys = [];
 		// init local static property `$allowedLocalizationKeys` only once:
 		if (count($allowedLocalizationKeys) === 0) {
-			$router = & $this->router;
+			$router = $this->router;
 			if ($router === NULL) {
 				static $routerStat = NULL;
 				if ($routerStat === NULL)
-					$routerStat = & \MvcCore\Application::GetInstance()->GetRouter();
+					$routerStat = \MvcCore\Application::GetInstance()->GetRouter();
 				$router = $routerStat;
 			}
 			$allowedLocalizations = $router->GetAllowedLocalizations();

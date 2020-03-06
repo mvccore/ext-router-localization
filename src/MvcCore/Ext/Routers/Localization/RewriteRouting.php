@@ -37,7 +37,7 @@ trait RewriteRouting
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
-		$request = & $this->request;
+		$request = $this->request;
 
 		$localizationInRequest = is_array($this->requestLocalization) && count($this->requestLocalization) > 0;
 		$localization = $this->localization ?: $this->defaultLocalization;
@@ -56,7 +56,7 @@ trait RewriteRouting
 		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$noSkipLocalRoutesForNonLocalRequests = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
 		
-		foreach ($routes as & $route) {
+		foreach ($routes as $route) {
 			$routeIsLocalized = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
 			
 			if ($this->rewriteRoutingCheckRoute($route, [

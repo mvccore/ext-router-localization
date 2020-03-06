@@ -194,12 +194,10 @@ trait PropsGettersSetters
 	 * @var string $defaultLocale It could be `US`, `GB`...
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
+	public function SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
-		if ($defaultLocalizationOrLanguage === NULL) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-			throw new \InvalidArgumentException("[".$selfClass."] Default localization must be defined at least by the language.");
-		}
+		if ($defaultLocalizationOrLanguage === NULL) 
+			throw new \InvalidArgumentException("[".get_class()."] Default localization must be defined at least by the language.");
 		if ($defaultLocale === NULL) {
 			$delimiterPos = strpos($defaultLocalizationOrLanguage, static::LANG_AND_LOCALE_SEPARATOR);
 			if ($delimiterPos !== FALSE) {
@@ -241,12 +239,11 @@ trait PropsGettersSetters
 	 * @throws \InvalidArgumentException Localization must be defined at least by the language.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetLocalization ($lang, $locale = NULL) {
+	public function SetLocalization ($lang, $locale = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
-		if ($lang === NULL) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-			throw new \InvalidArgumentException("[".$selfClass."] Localization must be defined at least by the language.");
-		}
+		if ($lang === NULL) throw new \InvalidArgumentException(
+			"[".get_class()."] Localization must be defined at least by the language."
+		);
 		$this->localization[0] = $lang;
 		if ($locale !== NULL) $this->localization[1] = $locale;
 		return $this;
@@ -271,7 +268,7 @@ trait PropsGettersSetters
 	 * @param bool $redirectFirstRequestToDefault
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetRedirectFirstRequestToDefault ($redirectFirstRequestToDefault = TRUE) {
+	public function SetRedirectFirstRequestToDefault ($redirectFirstRequestToDefault = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->redirectFirstRequestToDefault = $redirectFirstRequestToDefault;
 		return $this;
@@ -294,7 +291,7 @@ trait PropsGettersSetters
 	 * @param bool $allowNonLocalizedRoutes
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
+	public function SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->allowNonLocalizedRoutes = $allowNonLocalizedRoutes;
 		return $this;
@@ -327,7 +324,7 @@ trait PropsGettersSetters
 	 * @param bool $detectLocalizationOnlyByLang
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE) {
+	public function SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->detectLocalizationOnlyByLang = $detectLocalizationOnlyByLang;
 		return $this;
@@ -358,7 +355,7 @@ trait PropsGettersSetters
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetAllowedLocalizations ($allowedLocalizations) {
+	public function SetAllowedLocalizations ($allowedLocalizations) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
@@ -380,7 +377,7 @@ trait PropsGettersSetters
 	 *											code(s)).
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & AddAllowedLocalizations ($allowedLocalizations) {
+	public function AddAllowedLocalizations ($allowedLocalizations) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
@@ -418,7 +415,7 @@ trait PropsGettersSetters
 	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetLocalizationEquivalents (array $localizationEquivalents = []) {
+	public function SetLocalizationEquivalents (array $localizationEquivalents = []) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->localizationEquivalents = [];
 		$this->AddLocalizationEquivalents($localizationEquivalents);
@@ -437,7 +434,7 @@ trait PropsGettersSetters
 	 *											with target localization equivalents.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & AddLocalizationEquivalents (array $localizationEquivalents = []) {
+	public function AddLocalizationEquivalents (array $localizationEquivalents = []) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		foreach ($localizationEquivalents as $targetLocalization => $targetLocalizationEquivalents) {
 			foreach ($targetLocalizationEquivalents as $targetLocalizationEquivalent) 
@@ -467,7 +464,7 @@ trait PropsGettersSetters
 	 * @param bool $routeRecordsByLanguageAndLocale
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE) {
+	public function SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$this->routeRecordsByLanguageAndLocale = $routeRecordsByLanguageAndLocale;
 		return $this;
@@ -533,7 +530,7 @@ trait PropsGettersSetters
 	 *				`FALSE` old route is overwritten by new one.
 	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+	public function AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		$routeClass = self::$routeClass;
 		self::$routeClass = self::$routeClassLocalized;
@@ -557,7 +554,7 @@ trait PropsGettersSetters
 	 *		  Localized routes group cannot contain non-localized route instance.
 	 * @return void
 	 */
-	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupNames, $prepend) {
+	protected function addRouteToGroup (\MvcCore\IRoute $route, $routeName, $groupNames, $prepend) {
 		$routesGroupsKeys = [];
 		if ($groupNames === NULL) {
 			$routesGroupsKeys[] = '';
@@ -570,10 +567,9 @@ trait PropsGettersSetters
 			if ($route instanceof \MvcCore\Ext\Routers\Localizations\Route) {
 				$route->SetGroupName($groupNames);
 			} else {
-				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 				throw new \InvalidArgumentException (
-					"[".$selfClass."] Localized routes group cannot contain non-localized route instance. "
-					. "(group names: ".json_encode($groupNames).", route: $route)"
+					"[".get_class()."] Localized routes group cannot contain non-localized route instance. "
+					. "(group names: ".json_encode($groupNames).", route: {$route})"
 				);
 			}
 		}
@@ -655,7 +651,7 @@ trait PropsGettersSetters
 	 *				could be useful to restore cached routes etc.
 	 * @return \MvcCore\Router|\MvcCore\IRouter|\MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
 	 */
-	public function & SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
+	public function SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
 		/** @var $this \MvcCore\Ext\Routers\ILocalization */
 		if ($autoInitialize) {
 			$this->routes = [];
@@ -713,7 +709,7 @@ trait PropsGettersSetters
 	 * @param string $routeName 
 	 * @return void
 	 */
-	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
+	protected function removeRouteFromGroup (\MvcCore\IRoute $route, $routeName) {
 		$routeGroups = $route->GetGroupName();
 		$routesGroupsKeys = [];
 		if ($routeGroups === NULL) {
@@ -757,7 +753,7 @@ trait PropsGettersSetters
 	 *																route config array.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
-	protected function & getRouteInstance (& $routeCfgOrRoute) {
+	protected function getRouteInstance (& $routeCfgOrRoute) {
 		/** @var $this \MvcCore\IRouter */
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute->SetRouter($this);

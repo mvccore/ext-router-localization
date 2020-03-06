@@ -158,7 +158,7 @@ trait PreRouting
 			if ($this->redirectFirstRequestToDefault) {
 				$targetLocalization = $this->defaultLocalization;
 				/** @var $request \MvcCore\Request */
-				$request = & $this->request;
+				$request = $this->request;
 				$this->requestGlobalGet[static::URL_PARAM_REDIRECTED_SOURCE] = rawurlencode(
 					$request->GetBaseUrl() 
 					. $request->GetOriginalPath()

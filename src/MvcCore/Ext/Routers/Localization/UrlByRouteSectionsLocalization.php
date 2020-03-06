@@ -30,7 +30,7 @@ trait UrlByRouteSectionsLocalization
 	 * @param string|NULL $routeMethod 
 	 * @return array `[string $localizationParamName, string $localizationStr]`
 	 */
-	protected function urlByRouteSectionsLocalization (\MvcCore\IRoute & $route, array & $params = [], $routeMethod = NULL) {
+	protected function urlByRouteSectionsLocalization (\MvcCore\IRoute $route, array & $params = [], $routeMethod = NULL) {
 		// get `$localizationStr` from `$params` to work with the version more specifically
 		// in route object to choose proper reverse pattern and to complete url prefix
 		$localizedRoute = $route instanceof \MvcCore\Ext\Routers\Localizations\Route;
@@ -53,9 +53,8 @@ trait UrlByRouteSectionsLocalization
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
 			if (!isset($this->allowedLocalizations[$localizationStr])) {
 				$localizationStr = NULL;
-				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 				trigger_error(
-					'['.$selfClass.'] Not allowed localization used to generate url: `'
+					'['.get_class().'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
 					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.',
 					E_USER_ERROR

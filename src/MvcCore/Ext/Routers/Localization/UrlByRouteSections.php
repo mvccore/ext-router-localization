@@ -41,12 +41,12 @@ trait UrlByRouteSections
 	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL", 
 	 *			["localization" => "en-US"]
 	 *		]`
-	 * @param \MvcCore\Route|\MvcCore\IRoute & $route
+	 * @param \MvcCore\Route|\MvcCore\IRoute $route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return array `string $urlBaseSection, string $urlPathWithQuerySection, array $systemParams`
 	 */
-	protected function urlByRouteSections (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
+	protected function urlByRouteSections (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {
 		/** @var $route \MvcCore\Route */
 		$defaultParams = array_merge([], $this->GetDefaultParams() ?: []);
 		if ($urlParamRouteName == 'self') 
