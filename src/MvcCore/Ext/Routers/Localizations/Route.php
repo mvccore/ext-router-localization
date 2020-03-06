@@ -14,7 +14,7 @@
 namespace MvcCore\Ext\Routers\Localizations;
 
 /**
- * Responsibility - describing request(s) to match and reversely build URL 
+ * Responsibility - describing request(s) to match and reversely build URL
  * addresses for different languages or for different languages and localizations.
  * - Describing request to match and target it (read more about properties),
  *   for all languages in the same or in different form.
@@ -26,8 +26,19 @@ namespace MvcCore\Ext\Routers\Localizations;
 class Route extends \MvcCore\Route
 {
 	use \MvcCore\Ext\Routers\Localizations\Route\PropsGettersSetters;
-	use \MvcCore\Ext\Routers\Localizations\Route\Instancing;
+	//use \MvcCore\Ext\Routers\Localizations\Route\Instancing;
 	use \MvcCore\Ext\Routers\Localizations\Route\Matching;
 	use \MvcCore\Ext\Routers\Localizations\Route\InternalInits;
 	use \MvcCore\Ext\Routers\Localizations\Route\UrlBuilding;
+
+    // PHP 5.4 workaround:
+    use \MvcCore\Ext\Routers\Localizations\Route\Instancing {
+		\MvcCore\Ext\Routers\Localizations\Route\Instancing::__construct as protected __constructLocalized;
+	}
+	public function __construct() {
+		call_user_func_array(
+			[$this, '__constructLocalized'],
+			func_get_args()
+		);
+	}
 }
