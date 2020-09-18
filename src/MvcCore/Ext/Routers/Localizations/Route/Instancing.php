@@ -94,6 +94,7 @@ trait Instancing
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		$argsCount = count(func_get_args());
 		if ($argsCount === 0) return;
 		if (is_array($patternOrConfig) && $argsCount == 1) {
@@ -123,6 +124,7 @@ trait Instancing
 	 * @return void
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (isset($data->pattern)) {
 			if (is_array($data->pattern)) {
 				$this->patternLocalized = $data->pattern;
@@ -171,6 +173,7 @@ trait Instancing
 	 * @return void
 	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (is_array($pattern)) {
 			$this->patternLocalized = $pattern;
 		} else if ($pattern !== NULL) {
@@ -194,6 +197,7 @@ trait Instancing
 	 * @return bool
 	 */
 	protected function recordIsLocalized ($record) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		static $allowedLocalizationKeys = [];
 		// init local static property `$allowedLocalizationKeys` only once:
 		if (count($allowedLocalizationKeys) === 0) {

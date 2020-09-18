@@ -31,8 +31,8 @@ class Route extends \MvcCore\Route
 	use \MvcCore\Ext\Routers\Localizations\Route\InternalInits;
 	use \MvcCore\Ext\Routers\Localizations\Route\UrlBuilding;
 
-    // PHP 5.4 workaround:
-    use \MvcCore\Ext\Routers\Localizations\Route\Instancing {
+	// PHP 5.4 workaround:
+	use \MvcCore\Ext\Routers\Localizations\Route\Instancing {
 		\MvcCore\Ext\Routers\Localizations\Route\Instancing::__construct as protected __constructLocalized;
 	}
 	public function __construct() {

@@ -23,7 +23,7 @@ trait InternalInits
 	 * @return \MvcCore\Route|\MvcCore\IRoute|\MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function InitAll () {
-		/** @var $this \MvcCore\IRoute */
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		$router = $this->router;
 		$allowedLocalizations = $router->GetAllowedLocalizations();
 		$routeRecordsByLanguageAndLocale = $router->getRouteRecordsByLanguageAndLocale();
@@ -60,6 +60,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initMatchAndReverse ($localization = NULL) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (array_key_exists($localization, $this->reverseSectionsLocalized)) return;
 		$pattern = NULL;
 		$reverse = NULL;
@@ -115,6 +116,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initReverse ($localization = NULL) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (array_key_exists($localization, $this->reverseSectionsLocalized)) return;
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {
