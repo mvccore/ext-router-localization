@@ -63,6 +63,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		// initialize localization param and route localization key
 		$router = $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
@@ -89,11 +90,11 @@ trait UrlBuilding
 		if (count($reverseParams) === 0) {
 			$allParamsClone = array_merge([], $params);
 		} else {
-			$emptyReverseParams = array_fill_keys(array_keys($reverseParams), '');
+			$emptyReverseParams = array_fill_keys(array_keys($reverseParams), NULL);
 			$allMergedParams = array_merge($this->GetDefaults($routesLocalization), $defaultUrlParams, $params);
 			$allParamsClone = array_merge($emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params);
 		}
-
+		
 		// filter params
 		$localizationContained = array_key_exists($localizationParamName, $allParamsClone);
 		$allParamsClone[$localizationParamName] = $localizationStr;
@@ -111,7 +112,7 @@ trait UrlBuilding
 			$filteredParams, 
 			$this->GetDefaults($routesLocalization)
 		);
-
+		
 		// add all remaining params to query string
 		if ($filteredParams) {
 			// `http_build_query()` automatically converts all XSS chars to entities (`< > & " ' &`):
