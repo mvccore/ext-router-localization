@@ -80,9 +80,12 @@ trait UrlBuilding
 		$routesLocalization = $router->GetRouteRecordsByLanguageAndLocale()
 			? $localizationStr
 			: $localization[0];
-
+		
 		// check reverse initialization
-		if (!array_key_exists($routesLocalization, $this->reverseParamsLocalized) || !array_key_exists($routesLocalization, $this->reverseLocalized)) 
+		if (
+			!array_key_exists($routesLocalization, $this->reverseParamsLocalized) || 
+			!array_key_exists($routesLocalization, $this->reverseLocalized)
+		) 
 			$this->initReverse($routesLocalization);
 		
 		// complete and filter all params to build reverse pattern
