@@ -102,6 +102,7 @@ trait UrlBuilding
 		$localizationContained = array_key_exists($localizationParamName, $allParamsClone);
 		$allParamsClone[$localizationParamName] = $localizationStr;
 		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
+		$filteredParams = $filteredParams ?: [];
 		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
 		
 		// split params into domain params array and into path and query params array
