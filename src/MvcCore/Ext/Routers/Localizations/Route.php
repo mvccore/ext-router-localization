@@ -7,8 +7,8 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localizations;
@@ -23,8 +23,8 @@ namespace MvcCore\Ext\Routers\Localizations;
  * - Completing URL address by given params array, see `\MvcCore\Route::Url()`,
  *   by localization specific reverse patterns and default params.
  */
-class Route extends \MvcCore\Route
-{
+class Route extends \MvcCore\Route {
+
 	use \MvcCore\Ext\Routers\Localizations\Route\PropsGettersSetters;
 	//use \MvcCore\Ext\Routers\Localizations\Route\Instancing;
 	use \MvcCore\Ext\Routers\Localizations\Route\Matching;

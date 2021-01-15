@@ -7,8 +7,8 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers;
@@ -22,8 +22,8 @@ namespace MvcCore\Ext\Routers;
  *					localization for localized routes or add only localization 
  *					into query string where necessary.
  */
-interface ILocalization
-{
+interface ILocalization {
+
 	/**
 	 * Key name for language or/and locale in second argument `$params` in 
 	 * `$router->Url();` method. To tell to the method to generate URL in 
@@ -73,7 +73,7 @@ interface ILocalization
 	 * previous localization from session.
 	 * @var string $defaultLocalizationOrLanguage It could be `en` or `en-US`, `en-GB`...
 	 * @var string $defaultLocale It could be `US`, `GB`...
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL);
 
@@ -95,7 +95,7 @@ interface ILocalization
 	 * @param string $lang 
 	 * @param string $locale 
 	 * @throws \InvalidArgumentException Localization must be defined at least by the language.
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetLocalization ($lang, $locale = NULL);
 
@@ -114,7 +114,7 @@ interface ILocalization
 	 * If not configured, `FALSE` by default to not redirect in first request to
 	 * default localization version but to route requested localization version.
 	 * @param bool $redirectFirstRequestToDefault
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRedirectFirstRequestToDefault ($redirectFirstRequestToDefault = TRUE);
 
@@ -131,7 +131,7 @@ interface ILocalization
 	 * If `FALSE` non-localized routes are ignored and there is thrown an 
 	 * exception in development environment.
 	 * @param bool $allowNonLocalizedRoutes
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE);
 
@@ -158,7 +158,7 @@ interface ILocalization
 	 * language code together with international locale code with the only same 
 	 * combination which application has configured in allowed localizations only.
 	 * @param bool $detectLocalizationOnlyByLang
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE);
 
@@ -183,7 +183,7 @@ interface ILocalization
 	 *											code(s) (+ optionally dash character 
 	 *											+ upper case international locale 
 	 *											code(s)).
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetAllowedLocalizations ($allowedLocalizations);
 
@@ -198,7 +198,7 @@ interface ILocalization
 	 *											code(s) (+ optionally dash character 
 	 *											+ upper case international locale 
 	 *											code(s)).
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddAllowedLocalizations ($allowedLocalizations);
 	
@@ -222,7 +222,7 @@ interface ILocalization
 	 * @param array $localizationEquivalents	Keys in this array is target 
 	 *											localization, value is an array 
 	 *											with target localization equivalents.
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetLocalizationEquivalents (array $localizationEquivalents = []);
 	
@@ -236,7 +236,7 @@ interface ILocalization
 	 * @param array $localizationEquivalents	Keys in this array is target 
 	 *											localization, value is an array 
 	 *											with target localization equivalents.
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddLocalizationEquivalents (array $localizationEquivalents = []);
 
@@ -257,7 +257,7 @@ interface ILocalization
 	 * This option is very rare, if different locales have different naming 
 	 * for URL strings.
 	 * @param bool $routeRecordsByLanguageAndLocale
-	 * @return \MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE);
 
@@ -303,7 +303,7 @@ interface ILocalization
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
+	 * @param \MvcCore\Ext\Routers\Localizations\Route[]|array $routes 
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
 	 * @param string|array|NULL $groupNames 
@@ -319,7 +319,7 @@ interface ILocalization
 	 *				`TRUE` by default. Throw an exception, if route `name` or 
 	 *				route `Controller:Action` has been defined already. If 
 	 *				`FALSE` old route is overwritten by new one.
-	 * @return \MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
@@ -383,7 +383,7 @@ interface ILocalization
 	 *				records, completed always from array keys. You can you 
 	 *				`FALSE` to set routes without any change or auto-init, it 
 	 *				could be useful to restore cached routes etc.
-	 * @return \MvcCore\Router|\MvcCore\IRouter|\MvcCore\Ext\Routers\Localization|\MvcCore\Ext\Routers\ILocalization
+	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE);
 
@@ -439,7 +439,7 @@ interface ILocalization
 	 *		);`
 	 *	Output:
 	 *		`/application/base-bath/en-US/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route|\MvcCore\IRoute &$route
+	 * @param \MvcCore\Route &$route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return string

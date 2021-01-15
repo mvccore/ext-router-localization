@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localization;
 
-trait RewriteRouting
-{
+trait RewriteRouting {
+
 	/**
 	 * Try to parse first word from request path to get proper routes group.
 	 * If there is no first word in request path, get default routes group. 
@@ -101,7 +101,7 @@ trait RewriteRouting
 	 * returned is an empty array.
 	 * @param string $firstPathWord 
 	 * @param string|NULL $routesLocalizationStr 
-	 * @return array|\MvcCore\IRoute[]|\MvcCore\Ext\Routers\Localizations\Route[]
+	 * @return array|\MvcCore\Ext\Routers\Localizations\Route[]
 	 */
 	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
 		$routesGroupsKey = $firstPathWord;

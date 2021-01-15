@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localizations\Route;
 
-trait PropsGettersSetters
-{
+trait PropsGettersSetters {
+
 	/**
 	 * Standard route pattern string(s), but for multiple localizations. Keys could 
 	 * be lower case languages or lower case languages + dash + upper-case locales.
@@ -126,7 +126,7 @@ trait PropsGettersSetters
 	 * @param string|array $pattern
 	 * @param string|NULL  $localization Lower case language code, optionally 
 	 *									 with dash and upper case locale code.
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetPattern ($pattern, $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
@@ -185,7 +185,7 @@ trait PropsGettersSetters
 	 * @param string|array $match
 	 * @param string|NULL  $localization Lower case language code, optionally 
 	 *									 with dash and upper case locale code.
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetMatch ($match, $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
@@ -239,7 +239,7 @@ trait PropsGettersSetters
 	 * @param string|array $reverse
 	 * @param string|NULL $localization	Lower case language code, optionally 
 	 *									with dash and upper case locale code.
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetReverse ($reverse, $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
@@ -293,7 +293,7 @@ trait PropsGettersSetters
 	 * @param array|\array[] $defaults
 	 * @param string|NULL $localization	Lower case language code, optionally 
 	 *									with dash and upper case locale code.
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetDefaults ($defaults = [], $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
@@ -353,7 +353,7 @@ trait PropsGettersSetters
 	 * @param array|\array[] $constraints
 	 * @param string|NULL $localization	Lower case language code, optionally 
 	 *									with dash and upper case locale code.
-	 * @return \MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetConstraints ($constraints = [], $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
@@ -424,7 +424,7 @@ trait PropsGettersSetters
 	 * same for all localizations or an associative array with localization keys
 	 * and values as localization specific group names.
 	 * @param string|array|NULL $groupName 
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */

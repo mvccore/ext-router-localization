@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localization;
 
-trait RewriteRoutingChecks
-{
+trait RewriteRoutingChecks {
+
 	/**
 	 * Return `TRUE` if there is possible (or not) by additional info array 
 	 * records to route incoming request by given route as first argument. 
@@ -22,7 +22,7 @@ trait RewriteRoutingChecks
 	 * the same method or not and check if route object is localized route 
 	 * instance and if there is also any localization found in request. If there 
 	 * is a conflict, return `FALSE`, if there is everything OK, return `TRUE`.
-	 * @param \MvcCore\IRoute $route 
+	 * @param \MvcCore\Route $route 
 	 * @param array $additionalInfo 
 	 *				Array with request method as string, localization found in 
 	 *				request as bool, route is localized as bool and boolean 

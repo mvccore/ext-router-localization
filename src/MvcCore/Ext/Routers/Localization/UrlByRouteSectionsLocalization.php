@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localization;
 
-trait UrlByRouteSectionsLocalization
-{
+trait UrlByRouteSectionsLocalization {
+
 	/**
 	 * Return localization for result URL as localization param name string and 
 	 * localization param value string. If localization is specified in given 
@@ -25,7 +25,7 @@ trait UrlByRouteSectionsLocalization
 	 * when router is configured to hold localization strictly in session. But 
 	 * do not return any localization for not allowed route methods and do not 
 	 * return any not allowed localizations.
-	 * @param \MvcCore\Route|\MvcCore\Ext\Routers\Localizations\Route|\MvcCore\IRoute $route 
+	 * @param \MvcCore\Ext\Routers\Localizations\Route $route 
 	 * @param array $params 
 	 * @param string|NULL $routeMethod 
 	 * @return array `[string $localizationParamName, string $localizationStr]`

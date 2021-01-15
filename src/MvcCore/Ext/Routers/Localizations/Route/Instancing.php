@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Ext\Routers\Localizations\Route;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
 	 * Create new localized route instance. First argument could be configuration  
 	 * array with all necessary constructor values or all separated arguments -   
@@ -79,7 +79,7 @@ trait Instancing
 	 * @param array	$filters
 	 *				Optional, callable function(s) under keys `"in" | "out"` 
 	 *				to filter in and out params accepting arguments:
-	 *				`array $params, array $defaultParams, \MvcCore\IRequest $request`.
+	 *				`array $params, array $defaultParams, \MvcCore\Request $request`.
 	 * @param array $method
 	 *				Optional, http method to only match requests by this method. 
 	 *				If `NULL` (by default), request with any http method could 
