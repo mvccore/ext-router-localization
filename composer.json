@@ -3,24 +3,24 @@
 	"type": "library",
 	"description": "MvcCore - Extension - Router - Media & Localization - extension to manage website localizations (language or language and locale). For any HTTP method, multi or single language (or lang. with locale) patterns and reverses, URL addresses like `/en/path` or `/en-US/path`, very configurable.",
 	"keywords": [
-		"mvc", 
-		"mvccore", 
-		"framework", 
-		"extension", 
-		"plugin", 
-		"plug-in", 
+		"mvc",
+		"mvccore",
+		"framework",
+		"extension",
+		"plugin",
+		"plug-in",
 		"ext",
-		"router", 
+		"router",
 		"routing",
-		"routes", 
-		"lang", 
-		"language", 
+		"routes",
+		"lang",
+		"language",
 		"locale",
 		"localization",
-		"multi lang", 
-		"multi language", 
-		"language version", 
-		"locale version", 
+		"multi lang",
+		"multi language",
+		"language version",
+		"locale version",
 		"localized url"
 	],
 	"license": ["BSD-3-Clause"],
@@ -30,11 +30,13 @@
 	}],
 	"require": {
 		"php": ">=5.4.0",
-		"mvccore/mvccore": "dev-master",
-		"mvccore/ext-router-extended": "dev-master"
+		"mvccore/mvccore": "^5.0",
+		"mvccore/ext-router-extended": "^5.0"
 	},
 	"autoload": {
-		"classmap": ["src/"]
+		"classmap": [
+			"src/"
+		]
 	},
 	"minimum-stability": "dev"
 }
