@@ -157,8 +157,9 @@ trait InternalInits {
 		$this->reverseLocalized[$localization] = $reverse;
 
 		$match = NULL;
+		$constraintsLocalized = $this->GetConstraints($localization);
 		$reverseParams = $this->initReverseParams(
-			$reverse, $reverseSections, $this->GetConstraints($localization), $match
+			$reverse, $reverseSections, $constraintsLocalized, $match
 		);
 		$this->reverseParamsLocalized[$localization] = $reverseParams;
 		$this->reverseParams = array_keys($reverseParams);

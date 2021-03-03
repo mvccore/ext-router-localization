@@ -399,7 +399,7 @@ trait PropsGettersSetters {
 	 * localization equivalents.
 	 * @return array
 	 */
-	public function & GetLocalizationEquivalents () {
+	public function GetLocalizationEquivalents () {
 		return $this->localizationEquivalents;
 	}
 

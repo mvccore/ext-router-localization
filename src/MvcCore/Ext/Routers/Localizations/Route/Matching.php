@@ -32,14 +32,17 @@ trait Matching {
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest $request, $localization = NULL) {
+	public function Matches (\MvcCore\IRequest $request, $localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern($localization);
 		$subject = $this->matchesGetSubject($request);
-		$matchedValues = & $this->match($pattern, $subject);
+		$matchedValues = $this->match($pattern, $subject);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
-			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults($localization));
+			$defaultsLocalized = $this->GetDefaults($localization);
+			$matchedParams = $this->matchesParseRewriteParams(
+				$matchedValues, $defaultsLocalized
+			);
 			if (isset($matchedParams[$this->lastPatternParam])) 
 				$matchedParams[$this->lastPatternParam] = rtrim(
 				$matchedParams[$this->lastPatternParam], '/'

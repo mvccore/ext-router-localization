@@ -1,6 +1,6 @@
 # MvcCore - Extension - Router - Localization
 
-[![Latest Stable Version](https://img.shields.io/badge/Stable-v5.0.0-brightgreen.svg?style=plastic)](https://github.com/mvccore/ext-router-localization/releases)
+[![Latest Stable Version](https://img.shields.io/badge/Stable-v5.0.1-brightgreen.svg?style=plastic)](https://github.com/mvccore/ext-router-localization/releases)
 [![License](https://img.shields.io/badge/License-BSD%203-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/5.0.0/LICENSE.md)
 ![PHP Version](https://img.shields.io/badge/PHP->=5.4-brightgreen.svg?style=plastic)
 
@@ -109,12 +109,12 @@ Add this to `Bootstrap.php` or to **very application beginning**,
 before application routing or any other extension configuration
 using router for any purposes:
 ```php
-$app = & \MvcCore\Application::GetInstance();
+$app = \MvcCore\Application::GetInstance();
 $app->SetRouterClass('\MvcCore\Ext\Routers\Localization');
 ...
 // to get router instance for next configuration:
 /** @var $router \MvcCore\Ext\Routers\Localization */
-$router = & \MvcCore\Router::GetInstance();
+$router = \MvcCore\Router::GetInstance();
 ```
 
 [go to top](#user-content-outline)

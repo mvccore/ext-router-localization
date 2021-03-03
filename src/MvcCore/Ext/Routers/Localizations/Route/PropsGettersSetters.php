@@ -266,7 +266,7 @@ trait PropsGettersSetters {
 	 *									with dash and upper case locale code.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($localization = NULL) {
+	public function GetDefaults ($localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
@@ -324,7 +324,7 @@ trait PropsGettersSetters {
 	 *									with dash and upper case locale code.
 	 * @return array|\array[]
 	 */
-	public function & GetConstraints ($localization = NULL) {
+	public function GetConstraints ($localization = NULL) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 

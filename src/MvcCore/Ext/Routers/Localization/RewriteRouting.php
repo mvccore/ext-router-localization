@@ -53,7 +53,7 @@ trait RewriteRouting {
 		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
 
-		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
+		$routes = $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord, $routesLocalizationStr);
 		$noSkipLocalRoutesForNonLocalRequests = !($this->routeGetRequestsOnly && $requestMethod !== \MvcCore\IRequest::METHOD_GET);
 		
 		foreach ($routes as $route) {
@@ -103,7 +103,7 @@ trait RewriteRouting {
 	 * @param string|NULL $routesLocalizationStr 
 	 * @return array|\MvcCore\Ext\Routers\Localizations\Route[]
 	 */
-	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
+	protected function rewriteRoutingGetRoutesToMatch ($firstPathWord, $routesLocalizationStr = NULL) {
 		$routesGroupsKey = $firstPathWord;
 		if ($routesLocalizationStr !== NULL) 
 			$routesGroupsKey = $routesLocalizationStr . '/' . $firstPathWord;

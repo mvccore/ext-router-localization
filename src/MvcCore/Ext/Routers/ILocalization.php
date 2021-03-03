@@ -210,7 +210,7 @@ interface ILocalization {
 	 * localization equivalents.
 	 * @return array
 	 */
-	public function & GetLocalizationEquivalents ();
+	public function GetLocalizationEquivalents ();
 
 	/**
 	 * Set list of localization equivalents used in localization detection by http

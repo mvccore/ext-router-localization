@@ -62,7 +62,7 @@ trait UrlBuilding {
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		// initialize localization param and route localization key
 		$router = $this->router;
@@ -109,12 +109,13 @@ trait UrlBuilding {
 		$domainPercentageParams = $this->urlGetAndRemoveDomainPercentageParams($filteredParams);
 
 		// build reverse pattern
+		$defaultsLocalized = $this->GetDefaults($routesLocalization);
 		$result = $this->urlComposeByReverseSectionsAndParams(
 			$this->reverseLocalized[$routesLocalization], 
 			$this->reverseSectionsLocalized[$routesLocalization], 
 			$this->reverseParamsLocalized[$routesLocalization], 
 			$filteredParams, 
-			$this->GetDefaults($routesLocalization)
+			$defaultsLocalized
 		);
 		
 		// add all remaining params to query string
