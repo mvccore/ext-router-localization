@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait RewriteRouting {
 
 	/**
@@ -48,7 +51,7 @@ trait RewriteRouting {
 				? $localizationStr
 				: $localization[0];
 
-		/** @var $route \MvcCore\Route */
+		/** @var \MvcCore\Route $route */
 		$requestMethod = $request->GetMethod();
 		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);

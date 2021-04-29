@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localizations\Route;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localizations\Route
+ */
 trait Matching {
 
 	/**
@@ -33,7 +36,6 @@ trait Matching {
 	 *				 params or controller and action params.
 	 */
 	public function Matches (\MvcCore\IRequest $request, $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern($localization);
 		$subject = $this->matchesGetSubject($request);
@@ -72,7 +74,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetPattern ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($this->match !== NULL) {
 			$match = $this->match;
 			$this->matchLocalized[$localization] = $match;

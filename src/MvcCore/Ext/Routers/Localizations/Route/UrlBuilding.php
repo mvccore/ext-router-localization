@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localizations\Route;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localizations\Route
+ */
 trait UrlBuilding {
 
 	/**
@@ -63,7 +66,6 @@ trait UrlBuilding {
 	 *							path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		// initialize localization param and route localization key
 		$router = $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait PreRouting {
 
 	/**
@@ -157,7 +160,7 @@ trait PreRouting {
 		) {
 			if ($this->redirectFirstRequestToDefault) {
 				$targetLocalization = $this->defaultLocalization;
-				/** @var $request \MvcCore\Request */
+				/** @var \MvcCore\Request $request */
 				$request = $this->request;
 				$this->requestGlobalGet[static::URL_PARAM_REDIRECTED_SOURCE] = rawurlencode(
 					$request->GetBaseUrl() 

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait UrlByRouteSectionsLocalization {
 
 	/**

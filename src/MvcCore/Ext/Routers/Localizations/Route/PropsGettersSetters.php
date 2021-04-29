@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localizations\Route;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localizations\Route
+ */
 trait PropsGettersSetters {
 
 	/**
@@ -102,7 +105,6 @@ trait PropsGettersSetters {
 	 * @return string|array|NULL
 	 */
 	public function GetPattern ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->patternLocalized)
@@ -129,7 +131,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetPattern ($pattern, $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($localization !== NULL) {
 			$this->patternLocalized[$localization] = $pattern;
 		} else if (is_array($pattern)) {
@@ -157,7 +158,6 @@ trait PropsGettersSetters {
 	 * @return string|array|NULL
 	 */
 	public function GetMatch ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->matchLocalized)	
@@ -188,7 +188,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetMatch ($match, $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($localization !== NULL) {
 			$this->matchLocalized[$localization] = $match;
 		} else if (is_array($match)) {
@@ -214,7 +213,6 @@ trait PropsGettersSetters {
 	 * @return string|array|NULL
 	 */
 	public function GetReverse ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->reverseLocalized)
@@ -242,7 +240,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetReverse ($reverse, $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($localization !== NULL) {
 			$this->reverseLocalized[$localization] = $reverse;
 		} else if (is_array($reverse)) {
@@ -267,7 +264,6 @@ trait PropsGettersSetters {
 	 * @return array|\array[]
 	 */
 	public function GetDefaults ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->defaultsLocalized) && 
@@ -296,7 +292,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetDefaults ($defaults = [], $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($localization !== NULL) {
 			$this->defaultsLocalized[$localization] = $defaults;
 		} else {
@@ -325,7 +320,6 @@ trait PropsGettersSetters {
 	 * @return array|\array[]
 	 */
 	public function GetConstraints ($localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if (
 			$localization !== NULL && 
 			array_key_exists($localization, $this->constraintsLocalized) && 
@@ -356,7 +350,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localizations\Route
 	 */
 	public function SetConstraints ($constraints = [], $localization = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		if ($localization !== NULL) {
 			$this->constraintsLocalized[$localization] = $constraints;
 			if (!isset($this->defaultsLocalized[$localization]))
@@ -396,7 +389,6 @@ trait PropsGettersSetters {
 	 * @return \string[]|NULL
 	 */
 	public function GetReverseParams () {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		return $this->reverseParams;
 	}
 
@@ -411,7 +403,6 @@ trait PropsGettersSetters {
 	 * @return string|array|NULL
 	 */
 	public function GetGroupName () {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		return $this->groupName;
 	}
 
@@ -427,7 +418,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName) {
-		/** @var $this \MvcCore\Ext\Routers\Localizations\Route */
 		$this->groupName = $groupName;
 		return $this;
 	}

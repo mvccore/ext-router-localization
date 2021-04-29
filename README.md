@@ -113,7 +113,7 @@ $app = \MvcCore\Application::GetInstance();
 $app->SetRouterClass('\MvcCore\Ext\Routers\Localization');
 ...
 // to get router instance for next configuration:
-/** @var $router \MvcCore\Ext\Routers\Localization */
+/** @var \MvcCore\Ext\Routers\Localization $router */
 $router = \MvcCore\Router::GetInstance();
 ```
 

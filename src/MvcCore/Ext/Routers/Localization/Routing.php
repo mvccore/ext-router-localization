@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait Routing {
 
 	/**
@@ -46,7 +49,6 @@ trait Routing {
 	 * @return bool
 	 */
 	public function Route () {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->internalRequest = $this->request->IsInternalRequest();
 		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		if (!$this->internalRequest) {

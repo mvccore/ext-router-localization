@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait PropsGettersSetters {
 
 	/***************************************************************************
@@ -195,7 +198,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		if ($defaultLocalizationOrLanguage === NULL) 
 			throw new \InvalidArgumentException("[".get_class()."] Default localization must be defined at least by the language.");
 		if ($defaultLocale === NULL) {
@@ -240,7 +242,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetLocalization ($lang, $locale = NULL) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		if ($lang === NULL) throw new \InvalidArgumentException(
 			"[".get_class()."] Localization must be defined at least by the language."
 		);
@@ -269,7 +270,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRedirectFirstRequestToDefault ($redirectFirstRequestToDefault = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->redirectFirstRequestToDefault = $redirectFirstRequestToDefault;
 		return $this;
 	}
@@ -292,7 +292,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetAllowNonLocalizedRoutes ($allowNonLocalizedRoutes = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->allowNonLocalizedRoutes = $allowNonLocalizedRoutes;
 		return $this;
 	}
@@ -325,7 +324,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetDetectLocalizationOnlyByLang ($detectLocalizationOnlyByLang = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->detectLocalizationOnlyByLang = $detectLocalizationOnlyByLang;
 		return $this;
 	}
@@ -356,7 +354,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetAllowedLocalizations ($allowedLocalizations) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
 			$allowedLocalizations = $allowedLocalizations[0];
@@ -378,7 +375,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddAllowedLocalizations ($allowedLocalizations) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$allowedLocalizations = func_get_args();
 		if (count($allowedLocalizations) === 1 && is_array($allowedLocalizations[0])) 
 			$allowedLocalizations = $allowedLocalizations[0];
@@ -416,7 +412,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetLocalizationEquivalents (array $localizationEquivalents = []) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->localizationEquivalents = [];
 		$this->AddLocalizationEquivalents($localizationEquivalents);
 		return $this;
@@ -435,7 +430,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddLocalizationEquivalents (array $localizationEquivalents = []) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		foreach ($localizationEquivalents as $targetLocalization => $targetLocalizationEquivalents) {
 			foreach ($targetLocalizationEquivalents as $targetLocalizationEquivalent) 
 				$this->localizationEquivalents[$targetLocalizationEquivalent] = $targetLocalization;
@@ -465,7 +459,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRouteRecordsByLanguageAndLocale ($routeRecordsByLanguageAndLocale = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$this->routeRecordsByLanguageAndLocale = $routeRecordsByLanguageAndLocale;
 		return $this;
 	}
@@ -531,7 +524,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function AddRoutes (array $routes = [], $groupNames = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		$routeClass = self::$routeClass;
 		self::$routeClass = self::$routeClassLocalized;
 		parent::AddRoutes($routes, $groupNames, $prepend, $throwExceptionForDuplication);
@@ -652,7 +644,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Ext\Routers\Localization
 	 */
 	public function SetRoutes ($routes = [], $groupNames = NULL, $autoInitialize = TRUE) {
-		/** @var $this \MvcCore\Ext\Routers\Localization */
 		if ($autoInitialize) {
 			$this->routes = [];
 			$this->AddRoutes($routes, $groupNames);
@@ -754,7 +745,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Route
 	 */
 	protected function getRouteInstance (& $routeCfgOrRoute) {
-		/** @var $this \MvcCore\Router */
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute->SetRouter($this);
 		$routeClass = $this->isRouteCfgDataLocalized($routeCfgOrRoute) 

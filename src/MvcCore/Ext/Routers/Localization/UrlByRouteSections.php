@@ -13,6 +13,9 @@
 
 namespace MvcCore\Ext\Routers\Localization;
 
+/**
+ * @mixin \MvcCore\Ext\Routers\Localization
+ */
 trait UrlByRouteSections {
 
 	/**
@@ -47,7 +50,7 @@ trait UrlByRouteSections {
 	 * @return array `string $urlBaseSection, string $urlPathWithQuerySection, array $systemParams`
 	 */
 	protected function urlByRouteSections (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {
-		/** @var $route \MvcCore\Route */
+		/** @var \MvcCore\Route $route */
 		$defaultParams = array_merge([], $this->GetDefaultParams() ?: []);
 		if ($urlParamRouteName == 'self') 
 			$params = array_merge($this->requestedParams, $params);
