@@ -130,6 +130,7 @@ trait PreRouting {
 		if (!$this->localization) 
 			$this->localization = $this->defaultLocalization;
 		$this->session->{static::URL_PARAM_LOCALIZATION} = $this->localization;
+		$this->sessionLocalization = $this->localization;
 		$this->firstRequestLocalizationDetection = $firstRequestLocalizationDetection;
 	}
 
