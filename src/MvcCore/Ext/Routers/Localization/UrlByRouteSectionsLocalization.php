@@ -48,14 +48,18 @@ trait UrlByRouteSectionsLocalization {
 			if ($localizedRoute) $params[$localizationParamName] = $localizationStr;
 		}
 		// check if localization value is valid
-		if ($this->routeGetRequestsOnly && $routeMethod !== NULL && $routeMethod !== \MvcCore\IRequest::METHOD_GET) {
+		if (
+			$this->routeGetRequestsOnly && 
+			$routeMethod !== NULL && 
+			$routeMethod !== \MvcCore\IRequest::METHOD_GET && 
+			$routeMethod !== \MvcCore\IRequest::METHOD_HEAD
+		) {
 			$localizationStr = NULL;
 		} else if (!isset($this->allowedLocalizations[$localizationStr])) {
 			// check if localization value is valid
 			if (isset($this->localizationEquivalents[$localizationStr])) 
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
 			if (!isset($this->allowedLocalizations[$localizationStr])) {
-				$localizationStr = NULL;
 				trigger_error(
 					'['.get_class().'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
