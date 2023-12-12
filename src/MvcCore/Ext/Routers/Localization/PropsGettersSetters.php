@@ -199,7 +199,7 @@ trait PropsGettersSetters {
 	 */
 	public function SetDefaultLocalization ($defaultLocalizationOrLanguage, $defaultLocale = NULL) {
 		if ($defaultLocalizationOrLanguage === NULL) 
-			throw new \InvalidArgumentException("[".get_class()."] Default localization must be defined at least by the language.");
+			throw new \InvalidArgumentException("[".get_class($this)."] Default localization must be defined at least by the language.");
 		if ($defaultLocale === NULL) {
 			$delimiterPos = strpos($defaultLocalizationOrLanguage, static::LANG_AND_LOCALE_SEPARATOR);
 			if ($delimiterPos !== FALSE) {
@@ -243,7 +243,7 @@ trait PropsGettersSetters {
 	 */
 	public function SetLocalization ($lang, $locale = NULL) {
 		if ($lang === NULL) throw new \InvalidArgumentException(
-			"[".get_class()."] Localization must be defined at least by the language."
+			"[".get_class($this)."] Localization must be defined at least by the language."
 		);
 		$this->localization[0] = $lang;
 		if ($locale !== NULL) $this->localization[1] = $locale;
@@ -560,7 +560,7 @@ trait PropsGettersSetters {
 				$route->SetGroupName($groupNames);
 			} else {
 				throw new \InvalidArgumentException (
-					"[".get_class()."] Localized routes group cannot contain non-localized route instance. "
+					"[".get_class($this)."] Localized routes group cannot contain non-localized route instance. "
 					. "(group names: ".json_encode($groupNames).", route: {$route})"
 				);
 			}

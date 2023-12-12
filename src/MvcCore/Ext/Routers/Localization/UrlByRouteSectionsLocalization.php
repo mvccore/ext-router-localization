@@ -61,7 +61,7 @@ trait UrlByRouteSectionsLocalization {
 				$localizationStr = $this->localizationEquivalents[$localizationStr];
 			if (!isset($this->allowedLocalizations[$localizationStr])) {
 				trigger_error(
-					'['.get_class().'] Not allowed localization used to generate url: `'
+					'['.get_class($this).'] Not allowed localization used to generate url: `'
 					.$localizationStr.'`. Allowed values: `'
 					.implode('`, `', array_keys($this->allowedLocalizations)) . '`.',
 					E_USER_ERROR

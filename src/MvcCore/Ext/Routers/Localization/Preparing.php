@@ -41,7 +41,7 @@ trait Preparing {
 
 		// check all necessary properties configured
 		if (!$this->defaultLocalization) {
-			throw new \InvalidArgumentException("[".get_class()."] No default localization configured.");
+			throw new \InvalidArgumentException("[".get_class($this)."] No default localization configured.");
 		}
 		
 		// store path info locally for routing process
