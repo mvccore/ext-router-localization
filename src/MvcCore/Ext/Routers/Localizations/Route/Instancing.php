@@ -64,41 +64,47 @@ trait Instancing {
 	 *			"de" => ["name"	=> "standard-name","color" => "rot"],
 	 *		],
 	 * ]);`
-	 * @param string|array $patternOrConfig	
-	 *				Required, configuration array or route pattern value to 
-	 *				parse into match and reverse patterns for all localizations.
-	 * @param string $controllerAction
-	 *				Optional, controller and action name in pascal case like: 
-	 *				`"Photogallery:List"`.
-	 * @param array $defaults
-	 *				Optional, default param values like: 
-	 *				`["name" => "default-name", "page" => 1]`
-	 *				or in localized  version like:
-	 *				`["en" => ["name" => "default-name", "page" => 1]],...`
-	 * @param array $constraints
-	 *				Optional, params regular expression constraints for regular 
-	 *				expression match if `"match"` property in configuration 
-	 *				array as first argument defined.
-	 * @param array	$filters
-	 *				Optional, callable function(s) under keys `"in" | "out"` 
-	 *				to filter in and out params accepting arguments:
-	 *				`array $params, array $defaultParams, \MvcCore\Request $request`.
-	 * @param array $method
-	 *				Optional, http method to only match requests by this method. 
-	 *				If `NULL` (by default), request with any http method could 
-	 *				be matched by this route. Given value is automatically 
-	 *				converted to upper case.
+	 * @param string|array<string,mixed> $pattern
+	 * Required, configuration array or route pattern value to 
+	 * parse into match and reverse patterns for all localizations.
+	 * @param string|NULL                $controllerAction
+	 * Optional, controller and action name in pascal case like: 
+	 * `"Photogallery:List"`.
+	 * @param array<string,mixed>|NULL   $defaults
+	 * Optional, default param values like: 
+	 * `["name" => "default-name", "page" => 1]`
+	 * or in localized  version like:
+	 * `["en" => ["name" => "default-name", "page" => 1]],...`
+	 * @param array<string,string>|NULL  $constraints
+	 * Optional, params regular expression constraints for regular 
+	 * expression match if `"match"` property in configuration 
+	 * array as first argument defined.
+	 * @param array<string,mixed>        $config
+	 * Optional, array with adwanced configuration.
+	 * There could be defined:
+	 * - string   `method`   HTTP method name. If `NULL` (by default), 
+	 *                       request with any http method could be matched 
+	 *                       by this route. Given value is automatically 
+	 *                       converted to upper case.
+	 * - string   `redirect` Redirect route name.
+	 * - bool     `absolute` Absolutize URL.
+	 * - callable `in`       URL filter in, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
+	 * - callable `out`      URL filter out, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
 	 * @return void
 	 */
 	public function __construct (
-		$patternOrConfig = NULL,
+		$pattern = NULL,
 		$controllerAction = NULL,
-		$defaults = [],
-		$constraints = [],
-		$advancedConfiguration = []
+		$defaults = NULL,
+		$constraints = NULL,
+		$config = []
 	) {
 		$argsCount = count(func_get_args());
 		if ($argsCount === 0) return;
+		$patternOrConfig = $pattern;
+		$advancedConfiguration = $config;
 		if (is_array($patternOrConfig) && $argsCount == 1) {
 			$data = (object) $patternOrConfig;
 			$this->constructDataPatternsDefaultsConstraintsFilters($data);
