@@ -49,15 +49,15 @@ trait UrlBuilding {
 	 *							Requested URL route params and query string 
 	 *							params without escaped HTML special chars: 
 	 *							`< > & " ' &`.
-	 * @param string			$queryStringParamsSepatator 
-	 *							Query params separator, `&` by default. Always 
-	 *							automatically completed by router instance.
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
 	 *							into two parts or not. Default is FALSE to return 
 	 *							a string array with only one record - the result 
 	 *							URL. If `TRUE`, result url is split into two 
 	 *							parts and function return array with two items.
+	 * @param string			$queryStringParamsSepatator 
+	 *							Query params separator, `&amp;` by default. Always 
+	 *							automatically completed by router instance.
 	 * @return \string[]		Result URL address in array. If last argument is 
 	 *							`FALSE` by default, this function returns only 
 	 *							single item array with result URL. If last 
@@ -65,15 +65,17 @@ trait UrlBuilding {
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $splitUrl = FALSE, $queryStringParamsSepatator = '&amp;') {
 		// initialize localization param and route localization key
 		$router = $this->router;
 		$localizationParamName = $router::URL_PARAM_LOCALIZATION;
+		$defaultUrlParamsLocalization = NULL;
 		if (isset($params[$localizationParamName])) {
 			$localizationStr = $params[$localizationParamName];
 			unset($params[$localizationParamName]);
 		} else if (isset($defaultUrlParams[$localizationParamName])) {
 			$localizationStr = $defaultUrlParams[$localizationParamName];
+			$defaultUrlParamsLocalization = $localizationStr;
 			unset($defaultUrlParams[$localizationParamName]);
 		} else {
 			$localizationStr = implode($router::LANG_AND_LOCALE_SEPARATOR, $router->GetLocalization());
@@ -103,7 +105,10 @@ trait UrlBuilding {
 		// filter params
 		$localizationContained = array_key_exists($localizationParamName, $allParamsClone);
 		$allParamsClone[$localizationParamName] = $localizationStr;
-		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
+		$defaultUrlParamsClone = array_merge([], $defaultUrlParams);
+		if ($defaultUrlParamsLocalization !== NULL)
+			$defaultUrlParamsClone[$localizationParamName] = $defaultUrlParamsLocalization;
+		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParamsClone, \MvcCore\IRoute::CONFIG_FILTER_OUT);
 		$filteredParams = $filteredParams ?: [];
 		if (!$localizationContained) unset($filteredParams[$localizationParamName]);
 		
