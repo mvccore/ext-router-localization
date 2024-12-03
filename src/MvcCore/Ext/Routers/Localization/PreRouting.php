@@ -170,6 +170,8 @@ trait PreRouting {
 					. $request->GetFragment(TRUE, TRUE)
 				);
 				$request->SetPath('/');
+			} else if ($this->firstRequestLocalizationDetection && $this->localization !== NULL) {
+				$targetLocalization = $this->localization;
 			} else if ($this->requestLocalization !== NULL) {
 				$targetLocalization = $this->requestLocalization;
 			} else {
